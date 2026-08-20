@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #0a244d;
+  --navy-deep: #061733;
+  --cyan: #65cbe9;
+  --yellow: #ffc72c;
+  --white: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /* White is the dominant base — navy appears only as deliberate blocks
+     (nav, footer, hero panels, stat bands), never as the page canvas. */
+  background-color: var(--white);
+  color: var(--navy);
+  font-family: var(--font-body), sans-serif;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+/* Fluid display sizing — one shared scale instead of every page hand-rolling
+   its own breakpoint jumps. Matches the condensed, tight-leading treatment
+   already shipped on the ekounitedfc.com teaser page. */
+.display-hero {
+  font-size: clamp(3.2rem, 9vw, 6.5rem);
+  line-height: 0.92;
+}
+
+.display-title {
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 0.95;
+}
+
+/* Respect users who've asked for less motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Homepage hero's navy panel — one clean diagonal cut echoing the crest's own
+   diagonal composition (see the coming-soon page's .cyan-panel treatment).
+   Desktop cuts the left edge (panel sits right of the photo); mobile cuts the
+   bottom edge instead, since the panel stacks above the photo there. */
+.hero-diagonal {
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+@media (max-width: 1023px) {
+  .hero-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 90%);
+  }
+}
+
+/* Subtle bridge-cable line texture inside the hero panel, referencing the
+   crest's suspension-bridge artwork. Purely decorative, clipped by the
+   diagonal shape above. */
+.hero-diagonal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    100deg,
+    rgba(101, 203, 233, 0.07) 0px,
+    rgba(101, 203, 233, 0.07) 1px,
+    transparent 1px,
+    transparent 34px
+  );
+}
+
+/* Visible keyboard focus everywhere — never remove this without a replacement */
+:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}

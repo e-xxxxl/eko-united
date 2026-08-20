@@ -1,0 +1,81 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { apiFetch } from "@/lib/api";
+
+export const metadata: Metadata = {
+  title: "Coaching & Technical Staff",
+  description: "Meet the coaching and technical staff behind Eko United FC.",
+};
+
+type StaffMember = {
+  _id: string;
+  name: string;
+  title?: string;
+  position?: string;
+  photoUrl?: string;
+  bio?: string;
+};
+
+async function getStaff(role: "coach" | "technical_staff"): Promise<StaffMember[]> {
+  return (await apiFetch<StaffMember[]>(`/players?role=${role}`, 1800)) || [];
+}
+
+function StaffGrid({ members }: { members: StaffMember[] }) {
+  return (
+    <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {members.map((person) => (
+        <div key={person._id}>
+          <div className="relative aspect-square overflow-hidden bg-navy-light">
+            {person.photoUrl ? (
+              <Image
+                src={person.photoUrl}
+                alt={person.name}
+                fill
+                sizes="(min-width: 1024px) 22vw, (min-width: 640px) 40vw, 80vw"
+                className="object-cover"
+              />
+            ) : null}
+          </div>
+          <p className="mt-4 font-display text-lg">{person.name}</p>
+          {(person.title || person.position) && (
+            <p className="text-sm text-cyan">{person.title || person.position}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default async function CoachingStaffPage() {
+  const [coaches, technicalStaff] = await Promise.all([
+    getStaff("coach"),
+    getStaff("technical_staff"),
+  ]);
+
+  return (
+    <main className="px-6 py-16 sm:px-10 lg:px-16">
+      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
+        Behind the Team
+      </p>
+      <h1 className="display-title font-display">Coaching &amp; Technical Staff</h1>
+
+      <section className="mt-14 border-t border-navy/10 pt-10">
+        <h2 className="font-display text-2xl text-navy/90">Coaching Staff</h2>
+        {coaches.length === 0 ? (
+          <p className="mt-6 text-navy/50">Coaching staff profiles will appear here once added.</p>
+        ) : (
+          <StaffGrid members={coaches} />
+        )}
+      </section>
+
+      <section className="mt-14 border-t border-navy/10 pt-10">
+        <h2 className="font-display text-2xl text-navy/90">Technical Team</h2>
+        {technicalStaff.length === 0 ? (
+          <p className="mt-6 text-navy/50">Technical team profiles will appear here once added.</p>
+        ) : (
+          <StaffGrid members={technicalStaff} />
+        )}
+      </section>
+    </main>
+  );
+}
