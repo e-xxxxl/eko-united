@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
+import { demoFixtures, type DemoMatch } from "@/lib/demoData";
 import MatchCard from "@/components/MatchCard";
 
 export const metadata: Metadata = {
@@ -7,18 +8,9 @@ export const metadata: Metadata = {
   description: "Upcoming Eko United FC fixtures — Nigeria National League.",
 };
 
-type Match = {
-  _id: string;
-  opponent: string;
-  competition?: string;
-  venue?: string;
-  kickoff: string;
-  isHome: boolean;
-  status: "upcoming" | "live" | "finished" | "postponed";
-};
-
-async function getFixtures(): Promise<Match[]> {
-  return (await apiFetch<Match[]>("/matches?status=upcoming", 600)) || [];
+async function getFixtures(): Promise<DemoMatch[]> {
+  const live = await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600);
+  return live && live.length > 0 ? live : demoFixtures;
 }
 
 export default async function FixturesPage() {

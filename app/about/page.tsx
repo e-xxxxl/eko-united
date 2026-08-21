@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import { demoManagement, type DemoPlayer } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "About",
@@ -19,21 +20,13 @@ type SiteSettings = {
   };
 };
 
-type ManagementMember = {
-  _id: string;
-  name: string;
-  slug: string;
-  title?: string;
-  photoUrl?: string;
-  bio?: string;
-};
-
 async function getSettings(): Promise<SiteSettings> {
   return (await apiFetch<SiteSettings>("/settings")) || {};
 }
 
-async function getManagementTeam(): Promise<ManagementMember[]> {
-  return (await apiFetch<ManagementMember[]>("/players?role=management")) || [];
+async function getManagementTeam(): Promise<DemoPlayer[]> {
+  const live = await apiFetch<DemoPlayer[]>("/players?role=management");
+  return live && live.length > 0 ? live : demoManagement;
 }
 
 export default async function AboutPage() {

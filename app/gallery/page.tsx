@@ -3,21 +3,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
+import { demoGallery, type DemoGalleryItem } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Gallery",
   description: "Photos and videos from Eko United FC matchdays and behind the scenes.",
 };
 
-type GalleryItem = {
-  _id: string;
-  type: "photo" | "video";
-  url: string;
-  caption?: string;
-};
-
-async function getGallery(type?: string): Promise<GalleryItem[]> {
-  return (await apiFetch<GalleryItem[]>(`/gallery${type ? `?type=${type}` : ""}`, 900)) || [];
+async function getGallery(type?: string): Promise<DemoGalleryItem[]> {
+  const live = await apiFetch<DemoGalleryItem[]>(`/gallery${type ? `?type=${type}` : ""}`, 900);
+  if (live && live.length > 0) return live;
+  return type ? demoGallery.filter((item) => item.type === type) : demoGallery;
 }
 
 const tabs = [

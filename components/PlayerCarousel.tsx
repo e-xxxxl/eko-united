@@ -1,29 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import { demoSquad, type DemoPlayer } from "@/lib/demoData";
 
-type Player = {
-  _id: string;
-  name: string;
-  slug: string;
-  position?: string;
-  squadNumber?: number;
-  photoUrl?: string;
-};
-
-// Demo squad with Unsplash portraits — swap for real player photography
-// (via Cloudinary) once uploaded through the admin panel.
-const demoSquad: Player[] = [
-  { _id: "p1", name: "Chidi Okafor", slug: "chidi-okafor", position: "Forward", squadNumber: 9, photoUrl: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=700&q=80&fit=crop&auto=format" },
-  { _id: "p2", name: "Emeka Taiwo", slug: "emeka-taiwo", position: "Midfielder", squadNumber: 8, photoUrl: "https://images.unsplash.com/photo-1670489520245-c41cb342a565?w=700&q=80&fit=crop&auto=format" },
-  { _id: "p3", name: "Segun Bello", slug: "segun-bello", position: "Defender", squadNumber: 4, photoUrl: "https://images.unsplash.com/photo-1670489520252-91fcbaa172f2?w=700&q=80&fit=crop&auto=format" },
-  { _id: "p4", name: "Ayo Balogun", slug: "ayo-balogun", position: "Goalkeeper", squadNumber: 1, photoUrl: "https://images.unsplash.com/photo-1614150011754-cd8b7c8dc0cc?w=700&q=80&fit=crop&auto=format" },
-  { _id: "p5", name: "Femi Adeyemi", slug: "femi-adeyemi", position: "Winger", squadNumber: 11, photoUrl: "https://images.unsplash.com/photo-1610017128786-4a25f0f7756c?w=700&q=80&fit=crop&auto=format" },
-  { _id: "p6", name: "Tunde Bakare", slug: "tunde-bakare", position: "Defender", squadNumber: 5, photoUrl: "https://images.unsplash.com/photo-1649001863283-0ce7ca4e8754?w=700&q=80&fit=crop&auto=format" },
-];
-
-async function getSquad(): Promise<Player[]> {
-  const live = await apiFetch<Player[]>("/players?role=player", 1800);
+async function getSquad(): Promise<DemoPlayer[]> {
+  const live = await apiFetch<DemoPlayer[]>("/players?role=player", 1800);
   return live && live.length > 0 ? live : demoSquad;
 }
 

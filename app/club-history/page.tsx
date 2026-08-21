@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
+import { demoHistory, type DemoMilestone } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Club History",
   description: "The story of Eko United FC, from founding to today.",
 };
 
-type Milestone = {
-  _id: string;
-  year: number;
-  title: string;
-  description?: string;
-};
-
-async function getHistory(): Promise<Milestone[]> {
-  return (await apiFetch<Milestone[]>("/history", 3600)) || [];
+async function getHistory(): Promise<DemoMilestone[]> {
+  const live = await apiFetch<DemoMilestone[]>("/history", 3600);
+  return live && live.length > 0 ? live : demoHistory;
 }
 
 export default async function ClubHistoryPage() {

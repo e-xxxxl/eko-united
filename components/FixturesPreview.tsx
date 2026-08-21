@@ -1,26 +1,11 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
+import { demoFixtures, type DemoMatch } from "@/lib/demoData";
 import MatchCard from "@/components/MatchCard";
 
-type Match = {
-  _id: string;
-  opponent: string;
-  competition?: string;
-  venue?: string;
-  kickoff: string;
-  isHome: boolean;
-  status: "upcoming" | "live" | "finished" | "postponed";
-};
-
-const demoFixtures: Match[] = [
-  { _id: "f1", opponent: "Remo Stars FC", competition: "NNL — Matchday 12", venue: "Agege Stadium, Lagos", kickoff: "2026-08-30T15:00:00.000Z", isHome: true, status: "upcoming" },
-  { _id: "f2", opponent: "Sporting Lagos", competition: "NNL — Matchday 13", venue: "Teslim Balogun Stadium", kickoff: "2026-09-06T15:00:00.000Z", isHome: false, status: "upcoming" },
-  { _id: "f3", opponent: "Rivers United", competition: "NNL — Matchday 14", venue: "Agege Stadium, Lagos", kickoff: "2026-09-13T15:00:00.000Z", isHome: true, status: "upcoming" },
-];
-
-async function getFixtures(): Promise<Match[]> {
-  const live = await apiFetch<Match[]>("/matches?status=upcoming", 600);
-  return live && live.length > 0 ? live.slice(0, 3) : demoFixtures;
+async function getFixtures(): Promise<DemoMatch[]> {
+  const live = await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600);
+  return live && live.length > 0 ? live.slice(0, 3) : demoFixtures.slice(0, 3);
 }
 
 export default async function FixturesPreview() {

@@ -2,28 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
+import { demoStandings, type DemoStanding } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "League Table",
   description: "Nigeria National League standings.",
 };
 
-type Standing = {
-  _id: string;
-  clubName: string;
-  clubLogoUrl?: string;
-  isEkoUnited: boolean;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  goalDifference: number;
-  points: number;
-  position: number;
-};
-
-async function getStandings(): Promise<Standing[]> {
-  return (await apiFetch<Standing[]>("/standings", 3600)) || [];
+async function getStandings(): Promise<DemoStanding[]> {
+  const live = await apiFetch<DemoStanding[]>("/standings", 3600);
+  return live && live.length > 0 ? live : demoStandings;
 }
 
 export default async function TablePage() {

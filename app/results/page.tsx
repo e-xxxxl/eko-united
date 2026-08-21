@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
+import { demoResults, type DemoMatch } from "@/lib/demoData";
 import MatchCard from "@/components/MatchCard";
 
 export const metadata: Metadata = {
@@ -7,19 +8,9 @@ export const metadata: Metadata = {
   description: "Recent Eko United FC match results — Nigeria National League.",
 };
 
-type Match = {
-  _id: string;
-  opponent: string;
-  competition?: string;
-  venue?: string;
-  kickoff: string;
-  isHome: boolean;
-  status: "upcoming" | "live" | "finished" | "postponed";
-  score?: { eko: number | null; opponent: number | null };
-};
-
-async function getResults(): Promise<Match[]> {
-  return (await apiFetch<Match[]>("/matches?status=finished", 600)) || [];
+async function getResults(): Promise<DemoMatch[]> {
+  const live = await apiFetch<DemoMatch[]>("/matches?status=finished", 600);
+  return live && live.length > 0 ? live : demoResults;
 }
 
 export default async function ResultsPage() {

@@ -2,23 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { findDemoPerson, type DemoPlayer } from "@/lib/demoData";
 
-type Player = {
-  _id: string;
-  name: string;
-  slug: string;
-  position?: string;
-  squadNumber?: number;
-  dateOfBirth?: string;
-  nationality?: string;
-  photoUrl?: string;
-  bio?: string;
-  stats?: { appearances?: number; goals?: number; assists?: number };
-  role: "player" | "coach" | "technical_staff" | "management";
-};
-
-async function getPlayer(slug: string): Promise<Player | null> {
-  return apiFetch<Player>(`/players/${slug}`, 1800);
+async function getPlayer(slug: string): Promise<DemoPlayer | null> {
+  const live = await apiFetch<DemoPlayer>(`/players/${slug}`, 1800);
+  return live || findDemoPerson(slug) || null;
 }
 
 export async function generateMetadata({

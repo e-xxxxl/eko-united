@@ -1,24 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import { demoTrophies, type DemoTrophy } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Trophy Cabinet",
   description: "Honours and silverware won by Eko United FC.",
 };
 
-type Trophy = {
-  _id: string;
-  name: string;
-  competition?: string;
-  year: number;
-  timesWon: number;
-  description?: string;
-  imageUrl?: string;
-};
-
-async function getTrophies(): Promise<Trophy[]> {
-  return (await apiFetch<Trophy[]>("/trophies", 3600)) || [];
+async function getTrophies(): Promise<DemoTrophy[]> {
+  const live = await apiFetch<DemoTrophy[]>("/trophies", 3600);
+  return live && live.length > 0 ? live : demoTrophies;
 }
 
 export default async function TrophiesPage() {

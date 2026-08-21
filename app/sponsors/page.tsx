@@ -1,22 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import { demoSponsors, type DemoSponsor } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Sponsors & Partners",
   description: "The sponsors and partners who support Eko United FC.",
 };
 
-type Sponsor = {
-  _id: string;
-  name: string;
-  logoUrl: string;
-  website?: string;
-  tier: "principal" | "partner" | "supplier";
-};
-
-async function getSponsors(): Promise<Sponsor[]> {
-  return (await apiFetch<Sponsor[]>("/sponsors", 3600)) || [];
+async function getSponsors(): Promise<DemoSponsor[]> {
+  const live = await apiFetch<DemoSponsor[]>("/sponsors", 3600);
+  return live && live.length > 0 ? live : demoSponsors;
 }
 
 const tierMeta = {
@@ -25,7 +19,7 @@ const tierMeta = {
   supplier: { heading: "Official Suppliers" },
 } as const;
 
-function SponsorLogo({ sponsor, size }: { sponsor: Sponsor; size: number }) {
+function SponsorLogo({ sponsor, size }: { sponsor: DemoSponsor; size: number }) {
   const content = (
     <div
       className="flex items-center justify-center border border-navy/10 p-6 transition-colors duration-300 ease-smooth hover:border-cyan"

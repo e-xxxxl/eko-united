@@ -2,26 +2,17 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { demoNews, type DemoNews } from "@/lib/demoData";
 
-type NewsItem = {
-  _id: string;
-  title: string;
-  slug: string;
-  body: string;
-  coverImageUrl?: string;
-  category: "article" | "match_report" | "press_release";
-  author: string;
-  publishedAt: string;
-};
-
-const categoryLabels: Record<NewsItem["category"], string> = {
+const categoryLabels: Record<DemoNews["category"], string> = {
   article: "Article",
   match_report: "Match Report",
   press_release: "Press Release",
 };
 
-async function getArticle(slug: string): Promise<NewsItem | null> {
-  return apiFetch<NewsItem>(`/news/${slug}`, 600);
+async function getArticle(slug: string): Promise<DemoNews | null> {
+  const live = await apiFetch<DemoNews>(`/news/${slug}`, 600);
+  return live || demoNews.find((n) => n.slug === slug) || null;
 }
 
 export async function generateMetadata({

@@ -2,30 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import { demoNews, type DemoNews } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "News",
   description: "The latest news, match reports and press releases from Eko United FC.",
 };
 
-type NewsItem = {
-  _id: string;
-  title: string;
-  slug: string;
-  body: string;
-  coverImageUrl?: string;
-  category: "article" | "match_report" | "press_release";
-  publishedAt: string;
-};
-
-const categoryLabels: Record<NewsItem["category"], string> = {
+const categoryLabels: Record<DemoNews["category"], string> = {
   article: "Article",
   match_report: "Match Report",
   press_release: "Press Release",
 };
 
-async function getNews(): Promise<NewsItem[]> {
-  return (await apiFetch<NewsItem[]>("/news?limit=30", 600)) || [];
+async function getNews(): Promise<DemoNews[]> {
+  const live = await apiFetch<DemoNews[]>("/news?limit=30", 600);
+  return live && live.length > 0 ? live : demoNews;
 }
 
 export default async function NewsPage() {

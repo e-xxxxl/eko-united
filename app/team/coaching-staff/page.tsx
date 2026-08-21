@@ -1,26 +1,20 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import { demoCoaches, demoTechnicalStaff, type DemoPlayer } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Coaching & Technical Staff",
   description: "Meet the coaching and technical staff behind Eko United FC.",
 };
 
-type StaffMember = {
-  _id: string;
-  name: string;
-  title?: string;
-  position?: string;
-  photoUrl?: string;
-  bio?: string;
-};
-
-async function getStaff(role: "coach" | "technical_staff"): Promise<StaffMember[]> {
-  return (await apiFetch<StaffMember[]>(`/players?role=${role}`, 1800)) || [];
+async function getStaff(role: "coach" | "technical_staff"): Promise<DemoPlayer[]> {
+  const live = await apiFetch<DemoPlayer[]>(`/players?role=${role}`, 1800);
+  if (live && live.length > 0) return live;
+  return role === "coach" ? demoCoaches : demoTechnicalStaff;
 }
 
-function StaffGrid({ members }: { members: StaffMember[] }) {
+function StaffGrid({ members }: { members: DemoPlayer[] }) {
   return (
     <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {members.map((person) => (

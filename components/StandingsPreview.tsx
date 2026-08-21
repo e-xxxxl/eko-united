@@ -2,32 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
+import { demoStandings, type DemoStanding } from "@/lib/demoData";
 
-type Standing = {
-  _id: string;
-  clubName: string;
-  clubLogoUrl?: string;
-  isEkoUnited: boolean;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  goalDifference: number;
-  points: number;
-  position: number;
-};
-
-const demoStandings: Standing[] = [
-  { _id: "d1", clubName: "Sporting Lagos", isEkoUnited: false, played: 10, won: 7, drawn: 2, lost: 1, goalDifference: 14, points: 23, position: 1 },
-  { _id: "d2", clubName: "Remo Stars FC", isEkoUnited: false, played: 10, won: 6, drawn: 3, lost: 1, goalDifference: 11, points: 21, position: 2 },
-  { _id: "d3", clubName: "Eko United FC", isEkoUnited: true, played: 10, won: 6, drawn: 2, lost: 2, goalDifference: 9, points: 20, position: 3 },
-  { _id: "d4", clubName: "Rivers United", isEkoUnited: false, played: 10, won: 5, drawn: 3, lost: 2, goalDifference: 6, points: 18, position: 4 },
-  { _id: "d5", clubName: "Bendel Insurance", isEkoUnited: false, played: 10, won: 4, drawn: 3, lost: 3, goalDifference: 2, points: 15, position: 5 },
-];
-
-async function getStandings(): Promise<Standing[]> {
-  const live = await apiFetch<Standing[]>("/standings", 3600);
-  return live && live.length > 0 ? live : demoStandings;
+async function getStandings(): Promise<DemoStanding[]> {
+  const live = await apiFetch<DemoStanding[]>("/standings", 3600);
+  // Preview shows the top of the table only — the full list lives on /table.
+  return (live && live.length > 0 ? live : demoStandings).slice(0, 6);
 }
 
 export default async function StandingsPreview() {
