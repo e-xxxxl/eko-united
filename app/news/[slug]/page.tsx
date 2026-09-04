@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { demoNews, type DemoNews } from "@/lib/demoData";
+import { demoNews, fillWithDemo, type DemoNews } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
 
 const categoryLabels: Record<DemoNews["category"], string> = {
@@ -13,6 +15,21 @@ const categoryLabels: Record<DemoNews["category"], string> = {
 async function getArticle(slug: string): Promise<DemoNews | null> {
   const live = await apiFetch<DemoNews>(`/news/${slug}`, 600);
   return live || demoNews.find((n) => n.slug === slug) || null;
+}
+
+async function getRelatedNews(excludeSlug: string): Promise<DemoNews[]> {
+  const live = await apiFetch<DemoNews[]>("/news?limit=6", 600);
+  const real = (live || []).filter((n) => n.slug !== excludeSlug);
+  const demo = demoNews.filter((n) => n.slug !== excludeSlug);
+  return fillWithDemo(real, demo, 3);
+}
+
+function formatShortDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    timeZone: "Africa/Lagos",
+  });
 }
 
 export async function generateMetadata({
@@ -88,6 +105,8 @@ export default async function NewsArticlePage({
   const article = await getArticle(slug);
   if (!article) notFound();
 
+  const related = await getRelatedNews(slug);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -108,14 +127,22 @@ export default async function NewsArticlePage({
       />
 
       {article.coverImageUrl && (
-        <FramedImage
-          src={article.coverImageUrl}
-          alt={article.title}
-          priority
-          rounded={false}
-          sizes="100vw"
-          className="aspect-video w-full sm:aspect-[21/9]"
-        />
+        // Full-bleed cover fill (not the contain+blur FramedImage treatment
+        // used for in-body photos below) — the header should read as a bold,
+        // edge-to-edge banner, same idea as the player profile photo, not a
+        // smaller image floating on a padded backdrop. Taller on mobile
+        // (4:5) than the wide desktop banner (21:9) so it reads as a real
+        // hero moment on a phone screen instead of a thin strip.
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-navy-light sm:aspect-[21/9]">
+          <Image
+            src={article.coverImageUrl}
+            alt={article.title}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
       )}
 
       <article className="mx-auto max-w-3xl px-6 py-16 sm:px-10 lg:px-16">
@@ -149,6 +176,34 @@ export default async function NewsArticlePage({
           )}
         </div>
       </article>
+
+      {related.length > 0 && (
+        <section className="border-t border-navy/10 px-6 py-16 sm:px-10 lg:px-16">
+          <p className="mb-8 font-display text-2xl text-navy">More News</p>
+          <div className="grid gap-8 sm:grid-cols-3">
+            {related.map((item) => (
+              <Link key={item._id} href={`/news/${item.slug}`} className="group block">
+                {item.coverImageUrl ? (
+                  <FramedImage
+                    src={item.coverImageUrl}
+                    alt={item.title}
+                    sizes="(min-width: 640px) 30vw, 90vw"
+                    className="aspect-[4/3] transition-transform duration-500 ease-smooth group-hover:scale-[1.02]"
+                  />
+                ) : (
+                  <div className="aspect-[4/3] rounded-2xl bg-navy-light" />
+                )}
+                <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-cyan">
+                  {categoryLabels[item.category]} · {formatShortDate(item.publishedAt)}
+                </p>
+                <p className="mt-2 line-clamp-2 font-display text-lg leading-snug text-navy transition-colors duration-200 ease-smooth group-hover:text-cyan">
+                  {item.title}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

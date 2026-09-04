@@ -121,33 +121,36 @@ export default function Header() {
           </Link>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          aria-label={open ? "Close menu" : "Open menu"}
-          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
-        >
-          <span
-            className={clsx(
-              "h-0.5 w-6 bg-white transition-transform duration-300 ease-smooth",
-              open && "translate-y-2 rotate-45"
-            )}
-          />
-          <span
-            className={clsx(
-              "h-0.5 w-6 bg-white transition-opacity duration-300 ease-smooth",
-              open && "opacity-0"
-            )}
-          />
-          <span
-            className={clsx(
-              "h-0.5 w-6 bg-white transition-transform duration-300 ease-smooth",
-              open && "-translate-y-2 -rotate-45"
-            )}
-          />
-        </button>
+        <div className="flex items-center gap-5 lg:hidden">
+          <CartIndicator />
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
+          >
+            <span
+              className={clsx(
+                "h-0.5 w-6 bg-white transition-transform duration-300 ease-smooth",
+                open && "translate-y-2 rotate-45"
+              )}
+            />
+            <span
+              className={clsx(
+                "h-0.5 w-6 bg-white transition-opacity duration-300 ease-smooth",
+                open && "opacity-0"
+              )}
+            />
+            <span
+              className={clsx(
+                "h-0.5 w-6 bg-white transition-transform duration-300 ease-smooth",
+                open && "-translate-y-2 -rotate-45"
+              )}
+            />
+          </button>
+        </div>
       </div>
 
       <div
@@ -184,7 +187,6 @@ export default function Header() {
               >
                 Club History
               </Link>
-              <CartIndicator variant="text" />
               <Link
                 href="/tickets"
                 className="mt-2 rounded-full bg-yellow px-5 py-2.5 text-center text-xs font-bold uppercase tracking-wide text-navy-dark"
