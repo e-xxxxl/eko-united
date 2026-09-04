@@ -81,7 +81,16 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             <h1 className="font-display line-clamp-3 max-w-3xl text-4xl leading-[0.98] text-white sm:text-5xl lg:text-6xl">
               {slide.title}
             </h1>
-            <p className="mt-6 text-sm text-white/60">{formatDate(slide.publishedAt)} · Read the full story →</p>
+            {/* suppressHydrationWarning: toLocaleDateString can legitimately
+                render a hair differently between the server's Node/ICU build
+                and a visitor's browser (this is the one piece of this
+                component's output that's locale/environment-dependent) —
+                Next.js's own docs recommend this exact escape hatch for
+                date-formatted text rather than letting it fail hydration for
+                the whole page. */}
+            <p className="mt-6 text-sm text-white/60" suppressHydrationWarning>
+              {formatDate(slide.publishedAt)} · Read the full story →
+            </p>
           </div>
         </Link>
       ))}

@@ -56,9 +56,9 @@ const platformLabels: Record<string, string> = {
 // No SocialLinks supplied yet? Show the platforms anyway (disabled-looking,
 // no href) so the section still reads as "we're here" rather than vanishing.
 const demoLinks: SocialLinks = {
-  instagram: "#",
-  twitter: "#",
-  facebook: "#",
+  instagram: "https://www.instagram.com/eko_unitedfc",
+  twitter: "https://x.com/EkoUnitedFC",
+  facebook: "https://www.facebook.com/1247570668438918?ref=PROFILE_EDIT_xav_ig_profile_page_web",
   youtube: "#",
   tiktok: "#",
 };
