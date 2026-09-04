@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { clsx } from "clsx";
+import CartIndicator from "@/components/CartIndicator";
 
 const navLinks = [
   { href: "/about", label: "About" },
@@ -14,6 +15,7 @@ const navLinks = [
   { href: "/table", label: "Table" },
   { href: "/news", label: "News" },
   { href: "/gallery", label: "Gallery" },
+  { href: "/shop", label: "Shop" },
   { href: "/sponsors", label: "Sponsors" },
   { href: "/contact", label: "Contact" },
 ];
@@ -109,7 +111,8 @@ export default function Header() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-4 lg:flex">
+        <div className="hidden items-center gap-5 lg:flex">
+          <CartIndicator />
           <Link
             href="/tickets"
             className="rounded-full bg-yellow px-5 py-2 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
@@ -181,6 +184,7 @@ export default function Header() {
               >
                 Club History
               </Link>
+              <CartIndicator variant="text" />
               <Link
                 href="/tickets"
                 className="mt-2 rounded-full bg-yellow px-5 py-2.5 text-center text-xs font-bold uppercase tracking-wide text-navy-dark"

@@ -123,6 +123,7 @@ export type DemoNews = {
   slug: string;
   body: string;
   coverImageUrl?: string;
+  images?: string[]; // additional photos shown within the article, separate from the cover
   category: "article" | "match_report" | "press_release";
   author: string;
   publishedAt: string;
@@ -167,6 +168,7 @@ export const demoNews: DemoNews[] = [
     author: "Eko United FC",
     publishedAt: "2026-08-16T18:00:00.000Z",
     coverImageUrl: p("1489944440615-453fc2b6a9a9", 1200),
+    images: [p("1550881111-7cfde14b8073", 1000), p("1522778119026-d647f0596c20", 1000)],
     body: "Eko United FC came from behind to beat Enyimba FC 2-1 at Agege Stadium on Sunday, with second-half goals from Chidi Okafor and Femi Adeyemi sealing the win.\n\nEnyimba took an early lead against the run of play, but The Uga Boys responded well, dominating possession for large spells. Okafor's equaliser just before the hour mark shifted the momentum, and Adeyemi's driven finish from the edge of the box secured all three points with fifteen minutes to play.\n\nThe result moves Eko United up to third in the table ahead of next weekend's away trip to Sporting Lagos.",
   },
   {
@@ -231,4 +233,61 @@ export const demoHistory: DemoMilestone[] = [
   { _id: "h2", year: 2026, title: "NNL debut season", description: "The Uga Boys made their competitive debut in the Nigeria National League, quickly establishing themselves as genuine contenders." },
   { _id: "h3", year: 2026, title: "Agege Stadium upgrades", description: "Home ground improvements completed, including new seating, floodlighting, and pitch drainage." },
   { _id: "h4", year: 2026, title: "First silverware", description: "The club won its first piece of major silverware, the Lagos State Cup, in a commanding final performance." },
+];
+
+// --- Club shop -----------------------------------------------------------
+
+export type DemoProduct = {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  price: number;
+  category: "jersey" | "apparel" | "accessories" | "other";
+  images: string[];
+  sizes: string[];
+  stock: number;
+};
+
+export const demoProducts: DemoProduct[] = [
+  {
+    _id: "p1",
+    name: "2026 Home Kit",
+    slug: "2026-home-kit",
+    description: "The Uga Boys' home shirt for the 2026 Nigeria National League season — navy and cyan, crest on the chest.",
+    price: 25000,
+    category: "jersey",
+    images: ["/jerseys/home-kit.jpg"],
+    sizes: ["S", "M", "L", "XL"],
+    stock: 40,
+  },
+  {
+    _id: "p2",
+    name: "2026 Away Kit",
+    slug: "2026-away-kit",
+    description: "The 2026 away shirt — a clean white base with navy and cyan trim.",
+    price: 25000,
+    category: "jersey",
+    images: ["/jerseys/away-kit.jpg"],
+    sizes: ["S", "M", "L", "XL"],
+    stock: 35,
+  },
+];
+
+// --- Match tickets ---------------------------------------------------------
+// Keyed to demoFixtures' "f1" (the next fixture) so the /tickets flow has
+// something to demo before real matches + ticket types exist in the backend.
+
+export type DemoTicketType = {
+  _id: string;
+  match: string;
+  name: string;
+  price: number;
+  quantityAvailable: number;
+  quantitySold: number;
+};
+
+export const demoTicketTypes: DemoTicketType[] = [
+  { _id: "tt1", match: "f1", name: "Regular", price: 2000, quantityAvailable: 500, quantitySold: 210 },
+  { _id: "tt2", match: "f1", name: "VIP", price: 10000, quantityAvailable: 60, quantitySold: 22 },
 ];

@@ -1,7 +1,6 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import HeroCarousel from "@/components/HeroCarousel";
+import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
 import MatchdayCountdown from "@/components/MatchdayCountdown";
 import FixturesPreview from "@/components/FixturesPreview";
 import StandingsPreview from "@/components/StandingsPreview";
@@ -11,6 +10,14 @@ import HistoryPreview from "@/components/HistoryPreview";
 import ShopPreview from "@/components/ShopPreview";
 import PlayerCarousel from "@/components/PlayerCarousel";
 import PartnersSlogan from "@/components/PartnersSlogan";
+import { apiFetch } from "@/lib/api";
+import { demoNews } from "@/lib/demoData";
+import Link from "next/link";
+
+async function getHeroSlides(): Promise<HeroSlide[]> {
+  const live = await apiFetch<HeroSlide[]>("/news?limit=5", 600);
+  return (live && live.length > 0 ? live : demoNews).slice(0, 5);
+}
 
 // Placeholder data — replace with a fetch() to GET /api/matches/next once the
 // backend has a real season calendar (the admin panel will own this once
@@ -34,7 +41,8 @@ function SectionFallback({ className = "h-40" }: { className?: string }) {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const heroSlides = await getHeroSlides();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SportsTeam",
@@ -52,37 +60,17 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* HERO — full-bleed carousel background, header sits transparently on
-          top until #hero-sentinel scrolls out of view. Purely static, no
-          data fetch, so it paints immediately regardless of backend health. */}
+      {/* HERO — the latest news, not stock photography: each slide is a real
+          story (see getHeroSlides above), the whole slide links through to
+          that article, and the header sits transparently on top until
+          #hero-sentinel scrolls out of view. Fetched here (not deferred
+          behind Suspense) so the lead story is in the initial HTML — good
+          for both LCP and a visitor who shares the homepage link. Ticket/shop
+          CTAs deliberately aren't duplicated in here (a nested <Link> inside
+          the slide's own link would be invalid HTML) — they're one scroll
+          away in the Next Match band below, and always in the header. */}
       <section className="relative flex min-h-[92vh] flex-col justify-end overflow-hidden">
-        <HeroCarousel />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/60 to-transparent" />
-
-        <div className="relative z-10 px-6 pb-16 pt-32 sm:px-10 sm:pb-24 lg:px-16">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-cyan">
-            Nigeria National League
-          </p>
-          <h1 className="display-hero font-display max-w-3xl text-white">The Uga Boys</h1>
-          <p className="mt-6 max-w-md text-base text-white/70 sm:text-lg">
-            The official home of Eko United FC — news, fixtures, tickets and
-            everything Uga Boys.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              href="/tickets"
-              className="rounded-full bg-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
-            >
-              Get tickets
-            </Link>
-            <Link
-              href="/shop"
-              className="rounded-full border border-white/30 px-8 py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors duration-300 ease-smooth hover:border-white hover:bg-white/10"
-            >
-              Club shop
-            </Link>
-          </div>
-        </div>
+        <HeroCarousel slides={heroSlides} />
       </section>
       <div id="hero-sentinel" />
 

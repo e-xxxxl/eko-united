@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import { demoSponsors, type DemoSponsor } from "@/lib/demoData";
+import SafeImage from "@/components/SafeImage";
 
 export const metadata: Metadata = {
   title: "Sponsors & Partners",
@@ -25,7 +25,7 @@ function SponsorLogo({ sponsor, size }: { sponsor: DemoSponsor; size: number }) 
       className="flex items-center justify-center border border-navy/10 p-6 transition-colors duration-300 ease-smooth hover:border-cyan"
       style={{ height: size }}
     >
-      <Image
+      <SafeImage
         src={sponsor.logoUrl}
         alt={sponsor.name}
         width={size * 2.5}

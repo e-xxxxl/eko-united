@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import { demoTrophies, type DemoTrophy } from "@/lib/demoData";
+import { isAllowedImageUrl } from "@/lib/imageHosts";
 
 export const metadata: Metadata = {
   title: "Trophy Cabinet",
@@ -27,7 +28,7 @@ export default async function TrophiesPage() {
         <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {trophies.map((t) => (
             <div key={t._id} className="border-t-2 border-navy/10 pt-6">
-              {t.imageUrl ? (
+              {isAllowedImageUrl(t.imageUrl) ? (
                 <Image
                   src={t.imageUrl}
                   alt={t.name}

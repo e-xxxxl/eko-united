@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { demoNews, type DemoNews } from "@/lib/demoData";
+import FramedImage from "@/components/FramedImage";
 
 const categoryLabels: Record<DemoNews["category"], string> = {
   article: "Article",
@@ -25,25 +25,58 @@ export async function generateMetadata({
   if (!article) return { title: "Article Not Found" };
 
   const description = article.body.slice(0, 155).trim() + (article.body.length > 155 ? "…" : "");
+  const url = `https://ekounitedfc.com/news/${article.slug}`;
+  // Only claim a large-image card when there's a real image to show —
+  // "summary_large_image" with no image renders as a broken/empty card on X.
+  const hasImage = Boolean(article.coverImageUrl);
 
   return {
     title: article.title,
     description,
+    alternates: { canonical: url },
     openGraph: {
       type: "article",
+      siteName: "Eko United FC",
       title: article.title,
       description,
+      url,
       publishedTime: article.publishedAt,
-      images: article.coverImageUrl
-        ? [{ url: article.coverImageUrl, width: 1200, height: 630 }]
-        : undefined,
+      images: hasImage ? [{ url: article.coverImageUrl!, width: 1200, height: 630 }] : undefined,
     },
     twitter: {
-      card: "summary_large_image",
+      card: hasImage ? "summary_large_image" : "summary",
       title: article.title,
       description,
     },
   };
+}
+
+// Interleaves the article's extra photos (article.images, uploaded separately
+// from the cover in the admin News form) roughly every two paragraphs, so a
+// long-form piece reads like a real editorial layout instead of one photo up
+// top and a wall of text below. Any photos left over once the text runs out
+// are appended at the end rather than dropped.
+type ContentBlock = { type: "p"; text: string } | { type: "img"; src: string };
+
+function buildContent(body: string, images: string[]): ContentBlock[] {
+  const paragraphs = body.split(/\n+/).filter(Boolean);
+  const blocks: ContentBlock[] = [];
+  let imageIndex = 0;
+
+  paragraphs.forEach((text, i) => {
+    blocks.push({ type: "p", text });
+    if ((i + 1) % 2 === 0 && imageIndex < images.length) {
+      blocks.push({ type: "img", src: images[imageIndex] });
+      imageIndex += 1;
+    }
+  });
+
+  while (imageIndex < images.length) {
+    blocks.push({ type: "img", src: images[imageIndex] });
+    imageIndex += 1;
+  }
+
+  return blocks;
 }
 
 export default async function NewsArticlePage({
@@ -65,6 +98,8 @@ export default async function NewsArticlePage({
     publisher: { "@type": "Organization", name: "Eko United FC" },
   };
 
+  const content = buildContent(article.body, article.images || []);
+
   return (
     <main>
       <script
@@ -73,16 +108,14 @@ export default async function NewsArticlePage({
       />
 
       {article.coverImageUrl && (
-        <div className="relative aspect-video w-full bg-navy-light sm:aspect-[21/9]">
-          <Image
-            src={article.coverImageUrl}
-            alt={article.title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-        </div>
+        <FramedImage
+          src={article.coverImageUrl}
+          alt={article.title}
+          priority
+          rounded={false}
+          sizes="100vw"
+          className="aspect-video w-full sm:aspect-[21/9]"
+        />
       )}
 
       <article className="mx-auto max-w-3xl px-6 py-16 sm:px-10 lg:px-16">
@@ -101,12 +134,19 @@ export default async function NewsArticlePage({
         </p>
 
         <div className="mt-10 space-y-5 text-base leading-relaxed text-navy/80">
-          {article.body
-            .split(/\n+/)
-            .filter(Boolean)
-            .map((paragraph, i) => (
-              <p key={i}>{paragraph}</p>
-            ))}
+          {content.map((block, i) =>
+            block.type === "p" ? (
+              <p key={i}>{block.text}</p>
+            ) : (
+              <FramedImage
+                key={i}
+                src={block.src}
+                alt={`${article.title} — additional photo`}
+                sizes="(min-width: 1024px) 62vw, 90vw"
+                className="!my-8 aspect-[4/3]"
+              />
+            )
+          )}
         </div>
       </article>
     </main>

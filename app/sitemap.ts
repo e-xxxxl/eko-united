@@ -24,9 +24,10 @@ const staticRoutes = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [news, players] = await Promise.all([
+  const [news, players, products] = await Promise.all([
     apiFetch<{ slug: string }[]>("/news?limit=50"),
     apiFetch<{ slug: string; role: string }[]>("/players"),
+    apiFetch<{ slug: string }[]>("/products"),
   ]);
 
   const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
@@ -52,5 +53,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-  return [...staticEntries, ...newsEntries, ...playerEntries];
+  const productEntries: MetadataRoute.Sitemap = (products || []).map((product) => ({
+    url: `${base}/shop/${product.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...newsEntries, ...playerEntries, ...productEntries];
 }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { demoCoaches, demoTechnicalStaff, type DemoPlayer } from "@/lib/demoData";
+import FramedImage from "@/components/FramedImage";
 
 export const metadata: Metadata = {
   title: "Coaching & Technical Staff",
@@ -18,23 +19,24 @@ function StaffGrid({ members }: { members: DemoPlayer[] }) {
   return (
     <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {members.map((person) => (
-        <div key={person._id}>
-          <div className="relative aspect-square overflow-hidden bg-navy-light">
-            {person.photoUrl ? (
-              <Image
-                src={person.photoUrl}
-                alt={person.name}
-                fill
-                sizes="(min-width: 1024px) 22vw, (min-width: 640px) 40vw, 80vw"
-                className="object-cover"
-              />
-            ) : null}
-          </div>
-          <p className="mt-4 font-display text-lg">{person.name}</p>
+        <Link key={person._id} href={`/team/${person.slug}`} className="group block">
+          {person.photoUrl ? (
+            <FramedImage
+              src={person.photoUrl}
+              alt={person.name}
+              sizes="(min-width: 1024px) 22vw, (min-width: 640px) 40vw, 80vw"
+              className="aspect-square transition-transform duration-500 ease-smooth group-hover:scale-[1.02]"
+            />
+          ) : (
+            <div className="aspect-square rounded-2xl bg-navy-light" />
+          )}
+          <p className="mt-4 font-display text-lg transition-colors duration-200 ease-smooth group-hover:text-cyan">
+            {person.name}
+          </p>
           {(person.title || person.position) && (
             <p className="text-sm text-cyan">{person.title || person.position}</p>
           )}
-        </div>
+        </Link>
       ))}
     </div>
   );

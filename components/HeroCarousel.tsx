@@ -1,79 +1,107 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import Link from "next/link";
 import { clsx } from "clsx";
+import FramedImage from "@/components/FramedImage";
 
-// Demo match/stadium photography from Unsplash — swap for real Eko United
-// match-day photos (still via next/image) once the club supplies them; the
-// component and layout don't need to change, just these URLs.
-const slides = [
-  {
-    id: "1",
-    url: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?w=1600&q=80&fit=crop&auto=format",
-    alt: "Football match action",
-  },
-  {
-    id: "2",
-    url: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80&fit=crop&auto=format",
-    alt: "Packed football stadium",
-  },
-  {
-    id: "3",
-    url: "https://images.unsplash.com/photo-1508087625439-de3978963553?w=1600&q=80&fit=crop&auto=format",
-    alt: "Football player in action",
-  },
-];
+export type HeroSlide = {
+  _id: string;
+  slug: string;
+  title: string;
+  category: "article" | "match_report" | "press_release";
+  publishedAt: string;
+  coverImageUrl?: string;
+};
 
-export default function HeroCarousel() {
+const categoryLabels: Record<HeroSlide["category"], string> = {
+  article: "Article",
+  match_report: "Match Report",
+  press_release: "Press Release",
+};
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Africa/Lagos",
+  });
+}
+
+// The hero is the latest news, not generic stock photography: each slide is
+// a real story (cover photo + headline), the whole slide is a link to that
+// article, and the carousel just advances through the most recent few. Each
+// photo renders via FramedImage — a blurred, color-matched backdrop behind
+// the full uncropped photo — so an unusually tall/wide uploaded cover never
+// gets an awkward crop the way a plain object-cover fill would.
+export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
+    if (slides.length <= 1) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5500);
+    const timer = setInterval(() => setIndex((i) => (i + 1) % slides.length), 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
+
+  if (slides.length === 0) return null;
 
   return (
-    <div className="absolute inset-0 overflow-hidden" aria-hidden>
+    <div className="absolute inset-0 overflow-hidden">
       {slides.map((slide, i) => (
-        <div
-          key={slide.id}
+        <Link
+          key={slide._id}
+          href={`/news/${slide.slug}`}
+          aria-hidden={i !== index}
+          tabIndex={i === index ? 0 : -1}
           className={clsx(
-            "absolute inset-0 transition-opacity duration-[1400ms] ease-smooth",
-            i === index ? "opacity-100" : "opacity-0"
+            "absolute inset-0 block transition-opacity duration-[1400ms] ease-smooth",
+            i === index ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
           )}
         >
-          <Image
-            src={slide.url}
-            alt={slide.alt}
-            fill
-            priority={i === 0}
-            sizes="100vw"
-            className="object-cover"
-          />
-          {/* Bridge-cable texture + navy tint, tying the photo back to the crest's brand language */}
-          <div
-            className="absolute inset-0 bg-navy-dark/45"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(100deg, rgba(101,203,233,0.08) 0px, rgba(101,203,233,0.08) 1px, transparent 1px, transparent 40px)",
-            }}
-          />
-        </div>
+          {slide.coverImageUrl ? (
+            <FramedImage
+              src={slide.coverImageUrl}
+              alt={slide.title}
+              priority={i === 0}
+              rounded={false}
+              fill
+              sizes="100vw"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-navy-dark" />
+          )}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/50 to-navy-dark/10" />
+
+          <div className="absolute inset-x-0 bottom-0 px-6 pb-16 pt-32 sm:px-10 sm:pb-24 lg:px-16">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-cyan">
+              {categoryLabels[slide.category]}
+            </p>
+            <h1 className="font-display line-clamp-3 max-w-3xl text-4xl leading-[0.98] text-white sm:text-5xl lg:text-6xl">
+              {slide.title}
+            </h1>
+            <p className="mt-6 text-sm text-white/60">{formatDate(slide.publishedAt)} · Read the full story →</p>
+          </div>
+        </Link>
       ))}
-      {/* Slide indicators */}
-      <div className="absolute bottom-6 left-6 z-10 flex gap-2 sm:left-10 lg:left-16">
-        {slides.map((slide, i) => (
-          <span
-            key={slide.id}
-            className={clsx(
-              "h-1 rounded-full transition-all duration-500 ease-smooth",
-              i === index ? "w-6 bg-cyan" : "w-3 bg-white/30"
-            )}
-          />
-        ))}
-      </div>
+
+      {slides.length > 1 && (
+        <div className="absolute bottom-6 left-6 z-10 flex gap-2 sm:left-10 lg:left-16">
+          {slides.map((slide, i) => (
+            <button
+              key={slide._id}
+              type="button"
+              aria-label={`Show story ${i + 1}: ${slide.title}`}
+              onClick={() => setIndex(i)}
+              className={clsx(
+                "h-1 rounded-full transition-all duration-500 ease-smooth",
+                i === index ? "w-6 bg-cyan" : "w-3 bg-white/30 hover:bg-white/50"
+              )}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

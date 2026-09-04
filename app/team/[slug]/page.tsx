@@ -63,7 +63,7 @@ export default async function PlayerProfilePage({
       />
 
       <section className="grid gap-10 px-6 py-16 sm:px-10 lg:grid-cols-[380px_1fr] lg:px-16">
-        <div className="relative aspect-[3/4] overflow-hidden bg-navy-light">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-navy-light">
           {player.photoUrl ? (
             <Image
               src={player.photoUrl}

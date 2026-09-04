@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import SiteChrome from "@/components/SiteChrome";
 import { apiFetch } from "@/lib/api";
 import "./globals.css";
 
@@ -49,7 +48,12 @@ export const metadata: Metadata = {
     description:
       "Official website of Eko United FC, The Uga Boys — Nigeria National League club.",
     url: siteUrl,
-    images: [{ url: "/social/default.jpg", width: 1200, height: 630 }],
+    // No explicit `images` here — the app/opengraph-image.tsx file convention
+    // supplies the default share-card image site-wide (and any route with
+    // its own generateMetadata, like a news article, overrides it with a
+    // real photo). The old `/social/default.jpg` reference pointed at a file
+    // that was never actually added to public/, so every shared link was
+    // silently rendering with no image until this.
   },
   twitter: {
     card: "summary_large_image",
@@ -86,9 +90,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}>
       <body>
-        <Header />
-        {children}
-        <Footer settings={settings} />
+        <SiteChrome settings={settings}>{children}</SiteChrome>
       </body>
     </html>
   );

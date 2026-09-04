@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import { demoNews, type DemoNews } from "@/lib/demoData";
+import FramedImage from "@/components/FramedImage";
 
 export const metadata: Metadata = {
   title: "News",
@@ -42,23 +42,20 @@ export default async function NewsPage() {
                 href={`/news/${item.slug}`}
                 className={`group block ${featured ? "sm:col-span-2 lg:col-span-2" : ""}`}
               >
-                <div
-                  className={`relative bg-navy-light ${featured ? "aspect-[21/9]" : "aspect-video"}`}
-                >
-                  {item.coverImageUrl ? (
-                    <Image
-                      src={item.coverImageUrl}
-                      alt={item.title}
-                      fill
-                      sizes={
-                        featured
-                          ? "(min-width: 1024px) 62vw, 90vw"
-                          : "(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                      }
-                      className="object-cover transition-transform duration-500 ease-smooth group-hover:scale-105"
-                    />
-                  ) : null}
-                </div>
+                {item.coverImageUrl ? (
+                  <FramedImage
+                    src={item.coverImageUrl}
+                    alt={item.title}
+                    sizes={
+                      featured
+                        ? "(min-width: 1024px) 62vw, 90vw"
+                        : "(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
+                    }
+                    className={`transition-transform duration-500 ease-smooth group-hover:scale-[1.02] ${featured ? "aspect-[21/9]" : "aspect-video"}`}
+                  />
+                ) : (
+                  <div className={`rounded-2xl bg-navy-light ${featured ? "aspect-[21/9]" : "aspect-video"}`} />
+                )}
                 <p className="mt-4 text-xs font-semibold uppercase tracking-[0.15em] text-cyan">
                   {categoryLabels[item.category]}
                 </p>

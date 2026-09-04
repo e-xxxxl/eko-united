@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import SafeImage from "@/components/SafeImage";
 
 // Demo stadium-lights photo — swap for a real matchday/squad photo once supplied.
 const closingBg = "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1600&q=80&fit=crop&auto=format";
@@ -28,7 +29,7 @@ export default async function PartnersSlogan() {
         ) : (
           <div className="flex flex-wrap items-center justify-center gap-10">
             {sponsors.map((sponsor) => (
-              <Image
+              <SafeImage
                 key={sponsor._id}
                 src={sponsor.logoUrl}
                 alt={sponsor.name}
