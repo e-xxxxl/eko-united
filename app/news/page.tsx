@@ -17,7 +17,13 @@ const categoryLabels: Record<DemoNews["category"], string> = {
 
 async function getNews(): Promise<DemoNews[]> {
   const live = await apiFetch<DemoNews[]>("/news?limit=30", 600);
-  return live && live.length > 0 ? live : demoNews;
+  const real = live || [];
+  // Unlike the homepage sections (fixed small counts, use fillWithDemo),
+  // this page shows every real article there is — never truncated — and
+  // only pads with demo stories if the club hasn't published enough yet to
+  // fill out a normal-looking grid.
+  if (real.length >= demoNews.length) return real;
+  return [...real, ...demoNews.slice(real.length)];
 }
 
 export default async function NewsPage() {

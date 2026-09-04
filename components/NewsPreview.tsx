@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import { demoNews, type DemoNews } from "@/lib/demoData";
+import { demoNews, fillWithDemo, type DemoNews } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
 
 const categoryLabels: Record<DemoNews["category"], string> = {
@@ -11,10 +11,14 @@ const categoryLabels: Record<DemoNews["category"], string> = {
 
 async function getNews(): Promise<DemoNews[]> {
   const live = await apiFetch<DemoNews[]>("/news?limit=6", 600);
-  // Skip index 0 — that's the lead story already showcased in the hero
-  // carousel (see app/page.tsx). Showing it twice on the same page would
-  // feel redundant rather than "more news."
-  return (live && live.length > 0 ? live : demoNews).slice(1, 5);
+  // Skip index 0 of BOTH the real and demo pools — that's the lead story
+  // already showcased in the hero carousel (see app/page.tsx and its own
+  // fillWithDemo call), whether it ended up being a real article or a demo
+  // one. Real articles beyond that fill first; demo only pads out whatever's
+  // left, so a club with 2 real stories published sees exactly 2 real cards
+  // here (plus demo filler), not 0.
+  const rest = (live || []).slice(1);
+  return fillWithDemo(rest, demoNews.slice(1), 4);
 }
 
 function excerpt(body: string, len = 100) {

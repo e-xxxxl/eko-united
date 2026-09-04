@@ -11,12 +11,15 @@ import ShopPreview from "@/components/ShopPreview";
 import PlayerCarousel from "@/components/PlayerCarousel";
 import PartnersSlogan from "@/components/PartnersSlogan";
 import { apiFetch } from "@/lib/api";
-import { demoNews } from "@/lib/demoData";
+import { demoNews, fillWithDemo } from "@/lib/demoData";
 import Link from "next/link";
 
 async function getHeroSlides(): Promise<HeroSlide[]> {
   const live = await apiFetch<HeroSlide[]>("/news?limit=5", 600);
-  return (live && live.length > 0 ? live : demoNews).slice(0, 5);
+  // Real articles first, however many exist — demo only pads out the
+  // remaining slots so the hero doesn't look sparse with just 1-2 real
+  // stories published so far.
+  return fillWithDemo(live, demoNews, 5);
 }
 
 // Placeholder data — replace with a fetch() to GET /api/matches/next once the

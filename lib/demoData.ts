@@ -2,11 +2,22 @@
 // DEMO CONTENT — temporary scaffolding so every route shows what the finished
 // site will look like before the admin panel exists to populate real data.
 //
-// DELETE THIS FILE (and the `live.length > 0 ? live : demoX` fallback lines
-// that import from it) once the admin dashboard is live and the club has
-// entered real players, fixtures, news, etc. Every page that uses this falls
-// back to it ONLY when the live API returns nothing — real data always wins.
+// DELETE THIS FILE (and the fallback lines that import from it) once the
+// admin dashboard is live and the club has entered real players, fixtures,
+// news, etc. Real data always wins over demo data.
 // ---------------------------------------------------------------------------
+
+// News specifically uses a "fill" fallback rather than all-or-nothing: real
+// articles are shown first (however many exist), and only the remaining
+// slots — if the club hasn't published enough yet — are padded out with
+// demo stories, so a homepage/section with e.g. 2 real articles doesn't look
+// sparse next to one with 5. Everything else on the site still uses the
+// simpler all-or-nothing fallback (`live.length > 0 ? live : demoX`).
+export function fillWithDemo<T>(live: T[] | null | undefined, demo: T[], count: number): T[] {
+  const real = live || [];
+  if (real.length >= count) return real.slice(0, count);
+  return [...real, ...demo.slice(0, count - real.length)];
+}
 
 export type DemoPlayer = {
   _id: string;

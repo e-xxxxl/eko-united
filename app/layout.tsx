@@ -88,8 +88,17 @@ export default async function RootLayout({
   const settings = await apiFetch<SiteSettings>("/settings");
 
   return (
-    <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}>
-      <body>
+    // suppressHydrationWarning on both root tags: the actual production
+    // error (React #418, args[]=HTML) plus the repeated "extension port...
+    // back/forward cache" console messages point at a browser extension
+    // (password manager, Grammarly, an ad/theme extension, etc.) injecting
+    // attributes into <html>/<body> before React hydrates — not a real
+    // mismatch in anything this app renders. This is Next.js's own
+    // documented fix for exactly that scenario; it only silences the
+    // warning for these two root elements, it doesn't hide a real mismatch
+    // anywhere inside the actual page content.
+    <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <SiteChrome settings={settings}>{children}</SiteChrome>
       </body>
     </html>
