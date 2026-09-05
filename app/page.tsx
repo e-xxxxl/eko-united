@@ -17,17 +17,30 @@ async function getHeroSlides(): Promise<HeroSlide[]> {
   return (await apiFetch<HeroSlide[]>("/news?limit=5", 600)) || [];
 }
 
-// Placeholder data — replace with a fetch() to GET /api/matches/next once the
-// backend has a real season calendar (the admin panel will own this once
-// built). kickoffIso must stay a real ISO datetime — MatchdayCountdown reads it.
-const nextMatch = {
-  opponent: "Remo Stars FC",
-  opponentInitial: "R",
-  competition: "NNL — Matchday 12",
-  date: "Sat, 30 Aug 2026 · 4:00 PM",
-  venue: "Agege Stadium, Lagos",
-  kickoffIso: "2026-08-30T15:00:00.000Z",
+type NextMatch = {
+  _id: string;
+  opponent: string;
+  competition?: string;
+  venue?: string;
+  kickoff: string;
+  isHome: boolean;
 };
+
+async function getNextMatch(): Promise<NextMatch | null> {
+  return await apiFetch<NextMatch>("/matches/next", 300);
+}
+
+function formatMatchDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Africa/Lagos",
+  });
+}
 
 // Each data-driven section below is its own async Server Component wrapped
 // in Suspense, so a slow/unreachable backend delays only that section — not
@@ -40,7 +53,7 @@ function SectionFallback({ className = "h-40" }: { className?: string }) {
 }
 
 export default async function HomePage() {
-  const heroSlides = await getHeroSlides();
+  const [heroSlides, nextMatch] = await Promise.all([getHeroSlides(), getNextMatch()]);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SportsTeam",
@@ -72,64 +85,68 @@ export default async function HomePage() {
       </section>
       <div id="hero-sentinel" />
 
-      {/* NEXT MATCH — team crests either side, countdown, two CTAs. Static
-          demo data for now (see comment above); still no fetch, still instant. */}
-      <section className="bg-navy-dark px-6 py-12 sm:px-10 lg:px-16">
-        <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.3em] text-cyan sm:text-left">
-          Next Match
-        </p>
-        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-6 sm:gap-10">
-            <div className="flex flex-col items-center gap-3">
-              <Image
-                src="/brand/crest-mark.png"
-                alt="Eko United FC"
-                width={64}
-                height={64}
-                className="h-14 w-14 sm:h-16 sm:w-16"
-              />
-              <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
-                Eko United
-              </span>
-            </div>
-            <div className="text-center">
-              <p className="font-display text-2xl text-white/40">VS</p>
-              <MatchdayCountdown kickoffIso={nextMatch.kickoffIso} />
-            </div>
-            <div className="flex flex-col items-center gap-3">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 sm:h-16 sm:w-16">
-                <span className="font-display text-2xl text-white/70">
-                  {nextMatch.opponentInitial}
+      {/* NEXT MATCH — the real next upcoming fixture (GET /api/matches/next,
+          soonest kickoff first), not a hardcoded placeholder. Hides entirely
+          if there's no upcoming match scheduled yet, rather than showing a
+          fake opponent. */}
+      {nextMatch && (
+        <section className="bg-navy-dark px-6 py-12 sm:px-10 lg:px-16">
+          <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.3em] text-cyan sm:text-left">
+            Next Match
+          </p>
+          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-6 sm:gap-10">
+              <div className="flex flex-col items-center gap-3">
+                <Image
+                  src="/brand/crest-mark.png"
+                  alt="Eko United FC"
+                  width={64}
+                  height={64}
+                  className="h-14 w-14 sm:h-16 sm:w-16"
+                />
+                <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
+                  Eko United
                 </span>
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
-                {nextMatch.opponent}
-              </span>
+              <div className="text-center">
+                <p className="font-display text-2xl text-white/40">VS</p>
+                <MatchdayCountdown kickoffIso={nextMatch.kickoff} />
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 sm:h-16 sm:w-16">
+                  <span className="font-display text-2xl text-white/70">
+                    {nextMatch.opponent.charAt(0)}
+                  </span>
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
+                  {nextMatch.opponent}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className="text-center lg:text-right">
-            <p className="text-sm text-white/60">
-              {nextMatch.competition} · {nextMatch.date}
-            </p>
-            <p className="text-sm text-white/40">{nextMatch.venue}</p>
-            <div className="mt-4 flex flex-wrap justify-center gap-3 lg:justify-end">
-              <Link
-                href="/news"
-                className="rounded-full border border-white/30 px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition-colors duration-300 ease-smooth hover:border-white hover:bg-white/10"
-              >
-                Get more updates
-              </Link>
-              <Link
-                href="/tickets"
-                className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
-              >
-                Buy tickets
-              </Link>
+            <div className="text-center lg:text-right">
+              <p className="text-sm text-white/60">
+                {nextMatch.competition || "Friendly"} · {formatMatchDate(nextMatch.kickoff)}
+              </p>
+              {nextMatch.venue && <p className="text-sm text-white/40">{nextMatch.venue}</p>}
+              <div className="mt-4 flex flex-wrap justify-center gap-3 lg:justify-end">
+                <Link
+                  href="/news"
+                  className="rounded-full border border-white/30 px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition-colors duration-300 ease-smooth hover:border-white hover:bg-white/10"
+                >
+                  Get more updates
+                </Link>
+                <Link
+                  href="/tickets"
+                  className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+                >
+                  Buy tickets
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* MATCHES — next 3 fixtures + full league table, Eko United highlighted */}
       <section className="px-6 py-16 sm:px-10 lg:px-16">

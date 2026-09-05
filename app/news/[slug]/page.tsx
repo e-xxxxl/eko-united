@@ -42,9 +42,6 @@ export async function generateMetadata({
 
   const description = article.body.slice(0, 155).trim() + (article.body.length > 155 ? "…" : "");
   const url = `https://ekounitedfc.com/news/${article.slug}`;
-  // Only claim a large-image card when there's a real image to show —
-  // "summary_large_image" with no image renders as a broken/empty card on X.
-  const hasImage = Boolean(article.coverImageUrl);
 
   return {
     title: article.title,
@@ -57,21 +54,16 @@ export async function generateMetadata({
       description,
       url,
       publishedTime: article.publishedAt,
-      // No fixed width/height here — the cover and extra photos can be any
-      // aspect ratio (portrait or landscape), and hardcoding 1200x630 would
-      // just mislead platforms that DO read the real image dimensions.
-      // Multiple entries here (cover + every extra photo) are picked up by
-      // platforms that show more than one image per link (Facebook,
-      // LinkedIn, iMessage) — X/Twitter's card format only ever shows a
-      // single image and doesn't support a "swipeable" set no matter what's
-      // listed here; that's a platform limitation, not something a site can
-      // change from its own metadata.
-      images: hasImage
-        ? [article.coverImageUrl!, ...(article.images || [])].map((url) => ({ url }))
-        : undefined,
+      // No manual `images` here — opengraph-image.tsx in this same route
+      // folder generates the actual card (always a correctly-cropped
+      // 1200x630, regardless of the cover photo's real shape) and Next
+      // wires it in automatically. Pointing platforms at the raw uploaded
+      // photo directly was the cause of X rendering an odd "rectangle"
+      // instead of a standard card — X uses the source image's real aspect
+      // ratio verbatim, and an admin-uploaded photo can be any shape.
     },
     twitter: {
-      card: hasImage ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: article.title,
       description,
     },

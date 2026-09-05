@@ -20,7 +20,6 @@ export async function generateMetadata({
   const product = await getProduct(slug);
   if (!product) return { title: "Product Not Found" };
 
-  const image = product.images.find(isAllowedImageUrl);
   const description = product.description || `${product.name} — ${formatNaira(product.price)}. Official Eko United FC merchandise.`;
   const url = `https://ekounitedfc.com/shop/${product.slug}`;
 
@@ -34,10 +33,12 @@ export async function generateMetadata({
       title: `${product.name} | Eko United FC Shop`,
       description,
       url,
-      images: image ? [{ url: image, width: 1200, height: 630 }] : undefined,
+      // No manual `images` — opengraph-image.tsx in this route folder
+      // generates the actual card (always 1200x630), rather than claiming
+      // that size for what's usually actually a square product photo.
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: product.name,
       description,
     },
