@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import { demoProducts, type DemoProduct } from "@/lib/demoData";
+import type { DemoProduct } from "@/lib/demoData";
 import ProductCard from "@/components/shop/ProductCard";
 
 async function getProducts(): Promise<DemoProduct[]> {
-  const live = await apiFetch<DemoProduct[]>("/products", 900);
-  return (live && live.length > 0 ? live : demoProducts).slice(0, 2);
+  return ((await apiFetch<DemoProduct[]>("/products", 900)) || []).slice(0, 2);
 }
 
 export default async function ShopPreview() {
   const products = await getProducts();
+  if (products.length === 0) return null;
 
   return (
     <section className="bg-navy-dark px-6 py-16 sm:px-10 lg:px-16">

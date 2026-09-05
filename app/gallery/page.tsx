@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
-import { demoGallery, type DemoGalleryItem } from "@/lib/demoData";
+import type { DemoGalleryItem } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -11,9 +11,7 @@ export const metadata: Metadata = {
 };
 
 async function getGallery(type?: string): Promise<DemoGalleryItem[]> {
-  const live = await apiFetch<DemoGalleryItem[]>(`/gallery${type ? `?type=${type}` : ""}`, 900);
-  if (live && live.length > 0) return live;
-  return type ? demoGallery.filter((item) => item.type === type) : demoGallery;
+  return (await apiFetch<DemoGalleryItem[]>(`/gallery${type ? `?type=${type}` : ""}`, 900)) || [];
 }
 
 const tabs = [

@@ -115,7 +115,12 @@ export default function TrophyForm({
 
       <div>
         <span className={labelClass}>Image (optional)</span>
-        <CloudinaryUpload value={imageUrl} onChange={setImageUrl} folder="eko-united-fc/trophies" />
+        <CloudinaryUpload
+          value={imageUrl}
+          onChange={setImageUrl}
+          folder="eko-united-fc/trophies"
+          hint="Recommended: square trophy photo on a plain background, at least 500×500px."
+        />
       </div>
 
       <div>

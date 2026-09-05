@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
-import { demoSponsors, type DemoSponsor } from "@/lib/demoData";
+import type { DemoSponsor } from "@/lib/demoData";
 import SafeImage from "@/components/SafeImage";
 
 export const metadata: Metadata = {
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
 };
 
 async function getSponsors(): Promise<DemoSponsor[]> {
-  const live = await apiFetch<DemoSponsor[]>("/sponsors", 3600);
-  return live && live.length > 0 ? live : demoSponsors;
+  return (await apiFetch<DemoSponsor[]>("/sponsors", 3600)) || [];
 }
 
 const tierMeta = {

@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { demoProducts, type DemoProduct } from "@/lib/demoData";
+import type { DemoProduct } from "@/lib/demoData";
 import { formatNaira } from "@/lib/format";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import ProductDetailPurchase from "@/components/shop/ProductDetailPurchase";
 
 async function getProduct(slug: string): Promise<DemoProduct | null> {
-  const live = await apiFetch<DemoProduct>(`/products/${slug}`, 900);
-  return live || demoProducts.find((p) => p.slug === slug) || null;
+  return await apiFetch<DemoProduct>(`/products/${slug}`, 900);
 }
 
 export async function generateMetadata({

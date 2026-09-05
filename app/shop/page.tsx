@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
-import { demoProducts, type DemoProduct } from "@/lib/demoData";
+import type { DemoProduct } from "@/lib/demoData";
 import ProductCard from "@/components/shop/ProductCard";
 
 export const metadata: Metadata = {
@@ -17,8 +17,7 @@ export const metadata: Metadata = {
 };
 
 async function getProducts(): Promise<DemoProduct[]> {
-  const live = await apiFetch<DemoProduct[]>("/products", 900);
-  return live && live.length > 0 ? live : demoProducts;
+  return (await apiFetch<DemoProduct[]>("/products", 900)) || [];
 }
 
 export default async function ShopPage() {

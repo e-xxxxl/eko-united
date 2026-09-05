@@ -69,7 +69,12 @@ export default function StandingForm({
 
       <div>
         <span className={labelClass}>Club logo (optional)</span>
-        <CloudinaryUpload value={clubLogoUrl} onChange={setClubLogoUrl} folder="eko-united-fc/standings" />
+        <CloudinaryUpload
+          value={clubLogoUrl}
+          onChange={setClubLogoUrl}
+          folder="eko-united-fc/standings"
+          hint="Recommended: square club crest, transparent background, at least 200×200px."
+        />
       </div>
 
       <label className="flex items-center gap-2 text-sm text-navy">

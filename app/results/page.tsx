@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
-import { demoResults, type DemoMatch } from "@/lib/demoData";
+import type { DemoMatch } from "@/lib/demoData";
 import MatchCard from "@/components/MatchCard";
 
 export const metadata: Metadata = {
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
 };
 
 async function getResults(): Promise<DemoMatch[]> {
-  const live = await apiFetch<DemoMatch[]>("/matches?status=finished", 600);
-  return live && live.length > 0 ? live : demoResults;
+  return (await apiFetch<DemoMatch[]>("/matches?status=finished", 600)) || [];
 }
 
 export default async function ResultsPage() {

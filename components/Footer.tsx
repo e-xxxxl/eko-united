@@ -46,6 +46,7 @@ const columns = [
     heading: "Info",
     links: [
       { href: "/sponsors", label: "Sponsors" },
+      { href: "/media-accreditation", label: "Media Accreditation" },
       { href: "/contact", label: "Contact" },
       { href: "/privacy-policy", label: "Privacy Policy" },
       { href: "/terms", label: "Terms & Conditions" },

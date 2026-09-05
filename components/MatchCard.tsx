@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Match = {
   _id: string;
   opponent: string;
@@ -58,7 +60,9 @@ export default function MatchCard({ match }: { match: Match }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 border-b border-navy/10 py-5 sm:flex-row sm:items-center sm:gap-6">
+    <Link
+      href={`/fixtures/${match._id}`}
+      className="group flex flex-col gap-3 border-b border-navy/10 py-5 transition-colors duration-200 ease-smooth hover:bg-navy/[0.02] sm:flex-row sm:items-center sm:gap-6">
       <div className="sm:w-44 sm:shrink-0">
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-navy/40">
           {match.competition || "Friendly"}
@@ -92,6 +96,6 @@ export default function MatchCard({ match }: { match: Match }) {
           </span>
         )}
       </div>
-    </div>
+    </Link>
   );
 }

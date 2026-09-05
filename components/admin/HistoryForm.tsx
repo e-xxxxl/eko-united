@@ -85,7 +85,12 @@ export default function HistoryForm({
 
       <div>
         <span className={labelClass}>Image (optional)</span>
-        <CloudinaryUpload value={imageUrl} onChange={setImageUrl} folder="eko-united-fc/history" />
+        <CloudinaryUpload
+          value={imageUrl}
+          onChange={setImageUrl}
+          folder="eko-united-fc/history"
+          hint="Recommended: landscape, at least 1000px wide."
+        />
       </div>
 
       {error && (

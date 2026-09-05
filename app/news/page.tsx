@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import { demoNews, type DemoNews } from "@/lib/demoData";
+import type { DemoNews } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
 
 export const metadata: Metadata = {
@@ -16,14 +16,7 @@ const categoryLabels: Record<DemoNews["category"], string> = {
 };
 
 async function getNews(): Promise<DemoNews[]> {
-  const live = await apiFetch<DemoNews[]>("/news?limit=30", 600);
-  const real = live || [];
-  // Unlike the homepage sections (fixed small counts, use fillWithDemo),
-  // this page shows every real article there is — never truncated — and
-  // only pads with demo stories if the club hasn't published enough yet to
-  // fill out a normal-looking grid.
-  if (real.length >= demoNews.length) return real;
-  return [...real, ...demoNews.slice(real.length)];
+  return (await apiFetch<DemoNews[]>("/news?limit=30", 600)) || [];
 }
 
 export default async function NewsPage() {
@@ -57,10 +50,10 @@ export default async function NewsPage() {
                         ? "(min-width: 1024px) 62vw, 90vw"
                         : "(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
                     }
-                    className={`transition-transform duration-500 ease-smooth group-hover:scale-[1.02] ${featured ? "aspect-[21/9]" : "aspect-video"}`}
+                    className={`transition-transform duration-500 ease-smooth group-hover:scale-[1.02] ${featured ? "aspect-[3/4] sm:aspect-[21/9]" : "aspect-[3/4] sm:aspect-video"}`}
                   />
                 ) : (
-                  <div className={`rounded-2xl bg-navy-light ${featured ? "aspect-[21/9]" : "aspect-video"}`} />
+                  <div className={`rounded-2xl bg-navy-light ${featured ? "aspect-[3/4] sm:aspect-[21/9]" : "aspect-[3/4] sm:aspect-video"}`} />
                 )}
                 <p className="mt-4 text-xs font-semibold uppercase tracking-[0.15em] text-cyan">
                   {categoryLabels[item.category]}

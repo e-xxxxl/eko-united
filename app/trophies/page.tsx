@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
-import { demoTrophies, type DemoTrophy } from "@/lib/demoData";
+import type { DemoTrophy } from "@/lib/demoData";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 
 export const metadata: Metadata = {
@@ -10,8 +10,7 @@ export const metadata: Metadata = {
 };
 
 async function getTrophies(): Promise<DemoTrophy[]> {
-  const live = await apiFetch<DemoTrophy[]>("/trophies", 3600);
-  return live && live.length > 0 ? live : demoTrophies;
+  return (await apiFetch<DemoTrophy[]>("/trophies", 3600)) || [];
 }
 
 export default async function TrophiesPage() {

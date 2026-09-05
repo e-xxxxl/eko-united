@@ -76,7 +76,12 @@ export default function GalleryForm({
       {type === "photo" ? (
         <div>
           <span className={labelClass}>Photo</span>
-          <CloudinaryUpload value={url} onChange={setUrl} folder="eko-united-fc/gallery" />
+          <CloudinaryUpload
+            value={url}
+            onChange={setUrl}
+            folder="eko-united-fc/gallery"
+            hint="Recommended: landscape, at least 1200px wide."
+          />
           {!url && (
             <p className="mt-2 text-xs text-red-500" role="alert">
               A photo is required.

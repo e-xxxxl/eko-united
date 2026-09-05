@@ -1,11 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
-import { demoSquad, type DemoPlayer } from "@/lib/demoData";
+import type { DemoPlayer } from "@/lib/demoData";
 
 async function getSquad(): Promise<DemoPlayer[]> {
-  const live = await apiFetch<DemoPlayer[]>("/players?role=player", 1800);
-  return live && live.length > 0 ? live : demoSquad;
+  return (await apiFetch<DemoPlayer[]>("/players?role=player", 1800)) || [];
 }
 
 // Native CSS scroll-snap, not a JS carousel library — lightweight, no extra

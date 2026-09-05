@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { clsx } from "clsx";
 import FramedImage from "@/components/FramedImage";
@@ -45,7 +46,22 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  if (slides.length === 0) return null;
+  // No news published yet (a brand-new site, before the first article) —
+  // a branded fallback so the homepage never shows a blank void here,
+  // rather than just returning null.
+  if (slides.length === 0) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-navy-dark px-6 text-center">
+        <Image src="/brand/crest-mark.png" alt="Eko United FC crest" width={96} height={96} className="h-20 w-20 sm:h-24 sm:w-24" />
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan">
+            Nigeria National League
+          </p>
+          <h1 className="font-display mt-3 text-4xl text-white sm:text-5xl">The Uga Boys</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="absolute inset-0 overflow-hidden">

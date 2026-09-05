@@ -116,7 +116,12 @@ export default function NewsForm({
 
       <div>
         <span className={labelClass}>Cover image</span>
-        <CloudinaryUpload value={coverImageUrl} onChange={setCoverImageUrl} folder="eko-united-fc/news" />
+        <CloudinaryUpload
+          value={coverImageUrl}
+          onChange={setCoverImageUrl}
+          folder="eko-united-fc/news"
+          hint="Recommended: landscape, at least 1200×630px — this is what shows at the top of the article and in share previews."
+        />
       </div>
 
       <div>
@@ -131,6 +136,7 @@ export default function NewsForm({
                   value={url}
                   onChange={(next) => setImages((prev) => prev.map((u, idx) => (idx === i ? next : u)))}
                   folder="eko-united-fc/news"
+                  hint="Any orientation — shown at its full size within the article body."
                 />
               </div>
               <button

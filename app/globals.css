@@ -12,6 +12,10 @@
 
 html {
   scroll-behavior: smooth;
+  /* A slightly larger base than the browser default (16px) — every rem-based
+     Tailwind utility site-wide scales up proportionally with it, a small
+     but real legibility bump without touching every component. */
+  font-size: 106.25%;
 }
 
 body {

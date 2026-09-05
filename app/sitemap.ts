@@ -15,6 +15,7 @@ const staticRoutes = [
   "/tickets",
   "/shop",
   "/sponsors",
+  "/media-accreditation",
   "/contact",
   "/trophies",
   "/club-history",

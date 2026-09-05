@@ -56,7 +56,12 @@ export default function SponsorForm({
 
       <div>
         <span className={labelClass}>Logo</span>
-        <CloudinaryUpload value={logoUrl} onChange={setLogoUrl} folder="eko-united-fc/sponsors" />
+        <CloudinaryUpload
+          value={logoUrl}
+          onChange={setLogoUrl}
+          folder="eko-united-fc/sponsors"
+          hint="Recommended: logo on a transparent or white background, at least 400px wide."
+        />
         {!logoUrl && (
           <p className="mt-2 text-xs text-red-500" role="alert">
             A logo is required.

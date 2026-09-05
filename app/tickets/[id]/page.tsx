@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { demoFixtures, demoResults, demoTicketTypes, type DemoMatch, type DemoTicketType } from "@/lib/demoData";
+import type { DemoMatch, DemoTicketType } from "@/lib/demoData";
 import TicketPurchase from "@/components/tickets/TicketPurchase";
 
 function formatKickoff(iso: string) {
@@ -23,13 +23,11 @@ function formatKickoff(iso: string) {
 }
 
 async function getMatch(id: string): Promise<DemoMatch | null> {
-  const live = await apiFetch<DemoMatch>(`/matches/${id}`, 300);
-  return live || [...demoFixtures, ...demoResults].find((m) => m._id === id) || null;
+  return await apiFetch<DemoMatch>(`/matches/${id}`, 300);
 }
 
 async function getTicketTypes(matchId: string): Promise<DemoTicketType[]> {
-  const live = await apiFetch<DemoTicketType[]>(`/ticket-types?match=${matchId}`, 300);
-  return live && live.length > 0 ? live : demoTicketTypes.filter((t) => t.match === matchId);
+  return (await apiFetch<DemoTicketType[]>(`/ticket-types?match=${matchId}`, 300)) || [];
 }
 
 export async function generateMetadata({

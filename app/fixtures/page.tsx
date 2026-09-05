@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
-import { demoFixtures, type DemoMatch } from "@/lib/demoData";
+import type { DemoMatch } from "@/lib/demoData";
 import MatchCard from "@/components/MatchCard";
 
 export const metadata: Metadata = {
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
 };
 
 async function getFixtures(): Promise<DemoMatch[]> {
-  const live = await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600);
-  return live && live.length > 0 ? live : demoFixtures;
+  return (await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600)) || [];
 }
 
 export default async function FixturesPage() {

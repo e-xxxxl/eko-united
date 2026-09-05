@@ -160,6 +160,7 @@ export default function ProductForm({
               value={url}
               onChange={(next) => setImages((prev) => prev.map((u, idx) => (idx === i ? next : u)))}
               folder="eko-united-fc/products"
+              hint="Recommended: square, plain background, at least 1000×1000px."
             />
           ))}
         </div>

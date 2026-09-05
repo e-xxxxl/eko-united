@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
-import { demoManagement, type DemoPlayer } from "@/lib/demoData";
+import type { DemoPlayer } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "About",
@@ -25,8 +25,7 @@ async function getSettings(): Promise<SiteSettings> {
 }
 
 async function getManagementTeam(): Promise<DemoPlayer[]> {
-  const live = await apiFetch<DemoPlayer[]>("/players?role=management");
-  return live && live.length > 0 ? live : demoManagement;
+  return (await apiFetch<DemoPlayer[]>("/players?role=management")) || [];
 }
 
 export default async function AboutPage() {

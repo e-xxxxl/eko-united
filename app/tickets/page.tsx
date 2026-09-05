@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import { demoFixtures, type DemoMatch } from "@/lib/demoData";
+import type { DemoMatch } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Tickets",
@@ -34,8 +34,7 @@ function formatKickoff(iso: string) {
 }
 
 async function getUpcomingMatches(): Promise<DemoMatch[]> {
-  const live = await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600);
-  return live && live.length > 0 ? live : demoFixtures.filter((m) => m.status === "upcoming");
+  return (await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600)) || [];
 }
 
 export default async function TicketsPage() {

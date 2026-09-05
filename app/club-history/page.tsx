@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
-import { demoHistory, type DemoMilestone } from "@/lib/demoData";
+import type { DemoMilestone } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "Club History",
@@ -8,8 +8,7 @@ export const metadata: Metadata = {
 };
 
 async function getHistory(): Promise<DemoMilestone[]> {
-  const live = await apiFetch<DemoMilestone[]>("/history", 3600);
-  return live && live.length > 0 ? live : demoHistory;
+  return (await apiFetch<DemoMilestone[]>("/history", 3600)) || [];
 }
 
 export default async function ClubHistoryPage() {

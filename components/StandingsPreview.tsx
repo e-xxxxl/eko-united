@@ -2,12 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
-import { demoStandings, type DemoStanding } from "@/lib/demoData";
+import type { DemoStanding } from "@/lib/demoData";
 
 async function getStandings(): Promise<DemoStanding[]> {
   const live = await apiFetch<DemoStanding[]>("/standings", 3600);
   // Preview shows the top of the table only — the full list lives on /table.
-  return (live && live.length > 0 ? live : demoStandings).slice(0, 6);
+  return (live || []).slice(0, 6);
 }
 
 export default async function StandingsPreview() {

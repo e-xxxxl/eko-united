@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import { demoCoaches, demoTechnicalStaff, type DemoPlayer } from "@/lib/demoData";
+import type { DemoPlayer } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
 
 export const metadata: Metadata = {
@@ -10,9 +10,7 @@ export const metadata: Metadata = {
 };
 
 async function getStaff(role: "coach" | "technical_staff"): Promise<DemoPlayer[]> {
-  const live = await apiFetch<DemoPlayer[]>(`/players?role=${role}`, 1800);
-  if (live && live.length > 0) return live;
-  return role === "coach" ? demoCoaches : demoTechnicalStaff;
+  return (await apiFetch<DemoPlayer[]>(`/players?role=${role}`, 1800)) || [];
 }
 
 function StaffGrid({ members }: { members: DemoPlayer[] }) {

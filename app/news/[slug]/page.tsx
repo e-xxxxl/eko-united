@@ -3,8 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { demoNews, fillWithDemo, type DemoNews } from "@/lib/demoData";
+import type { DemoNews } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
+import CopyLinkButton from "@/components/CopyLinkButton";
+import SocialsSection from "@/components/SocialsSection";
 
 const categoryLabels: Record<DemoNews["category"], string> = {
   article: "Article",
@@ -13,15 +15,12 @@ const categoryLabels: Record<DemoNews["category"], string> = {
 };
 
 async function getArticle(slug: string): Promise<DemoNews | null> {
-  const live = await apiFetch<DemoNews>(`/news/${slug}`, 600);
-  return live || demoNews.find((n) => n.slug === slug) || null;
+  return await apiFetch<DemoNews>(`/news/${slug}`, 600);
 }
 
 async function getRelatedNews(excludeSlug: string): Promise<DemoNews[]> {
   const live = await apiFetch<DemoNews[]>("/news?limit=6", 600);
-  const real = (live || []).filter((n) => n.slug !== excludeSlug);
-  const demo = demoNews.filter((n) => n.slug !== excludeSlug);
-  return fillWithDemo(real, demo, 3);
+  return (live || []).filter((n) => n.slug !== excludeSlug).slice(0, 3);
 }
 
 function formatShortDate(iso: string) {
@@ -58,7 +57,18 @@ export async function generateMetadata({
       description,
       url,
       publishedTime: article.publishedAt,
-      images: hasImage ? [{ url: article.coverImageUrl!, width: 1200, height: 630 }] : undefined,
+      // No fixed width/height here — the cover and extra photos can be any
+      // aspect ratio (portrait or landscape), and hardcoding 1200x630 would
+      // just mislead platforms that DO read the real image dimensions.
+      // Multiple entries here (cover + every extra photo) are picked up by
+      // platforms that show more than one image per link (Facebook,
+      // LinkedIn, iMessage) — X/Twitter's card format only ever shows a
+      // single image and doesn't support a "swipeable" set no matter what's
+      // listed here; that's a platform limitation, not something a site can
+      // change from its own metadata.
+      images: hasImage
+        ? [article.coverImageUrl!, ...(article.images || [])].map((url) => ({ url }))
+        : undefined,
     },
     twitter: {
       card: hasImage ? "summary_large_image" : "summary",
@@ -130,10 +140,11 @@ export default async function NewsArticlePage({
         // Full-bleed cover fill (not the contain+blur FramedImage treatment
         // used for in-body photos below) — the header should read as a bold,
         // edge-to-edge banner, same idea as the player profile photo, not a
-        // smaller image floating on a padded backdrop. Taller on mobile
-        // (4:5) than the wide desktop banner (21:9) so it reads as a real
-        // hero moment on a phone screen instead of a thin strip.
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-navy-light sm:aspect-[21/9]">
+        // smaller image floating on a padded backdrop. 4:5 on mobile was
+        // already right; 21/9 on desktop was the actual problem — that's an
+        // ultra-panoramic ratio that slices away most of a normal landscape
+        // photo's height. 16:9 is a much more moderate, standard banner crop.
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-navy-light sm:aspect-video">
           <Image
             src={article.coverImageUrl}
             alt={article.title}
@@ -175,7 +186,13 @@ export default async function NewsArticlePage({
             )
           )}
         </div>
+
+        <div className="mt-12 border-t border-navy/10 pt-6">
+          <CopyLinkButton url={`https://ekounitedfc.com/news/${article.slug}`} />
+        </div>
       </article>
+
+      <SocialsSection />
 
       {related.length > 0 && (
         <section className="border-t border-navy/10 px-6 py-16 sm:px-10 lg:px-16">
@@ -188,10 +205,10 @@ export default async function NewsArticlePage({
                     src={item.coverImageUrl}
                     alt={item.title}
                     sizes="(min-width: 640px) 30vw, 90vw"
-                    className="aspect-[4/3] transition-transform duration-500 ease-smooth group-hover:scale-[1.02]"
+                    className="aspect-[3/4] transition-transform duration-500 ease-smooth group-hover:scale-[1.02] sm:aspect-[4/3]"
                   />
                 ) : (
-                  <div className="aspect-[4/3] rounded-2xl bg-navy-light" />
+                  <div className="aspect-[3/4] rounded-2xl bg-navy-light sm:aspect-[4/3]" />
                 )}
                 <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-cyan">
                   {categoryLabels[item.category]} · {formatShortDate(item.publishedAt)}

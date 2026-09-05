@@ -114,6 +114,7 @@ export default function AdminSettingsPage() {
                         value={banner.imageUrl}
                         onChange={(url) => updateBanner(i, { imageUrl: url })}
                         folder="eko-united-fc/hero"
+                        hint="Recommended: wide landscape banner, at least 1600×900px."
                       />
                       <input
                         value={banner.headline}

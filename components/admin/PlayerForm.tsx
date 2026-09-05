@@ -179,7 +179,12 @@ export default function PlayerForm({
 
       <div>
         <span className={labelClass}>Photo</span>
-        <CloudinaryUpload value={photoUrl} onChange={setPhotoUrl} folder="eko-united-fc/players" />
+        <CloudinaryUpload
+          value={photoUrl}
+          onChange={setPhotoUrl}
+          folder="eko-united-fc/players"
+          hint="Recommended: portrait orientation (taller than wide), at least 800×1000px."
+        />
       </div>
 
       <div>

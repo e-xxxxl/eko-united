@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
-import { demoSquad, type DemoPlayer } from "@/lib/demoData";
+import type { DemoPlayer } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "First Team Squad",
@@ -11,8 +11,7 @@ export const metadata: Metadata = {
 };
 
 async function getSquad(): Promise<DemoPlayer[]> {
-  const live = await apiFetch<DemoPlayer[]>("/players?role=player", 1800);
-  return live && live.length > 0 ? live : demoSquad;
+  return (await apiFetch<DemoPlayer[]>("/players?role=player", 1800)) || [];
 }
 
 export default async function TeamPage() {

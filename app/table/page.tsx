@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
-import { demoStandings, type DemoStanding } from "@/lib/demoData";
+import type { DemoStanding } from "@/lib/demoData";
 
 export const metadata: Metadata = {
   title: "League Table",
@@ -10,8 +10,7 @@ export const metadata: Metadata = {
 };
 
 async function getStandings(): Promise<DemoStanding[]> {
-  const live = await apiFetch<DemoStanding[]>("/standings", 3600);
-  return live && live.length > 0 ? live : demoStandings;
+  return (await apiFetch<DemoStanding[]>("/standings", 3600)) || [];
 }
 
 export default async function TablePage() {

@@ -23,10 +23,12 @@ export default function CloudinaryUpload({
   value,
   onChange,
   folder,
+  hint = "Recommended: landscape, at least 1200px wide.",
 }: {
   value: string;
   onChange: (url: string) => void;
   folder: string;
+  hint?: string;
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -93,14 +95,27 @@ export default function CloudinaryUpload({
               e.target.value = "";
             }}
           />
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={uploading}
-            className="rounded-full border border-navy/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy disabled:opacity-60"
-          >
-            {uploading ? "Uploading…" : value ? "Replace image" : "Upload image"}
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              disabled={uploading}
+              className="rounded-full border border-navy/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy disabled:opacity-60"
+            >
+              {uploading ? "Uploading…" : value ? "Replace image" : "Upload image"}
+            </button>
+            {value && (
+              <button
+                type="button"
+                onClick={() => onChange("")}
+                disabled={uploading}
+                className="rounded-full border border-navy/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-navy/50 transition-colors duration-200 ease-smooth hover:border-red-300 hover:text-red-500 disabled:opacity-60"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          <p className="mt-2 text-[11px] text-navy/40">{hint}</p>
           {error && (
             <p className="mt-2 text-xs text-red-500" role="alert">
               {error}
@@ -110,13 +125,21 @@ export default function CloudinaryUpload({
       </div>
 
       <label className="mt-3 block text-xs text-navy/40">
-        or paste an image URL directly
+        {value ? "Image URL" : "or paste an image URL directly"}
         <input
           type="url"
           value={value}
+          // Read-only once a real value exists — this field used to double
+          // as a free-edit box, which meant an accidental keystroke could
+          // silently blank out or corrupt an already-uploaded image on
+          // save. Changing the image now only happens deliberately, via
+          // "Replace image" or "Remove" above.
+          readOnly={Boolean(value)}
           onChange={(e) => onChange(e.target.value)}
           placeholder="https://res.cloudinary.com/..."
-          className="mt-1 w-full border-b border-navy/20 bg-transparent px-1 py-2 text-sm text-navy outline-none transition-colors duration-200 ease-smooth placeholder:text-navy/30 focus:border-cyan"
+          className={`mt-1 w-full border-b border-navy/20 bg-transparent px-1 py-2 text-sm outline-none transition-colors duration-200 ease-smooth placeholder:text-navy/30 ${
+            value ? "text-navy/60" : "text-navy focus:border-cyan"
+          }`}
         />
       </label>
       {value && !isAllowedImageUrl(value) && (

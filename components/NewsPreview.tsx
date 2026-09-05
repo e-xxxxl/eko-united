@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import { demoNews, fillWithDemo, type DemoNews } from "@/lib/demoData";
+import type { DemoNews } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
 
 const categoryLabels: Record<DemoNews["category"], string> = {
@@ -11,14 +11,10 @@ const categoryLabels: Record<DemoNews["category"], string> = {
 
 async function getNews(): Promise<DemoNews[]> {
   const live = await apiFetch<DemoNews[]>("/news?limit=6", 600);
-  // Skip index 0 of BOTH the real and demo pools — that's the lead story
-  // already showcased in the hero carousel (see app/page.tsx and its own
-  // fillWithDemo call), whether it ended up being a real article or a demo
-  // one. Real articles beyond that fill first; demo only pads out whatever's
-  // left, so a club with 2 real stories published sees exactly 2 real cards
-  // here (plus demo filler), not 0.
-  const rest = (live || []).slice(1);
-  return fillWithDemo(rest, demoNews.slice(1), 4);
+  // Skip index 0 — that's the lead story already showcased in the hero
+  // carousel (see app/page.tsx). Showing it twice on the same page would
+  // feel redundant rather than "more news."
+  return (live || []).slice(1, 5);
 }
 
 function excerpt(body: string, len = 100) {
@@ -67,10 +63,10 @@ export default async function NewsPreview() {
                 src={item.coverImageUrl}
                 alt={item.title}
                 sizes="(min-width: 1280px) 24vw, (min-width: 1024px) 27vw, (min-width: 640px) 46vw, 78vw"
-                className="aspect-[4/3] transition-transform duration-500 ease-smooth group-hover:scale-[1.02]"
+                className="aspect-[3/4] transition-transform duration-500 ease-smooth group-hover:scale-[1.02] sm:aspect-[4/3]"
               />
             ) : (
-              <div className="aspect-[4/3] rounded-2xl bg-navy-light" />
+              <div className="aspect-[3/4] rounded-2xl bg-navy-light sm:aspect-[4/3]" />
             )}
             <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-cyan">
               {categoryLabels[item.category]} · {formatDate(item.publishedAt)}

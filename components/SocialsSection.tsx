@@ -53,16 +53,6 @@ const platformLabels: Record<string, string> = {
   tiktok: "TikTok",
 };
 
-// No SocialLinks supplied yet? Show the platforms anyway (disabled-looking,
-// no href) so the section still reads as "we're here" rather than vanishing.
-const demoLinks: SocialLinks = {
-  instagram: "https://www.instagram.com/eko_unitedfc",
-  twitter: "https://x.com/EkoUnitedFC",
-  facebook: "https://www.facebook.com/1247570668438918?ref=PROFILE_EDIT_xav_ig_profile_page_web",
-  youtube: "#",
-  tiktok: "#",
-};
-
 async function getSocialLinks(): Promise<SocialLinks | undefined> {
   const settings = await apiFetch<{ socialLinks?: SocialLinks }>("/settings");
   return settings?.socialLinks;
@@ -70,7 +60,10 @@ async function getSocialLinks(): Promise<SocialLinks | undefined> {
 
 export default async function SocialsSection() {
   const social = await getSocialLinks();
-  const links = social && Object.values(social).some(Boolean) ? social : demoLinks;
+  // No fabricated handles here — a wrong/fake social link is worse than no
+  // section at all. Hides entirely until the admin sets real ones in Settings.
+  if (!social || !Object.values(social).some(Boolean)) return null;
+  const links = social;
 
   return (
     <section className="relative overflow-hidden bg-navy-dark px-6 py-20 sm:px-10 lg:px-16">
