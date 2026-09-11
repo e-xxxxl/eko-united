@@ -29,7 +29,7 @@ export default function AdminProductsPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this product from the shop?")) return;
+    if (!confirm("Permanently delete this product? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/products/${id}`, { method: "DELETE" });

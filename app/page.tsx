@@ -3,6 +3,7 @@ import Image from "next/image";
 import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
 import MatchdayCountdown from "@/components/MatchdayCountdown";
 import FixturesPreview from "@/components/FixturesPreview";
+import ResultsPreview from "@/components/ResultsPreview";
 import StandingsPreview from "@/components/StandingsPreview";
 import NewsPreview from "@/components/NewsPreview";
 import SocialsSection from "@/components/SocialsSection";
@@ -11,6 +12,7 @@ import ShopPreview from "@/components/ShopPreview";
 import PlayerCarousel from "@/components/PlayerCarousel";
 import PartnersSlogan from "@/components/PartnersSlogan";
 import { apiFetch } from "@/lib/api";
+import { isAllowedImageUrl } from "@/lib/imageHosts";
 import Link from "next/link";
 
 async function getHeroSlides(): Promise<HeroSlide[]> {
@@ -20,6 +22,7 @@ async function getHeroSlides(): Promise<HeroSlide[]> {
 type NextMatch = {
   _id: string;
   opponent: string;
+  opponentLogoUrl?: string;
   competition?: string;
   venue?: string;
   kickoff: string;
@@ -113,11 +116,23 @@ export default async function HomePage() {
                 <MatchdayCountdown kickoffIso={nextMatch.kickoff} />
               </div>
               <div className="flex flex-col items-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 sm:h-16 sm:w-16">
-                  <span className="font-display text-2xl text-white/70">
-                    {nextMatch.opponent.charAt(0)}
-                  </span>
-                </div>
+                {nextMatch.opponentLogoUrl && isAllowedImageUrl(nextMatch.opponentLogoUrl) ? (
+                  <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/20 bg-white sm:h-16 sm:w-16">
+                    <Image
+                      src={nextMatch.opponentLogoUrl}
+                      alt={nextMatch.opponent}
+                      fill
+                      sizes="64px"
+                      className="object-contain p-1.5"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 sm:h-16 sm:w-16">
+                    <span className="font-display text-2xl text-white/70">
+                      {nextMatch.opponent.charAt(0)}
+                    </span>
+                  </div>
+                )}
                 <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
                   {nextMatch.opponent}
                 </span>
@@ -166,6 +181,15 @@ export default async function HomePage() {
               <StandingsPreview />
             </Suspense>
           </div>
+        </div>
+
+        {/* Last 5 results: hidden entirely once there's nothing finished
+            yet (ResultsPreview returns null), rather than showing an empty
+            section. Full width below the fixtures/table grid above. */}
+        <div className="mt-14 min-w-0">
+          <Suspense fallback={<SectionFallback className="h-72" />}>
+            <ResultsPreview />
+          </Suspense>
         </div>
       </section>
 

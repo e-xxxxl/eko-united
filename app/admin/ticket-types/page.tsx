@@ -35,7 +35,7 @@ export default function AdminTicketTypesPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this ticket type?")) return;
+    if (!confirm("Permanently delete this ticket type? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/ticket-types/${id}`, { method: "DELETE" });

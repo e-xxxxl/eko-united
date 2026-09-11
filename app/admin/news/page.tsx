@@ -27,7 +27,7 @@ export default function AdminNewsPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this article from the public site?")) return;
+    if (!confirm("Permanently delete this article? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/news/${id}`, { method: "DELETE" });

@@ -30,7 +30,7 @@ export default function AdminSponsorsPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this sponsor from the public site? This can be undone from the database if needed.")) return;
+    if (!confirm("Permanently delete this sponsor? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/sponsors/${id}`, { method: "DELETE" });

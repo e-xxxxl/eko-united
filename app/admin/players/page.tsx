@@ -35,7 +35,7 @@ export default function AdminPlayersPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this profile from the public site?")) return;
+    if (!confirm("Permanently delete this profile? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/players/${id}`, { method: "DELETE" });

@@ -29,7 +29,7 @@ export default function AdminMatchesPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this match from the public site?")) return;
+    if (!confirm("Permanently delete this match, including its events/lineup history? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/matches/${id}`, { method: "DELETE" });

@@ -26,7 +26,7 @@ export default function AdminHistoryPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this milestone from the public site?")) return;
+    if (!confirm("Permanently delete this milestone? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/history/${id}`, { method: "DELETE" });

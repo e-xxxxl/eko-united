@@ -27,6 +27,7 @@ export type DemoPlayer = {
 export type DemoMatch = {
   _id: string;
   opponent: string;
+  opponentLogoUrl?: string;
   competition?: string;
   venue?: string;
   kickoff: string;

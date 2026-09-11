@@ -11,6 +11,7 @@ const roleLabels: Record<string, string> = {
   content_editor: "Content Editor",
   ticket_manager: "Ticket Manager",
   shop_manager: "Shop Manager",
+  inventory_manager: "Inventory Manager",
 };
 
 // Only sections that actually exist link here — add to this list as each
@@ -30,10 +31,12 @@ const navLinks: { href: string; label: string; roles?: string[] }[] = [
   { href: "/admin/gallery", label: "Gallery", roles: ["content_editor"] },
   { href: "/admin/standings", label: "League Table", roles: ["content_editor"] },
   { href: "/admin/contact", label: "Messages", roles: ["content_editor"] },
-  { href: "/admin/products", label: "Products", roles: ["shop_manager"] },
+  { href: "/admin/products", label: "Products", roles: ["shop_manager", "inventory_manager"] },
   { href: "/admin/ticket-types", label: "Ticket Types", roles: ["ticket_manager"] },
-  { href: "/admin/orders", label: "Orders", roles: ["shop_manager", "ticket_manager"] },
+  { href: "/admin/orders", label: "Orders", roles: ["shop_manager", "ticket_manager", "inventory_manager"] },
+  { href: "/admin/scan-tickets", label: "Scan Tickets", roles: ["ticket_manager", "inventory_manager"] },
   { href: "/admin/settings", label: "Settings", roles: ["content_editor"] },
+  { href: "/admin/analytics", label: "Analytics", roles: ["super_admin"] },
   { href: "/admin/users", label: "Staff Accounts", roles: ["super_admin"] },
 ];
 

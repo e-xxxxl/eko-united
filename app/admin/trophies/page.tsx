@@ -28,7 +28,7 @@ export default function AdminTrophiesPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this trophy from the public site?")) return;
+    if (!confirm("Permanently delete this trophy? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/trophies/${id}`, { method: "DELETE" });

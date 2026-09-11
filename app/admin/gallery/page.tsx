@@ -26,7 +26,7 @@ export default function AdminGalleryPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this item from the public gallery?")) return;
+    if (!confirm("Permanently delete this gallery item? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/gallery/${id}`, { method: "DELETE" });

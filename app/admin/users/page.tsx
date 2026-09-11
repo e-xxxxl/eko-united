@@ -9,7 +9,7 @@ type StaffAccount = {
   _id: string;
   name: string;
   email: string;
-  role: "super_admin" | "content_editor" | "ticket_manager" | "shop_manager";
+  role: "super_admin" | "content_editor" | "ticket_manager" | "shop_manager" | "inventory_manager";
   isActive: boolean;
 };
 
@@ -18,6 +18,7 @@ const roleLabels: Record<StaffAccount["role"], string> = {
   content_editor: "Content Editor",
   ticket_manager: "Ticket Manager",
   shop_manager: "Shop Manager",
+  inventory_manager: "Inventory Manager",
 };
 
 export default function AdminUsersPage() {

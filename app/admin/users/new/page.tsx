@@ -11,9 +11,9 @@ const labelClass = "mb-2 block text-xs font-semibold uppercase tracking-wide tex
 
 export default function NewStaffAccountPage() {
   const router = useRouter();
-  const [role, setRole] = useState<"content_editor" | "ticket_manager" | "shop_manager" | "super_admin">(
-    "content_editor"
-  );
+  const [role, setRole] = useState<
+    "content_editor" | "ticket_manager" | "shop_manager" | "inventory_manager" | "super_admin"
+  >("content_editor");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -68,7 +68,7 @@ export default function NewStaffAccountPage() {
             <div>
               <span className={labelClass}>Role</span>
               <div className="flex flex-wrap gap-2">
-                {(["content_editor", "ticket_manager", "shop_manager", "super_admin"] as const).map((r) => (
+                {(["content_editor", "ticket_manager", "shop_manager", "inventory_manager", "super_admin"] as const).map((r) => (
                   <button
                     key={r}
                     type="button"

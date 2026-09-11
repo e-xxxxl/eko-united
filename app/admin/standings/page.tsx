@@ -28,7 +28,7 @@ export default function AdminStandingsPage() {
   useEffect(load, []);
 
   async function handleDelete(id: string) {
-    if (!confirm("Remove this club from the public league table?")) return;
+    if (!confirm("Permanently delete this club from the table? This cannot be undone.")) return;
     setDeletingId(id);
     try {
       await adminFetch(`/standings/${id}`, { method: "DELETE" });
