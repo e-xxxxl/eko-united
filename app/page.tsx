@@ -76,17 +76,37 @@ export default async function HomePage() {
 
       {/* HERO — the latest news, not stock photography: each slide is a real
           story (see getHeroSlides above), the whole slide links through to
-          that article, and the header sits transparently on top until
-          #hero-sentinel scrolls out of view. Fetched here (not deferred
-          behind Suspense) so the lead story is in the initial HTML — good
-          for both LCP and a visitor who shares the homepage link. Ticket/shop
-          CTAs deliberately aren't duplicated in here (a nested <Link> inside
-          the slide's own link would be invalid HTML) — they're one scroll
+          that article, and the header sits transparently on top of it (and
+          stays transparent past it, see Header.tsx). Fetched here (not
+          deferred behind Suspense) so the lead story is in the initial HTML,
+          good for both LCP and a visitor who shares the homepage link.
+          Ticket/shop CTAs deliberately aren't duplicated in here (a nested <Link> inside
+          the slide's own link would be invalid HTML): they're one scroll
           away in the Next Match band below, and always in the header. */}
-      <section className="relative flex min-h-[92vh] flex-col justify-end overflow-hidden">
+      {/* min-h-[max(92vh,56.25vw)]: on an ordinary (~16:9) screen 92vh and
+          56.25vw land in about the same place, so this changes nothing there.
+          On a wide/ultrawide window, 92vh alone pins the box's height while
+          its width keeps growing with the viewport: the wider that gets
+          relative to a portrait-oriented news photo, the more object-cover
+          has to scale the photo up to cover the width, cropping into most of
+          its height ("too zoomed in on big screen"). Capping the ratio to
+          16:9 via the vw term means the box grows taller to match instead of
+          staying razor-thin-and-wide, so the crop factor stays reasonable. */}
+      {/* Pulled up by the header's own real height (--header-height, set by
+          Header.tsx measuring itself) so this section visually starts at the
+          very top of the page, genuinely behind the sticky header, instead
+          of beginning right after the space the header reserves for itself
+          in normal flow, see Header.tsx's comment on this for the full
+          story of why that reserved space used to just show a blank white
+          strip. The 100px fallback covers the one JS-less paint before that
+          effect runs; it's close enough to the header's real ~94-102px
+          height (mobile/desktop) that the gap is imperceptible either way. */}
+      <section
+        className="relative flex min-h-[max(92vh,56.25vw)] flex-col justify-end overflow-hidden"
+        style={{ marginTop: "calc(-1 * var(--header-height, 100px))" }}
+      >
         <HeroCarousel slides={heroSlides} />
       </section>
-      <div id="hero-sentinel" />
 
       {/* NEXT MATCH — the real next upcoming fixture (GET /api/matches/next,
           soonest kickoff first), not a hardcoded placeholder. Hides entirely
@@ -97,46 +117,50 @@ export default async function HomePage() {
           <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.3em] text-cyan sm:text-left">
             Next Match
           </p>
-          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-6 sm:gap-10">
-              <div className="flex flex-col items-center gap-3">
-                <Image
-                  src="/brand/crest-mark.png"
-                  alt="Eko United FC"
-                  width={64}
-                  height={64}
-                  className="h-14 w-14 sm:h-16 sm:w-16"
-                />
-                <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
-                  Eko United
-                </span>
+          <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+            {/* Crests+VS stay a compact single row at every width; the clock
+                sits full-width beneath rather than squeezed inline between
+                them, which used to overflow past the viewport on mobile
+                once the clock display grew wide enough to need its own room. */}
+            <div className="flex flex-col items-center gap-6">
+              <div className="flex items-center justify-center gap-5 sm:gap-8">
+                <div className="flex flex-col items-center gap-3">
+                  <Image
+                    src="/brand/crest-mark.png"
+                    alt="Eko United FC"
+                    width={64}
+                    height={64}
+                    className="h-12 w-12 sm:h-16 sm:w-16"
+                  />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
+                    Eko United
+                  </span>
+                </div>
+                <p className="font-display text-xl text-white/40 sm:text-2xl">VS</p>
+                <div className="flex flex-col items-center gap-3">
+                  {nextMatch.opponentLogoUrl && isAllowedImageUrl(nextMatch.opponentLogoUrl) ? (
+                    <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20 bg-white sm:h-16 sm:w-16">
+                      <Image
+                        src={nextMatch.opponentLogoUrl}
+                        alt={nextMatch.opponent}
+                        fill
+                        sizes="64px"
+                        className="object-contain p-1.5"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 sm:h-16 sm:w-16">
+                      <span className="font-display text-2xl text-white/70">
+                        {nextMatch.opponent.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <span className="max-w-[92px] text-center text-xs font-semibold uppercase tracking-wide text-white/60 sm:max-w-none">
+                    {nextMatch.opponent}
+                  </span>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="font-display text-2xl text-white/40">VS</p>
-                <MatchdayCountdown kickoffIso={nextMatch.kickoff} />
-              </div>
-              <div className="flex flex-col items-center gap-3">
-                {nextMatch.opponentLogoUrl && isAllowedImageUrl(nextMatch.opponentLogoUrl) ? (
-                  <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/20 bg-white sm:h-16 sm:w-16">
-                    <Image
-                      src={nextMatch.opponentLogoUrl}
-                      alt={nextMatch.opponent}
-                      fill
-                      sizes="64px"
-                      className="object-contain p-1.5"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 sm:h-16 sm:w-16">
-                    <span className="font-display text-2xl text-white/70">
-                      {nextMatch.opponent.charAt(0)}
-                    </span>
-                  </div>
-                )}
-                <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
-                  {nextMatch.opponent}
-                </span>
-              </div>
+              <MatchdayCountdown kickoffIso={nextMatch.kickoff} />
             </div>
 
             <div className="text-center lg:text-right">

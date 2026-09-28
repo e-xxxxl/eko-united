@@ -78,7 +78,7 @@ export default function Footer({ settings }: { settings?: FooterSettings | null 
               height={44}
               className="h-11 w-11"
             />
-            <p className="font-display text-lg tracking-wide">Eko United FC</p>
+            <p className="font-display text-lg tracking-wide text-white">Eko United FC</p>
           </div>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/60">
             The Uga Boys — Nigeria National League. Official news, fixtures,

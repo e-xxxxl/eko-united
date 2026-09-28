@@ -83,6 +83,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               priority={i === 0}
               rounded={false}
               fill
+              fullBleedFromSm
               sizes="100vw"
             />
           ) : (

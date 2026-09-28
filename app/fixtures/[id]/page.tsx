@@ -7,6 +7,7 @@ import type { DemoMatch } from "@/lib/demoData";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import CopyLinkButton from "@/components/CopyLinkButton";
 import SocialsSection from "@/components/SocialsSection";
+import MatchdayCountdown from "@/components/MatchdayCountdown";
 
 type MatchEvent = { minute?: number; type?: string; player?: string; detail?: string };
 type SquadPlayer = { _id: string; name: string; slug: string; squadNumber?: number; position?: string };
@@ -185,6 +186,11 @@ export default async function MatchDetailPage({
                   <br />
                   Kickoff {time}
                 </p>
+                {match.status === "upcoming" && (
+                  <div className="mt-5 flex justify-center">
+                    <MatchdayCountdown kickoffIso={match.kickoff} />
+                  </div>
+                )}
               </>
             )}
           </div>

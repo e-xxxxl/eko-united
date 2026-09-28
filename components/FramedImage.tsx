@@ -27,6 +27,7 @@ export default function FramedImage({
   rounded = true,
   fill = false,
   className,
+  fullBleedFromSm = false,
 }: {
   src: string;
   alt: string;
@@ -35,6 +36,16 @@ export default function FramedImage({
   rounded?: boolean;
   fill?: boolean;
   className?: string;
+  // Opt-in only (the hero carousel is the one caller that wants this): every
+  // other use of this component (news covers, staff headshots, product shots)
+  // keeps the never-crop letterboxed treatment at every width, which is the
+  // whole point of this component existing. At `sm` and up the sharp image
+  // switches to a full-bleed object-cover crop and the blurred backdrop
+  // (pointless once nothing is left uncovered) hides, so a portrait/oddly-
+  // shaped photo still shows uncropped on a narrow phone screen but fills a
+  // wide desktop hero edge-to-edge instead of sitting letterboxed in the
+  // middle with visible blur on both sides.
+  fullBleedFromSm?: boolean;
 }) {
   return (
     <div
@@ -51,7 +62,7 @@ export default function FramedImage({
         fill
         aria-hidden
         sizes={sizes}
-        className="scale-125 object-cover opacity-60 blur-2xl"
+        className={clsx("scale-125 object-cover opacity-60 blur-2xl", fullBleedFromSm && "sm:hidden")}
       />
       <Image
         src={src}
@@ -59,7 +70,12 @@ export default function FramedImage({
         fill
         priority={priority}
         sizes={sizes}
-        className="object-contain"
+        // object-top, not the default center: object-cover's crop is
+        // otherwise symmetric top+bottom, and for a photo whose subject sits
+        // in the upper portion of the frame (a headshot-style news photo,
+        // say) that chops into exactly the part that matters; anchoring to
+        // the top keeps the crop's slack entirely at the bottom instead.
+        className={clsx("object-contain", fullBleedFromSm && "sm:object-cover sm:object-top")}
       />
     </div>
   );

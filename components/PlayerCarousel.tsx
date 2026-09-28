@@ -27,6 +27,11 @@ export default async function PlayerCarousel() {
         </Link>
       </div>
 
+      {squad.length === 0 ? (
+        <p className="border-t border-navy/10 py-6 text-navy/50">
+          Squad profiles will appear here once added.
+        </p>
+      ) : (
       <div className="relative -mx-6 sm:-mx-10 lg:-mx-16">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white to-transparent sm:w-10 lg:w-16" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-white to-transparent sm:w-10 lg:w-16" />
@@ -77,6 +82,7 @@ export default async function PlayerCarousel() {
           ))}
         </div>
       </div>
+      )}
     </section>
   );
 }

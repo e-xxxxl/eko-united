@@ -44,10 +44,16 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const isHome = pathname === "/";
-  // Solid immediately on every page except the homepage, where it starts
-  // transparent over the hero and solidifies once the hero scrolls out of
-  // view (see the #hero-sentinel it observes in app/page.tsx).
+  // Solid immediately on every other page; always transparent on the
+  // homepage, at every scroll position, not just over the hero: a plain
+  // opacity flag, not scroll-tracked. (An earlier version solidified once the
+  // hero scrolled out of view for legibility against the white sections
+  // below; that read as "still has a background" and was removed.) A drop-
+  // shadow on the header's own content (below) keeps the white crest/wordmark/
+  // links readable over both the dark hero and the white page beneath it,
+  // since there's no background layer left to guarantee contrast on its own.
   const [solid, setSolid] = useState(!isHome);
 
   useEffect(() => {
@@ -63,23 +69,34 @@ export default function Header() {
   }, [open]);
 
   useEffect(() => {
-    if (!isHome) {
-      setSolid(true);
-      return;
-    }
-    const sentinel = document.getElementById("hero-sentinel");
-    if (!sentinel) {
-      setSolid(true);
-      return;
-    }
-    setSolid(false);
-    const observer = new IntersectionObserver(
-      ([entry]) => setSolid(!entry.isIntersecting),
-      { rootMargin: "-64px 0px 0px 0px" }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    setSolid(!isHome);
   }, [isHome, pathname]);
+
+  // The header is `sticky`, not `fixed`: it still reserves its own box in
+  // normal document flow (that's what lets it "stick" back to the top
+  // correctly, and what every non-home page needs so its content starts
+  // below the header rather than getting hidden under it). That reserved
+  // box is exactly the "white bar" bug on the homepage: transparent though
+  // the header itself is, nothing paints that reserved strip, and the hero
+  // section only begins after it. The hero was never actually sitting
+  // behind the header at all; an old dark scrim just used to paint over
+  // that same strip and hide the gap. This measures the header's real
+  // rendered height (responsive, so it can't drift out of sync with a
+  // hardcoded number) and exposes it as a CSS variable that only the
+  // homepage's hero section (app/page.tsx) consumes, pulling itself up by
+  // exactly that amount so it visually starts at the very top, genuinely
+  // behind the header, on every other page this variable simply goes unused.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const setHeightVar = () => {
+      document.documentElement.style.setProperty("--header-height", `${el.offsetHeight}px`);
+    };
+    setHeightVar();
+    const observer = new ResizeObserver(setHeightVar);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!moreOpen) return;
@@ -95,20 +112,30 @@ export default function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-50">
-      {/* Two stacked layers so the background crossfades via opacity (GPU-safe)
-          rather than a background-color transition. */}
+    <header ref={headerRef} className="sticky top-0 z-50">
+      {/* Always fully transparent on the homepage, at every scroll
+          position: no scrim, no tint, just the crest/nav floating directly
+          on whatever's behind them. Solid elsewhere (no hero to sit over).
+          Opacity, not a background-color transition, so it's still one GPU-
+          safe crossfade on the rare case `solid` does change (a route
+          change into/out of the homepage). */}
       <div
         className={clsx(
           "absolute inset-0 bg-navy-dark transition-opacity duration-300 ease-smooth",
           solid ? "opacity-100" : "opacity-0"
         )}
       />
-      {!solid && (
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
-      )}
 
-      <div className="relative flex items-center justify-between gap-4 px-6 py-3 sm:px-10 lg:px-16">
+      <div
+        className={clsx(
+          "relative flex items-center justify-between gap-4 px-6 py-3 sm:px-10 lg:px-16",
+          // No background layer to guarantee contrast once `solid` is gone
+          // for good on the homepage, so a drop-shadow on the content itself
+          // keeps the white crest/wordmark/links/hamburger readable over
+          // both the dark hero and the white page sections beneath it.
+          !solid && "drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+        )}
+      >
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image
             src="/brand/crest-mark.png"
