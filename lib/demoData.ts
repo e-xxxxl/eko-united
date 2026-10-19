@@ -56,6 +56,7 @@ export type DemoNews = {
   slug: string;
   body: string;
   coverImageUrl?: string;
+  heroImageUrl?: string;
   images?: string[]; // additional photos shown within the article, separate from the cover
   category: "article" | "match_report" | "press_release";
   author: string;

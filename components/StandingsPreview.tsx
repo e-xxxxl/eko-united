@@ -40,11 +40,11 @@ export default async function StandingsPreview() {
 
   return (
     <div>
-      <div className="mb-6 flex items-baseline justify-between">
+      <div className="mb-6 flex items-baseline justify-between gap-x-4">
         <h2 className="font-display text-2xl text-navy">League Table</h2>
         <Link
           href="/table"
-          className="text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
+          className="shrink-0 whitespace-nowrap text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
         >
           Full table →
         </Link>

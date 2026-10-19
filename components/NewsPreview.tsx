@@ -41,11 +41,11 @@ export default async function NewsPreview() {
 
   return (
     <section className="border-t border-navy/10 py-16">
-      <div className="mb-8 flex items-baseline justify-between px-6 sm:px-10 lg:px-16">
+      <div className="mb-8 flex items-baseline justify-between gap-x-4 px-6 sm:px-10 lg:px-16">
         <h2 className="font-display text-2xl text-navy sm:text-3xl">More From The Club</h2>
         <Link
           href="/news"
-          className="text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
+          className="shrink-0 whitespace-nowrap text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
         >
           View all →
         </Link>

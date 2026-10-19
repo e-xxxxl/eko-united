@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { clsx } from "clsx";
 import FramedImage from "@/components/FramedImage";
+import { isAllowedImageUrl } from "@/lib/imageHosts";
 
 export type HeroSlide = {
   _id: string;
@@ -13,7 +14,52 @@ export type HeroSlide = {
   category: "article" | "match_report" | "press_release";
   publishedAt: string;
   coverImageUrl?: string;
+  heroImageUrl?: string;
 };
+
+// Art direction for a slide that has its own landscape image: a <picture>
+// (via next/image's getImageProps) so each device downloads only the image it
+// actually shows, rather than both. Phones get the portrait cover image,
+// letterboxed over a blurred copy of itself so the whole photo always shows;
+// tablets and up get the landscape image, full-bleed. A slide with no
+// landscape image keeps using FramedImage's single-image behavior instead.
+function ArtDirectedImage({
+  portraitSrc,
+  landscapeSrc,
+  alt,
+  priority,
+}: {
+  portraitSrc: string;
+  landscapeSrc: string;
+  alt: string;
+  priority: boolean;
+}) {
+  const common = { alt, fill: true, sizes: "100vw", priority } as const;
+  const { props: landscape } = getImageProps({ ...common, src: landscapeSrc });
+  const { props: portrait } = getImageProps({
+    ...common,
+    src: portraitSrc,
+    className: "object-contain sm:object-cover sm:object-center",
+  });
+
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-navy-light">
+      <Image
+        src={portraitSrc}
+        alt=""
+        fill
+        aria-hidden
+        sizes="100vw"
+        className="scale-125 object-cover opacity-60 blur-2xl sm:hidden"
+      />
+      <picture>
+        <source media="(min-width: 640px)" srcSet={landscape.srcSet} sizes="100vw" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img {...portrait} alt={alt} />
+      </picture>
+    </div>
+  );
+}
 
 const categoryLabels: Record<HeroSlide["category"], string> = {
   article: "Article",
@@ -76,19 +122,34 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             i === index ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
           )}
         >
-          {slide.coverImageUrl ? (
-            <FramedImage
-              src={slide.coverImageUrl}
-              alt={slide.title}
-              priority={i === 0}
-              rounded={false}
-              fill
-              fullBleedFromSm
-              sizes="100vw"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-navy-dark" />
-          )}
+          {(() => {
+            const landscape = isAllowedImageUrl(slide.heroImageUrl) ? slide.heroImageUrl : undefined;
+            const portrait = isAllowedImageUrl(slide.coverImageUrl) ? slide.coverImageUrl : undefined;
+            if (landscape) {
+              return (
+                <ArtDirectedImage
+                  portraitSrc={portrait || landscape}
+                  landscapeSrc={landscape}
+                  alt={slide.title}
+                  priority={i === 0}
+                />
+              );
+            }
+            if (portrait) {
+              return (
+                <FramedImage
+                  src={portrait}
+                  alt={slide.title}
+                  priority={i === 0}
+                  rounded={false}
+                  fill
+                  fullBleedFromSm
+                  sizes="100vw"
+                />
+              );
+            }
+            return <div className="absolute inset-0 bg-navy-dark" />;
+          })()}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/50 to-navy-dark/10" />
 
           <div className="absolute inset-x-0 bottom-0 px-6 pb-16 pt-32 sm:px-10 sm:pb-24 lg:px-16">

@@ -17,11 +17,11 @@ export default async function PlayerCarousel() {
 
   return (
     <section className="px-6 py-16 sm:px-10 lg:px-16">
-      <div className="mb-8 flex items-baseline justify-between">
+      <div className="mb-8 flex items-baseline justify-between gap-x-4">
         <h2 className="font-display text-2xl text-navy sm:text-3xl">The Squad</h2>
         <Link
           href="/team"
-          className="text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
+          className="shrink-0 whitespace-nowrap text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
         >
           View players →
         </Link>

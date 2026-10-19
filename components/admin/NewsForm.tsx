@@ -10,6 +10,7 @@ export type NewsFormValues = {
   slug: string;
   body: string;
   coverImageUrl: string;
+  heroImageUrl: string;
   images: string[];
   category: "article" | "match_report" | "press_release";
   author: string;
@@ -36,12 +37,14 @@ export default function NewsForm({
   const [slug, setSlug] = useState(initial?.slug || "");
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [coverImageUrl, setCoverImageUrl] = useState(initial?.coverImageUrl || "");
+  const [heroImageUrl, setHeroImageUrl] = useState(initial?.heroImageUrl || "");
   const [images, setImages] = useState<string[]>(initial?.images || []);
   const [category, setCategory] = useState<NewsFormValues["category"]>(initial?.category || "article");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (coverImageUrl && !isAllowedImageUrl(coverImageUrl)) return;
+    if (heroImageUrl && !isAllowedImageUrl(heroImageUrl)) return;
     const validImages = images.filter((url) => url && isAllowedImageUrl(url));
     const data = new FormData(event.currentTarget);
     const publishedAtLocal = String(data.get("publishedAt") || "");
@@ -50,6 +53,7 @@ export default function NewsForm({
       slug: slug || slugify(title),
       body: String(data.get("body") || ""),
       coverImageUrl,
+      heroImageUrl,
       images: validImages,
       category,
       author: String(data.get("author") || "Eko United FC"),
@@ -115,12 +119,22 @@ export default function NewsForm({
       </div>
 
       <div>
-        <span className={labelClass}>Cover image</span>
+        <span className={labelClass}>Cover image (phone / portrait)</span>
         <CloudinaryUpload
           value={coverImageUrl}
           onChange={setCoverImageUrl}
           folder="eko-united-fc/news"
-          hint="Recommended: landscape, at least 1200×630px — this is what shows at the top of the article and in share previews."
+          hint="Best: portrait 4:5, 1600×2000px (minimum 1200×1500px), JPG or WebP under 1MB. Keep the subject centred. Shown on phones in the homepage hero, at the top of the article on phones, in news lists and in share previews. If you skip the desktop image below, this one is used on desktop too (a landscape 3:2 photo, 2400×1600px, works best in that case)."
+        />
+      </div>
+
+      <div>
+        <span className={labelClass}>Desktop hero image (landscape, optional)</span>
+        <CloudinaryUpload
+          value={heroImageUrl}
+          onChange={setHeroImageUrl}
+          folder="eko-united-fc/news"
+          hint="Best: landscape 16:9, 2560×1440px (minimum 1920×1080px), JPG or WebP under 1MB. Keep faces in the middle 60% of the width and above the bottom third, where the headline sits. Used only by the homepage hero on tablets and desktops."
         />
       </div>
 

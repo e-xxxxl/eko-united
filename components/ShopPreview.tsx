@@ -13,7 +13,7 @@ export default async function ShopPreview() {
 
   return (
     <section className="bg-navy-dark px-6 py-16 sm:px-10 lg:px-16">
-      <div className="mb-8 flex items-baseline justify-between">
+      <div className="mb-8 flex items-baseline justify-between gap-x-4">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
             2026 Kit
@@ -22,7 +22,7 @@ export default async function ShopPreview() {
         </div>
         <Link
           href="/shop"
-          className="text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-white"
+          className="shrink-0 whitespace-nowrap text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-white"
         >
           Visit shop →
         </Link>

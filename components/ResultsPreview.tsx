@@ -16,11 +16,11 @@ export default async function ResultsPreview() {
 
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between">
+      <div className="mb-2 flex items-baseline justify-between gap-x-4">
         <h2 className="font-display text-2xl text-navy">Latest Results</h2>
         <Link
           href="/results"
-          className="text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
+          className="shrink-0 whitespace-nowrap text-sm font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy"
         >
           All results →
         </Link>

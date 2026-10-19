@@ -27,6 +27,18 @@ const config: Config = {
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
+      // A countdown digit dropping into place when its value changes.
+      keyframes: {
+        "digit-in": {
+          // Starts at 40% opacity, not 0: the seconds digit changes every
+          // second, and fading it in from nothing made it blink.
+          "0%": { opacity: "0.4", transform: "translateY(-28%)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "digit-in": "digit-in 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+      },
     },
   },
   plugins: [],

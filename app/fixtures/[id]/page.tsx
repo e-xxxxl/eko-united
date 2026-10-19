@@ -186,11 +186,6 @@ export default async function MatchDetailPage({
                   <br />
                   Kickoff {time}
                 </p>
-                {match.status === "upcoming" && (
-                  <div className="mt-5 flex justify-center">
-                    <MatchdayCountdown kickoffIso={match.kickoff} />
-                  </div>
-                )}
               </>
             )}
           </div>
@@ -202,6 +197,14 @@ export default async function MatchDetailPage({
             </span>
           </div>
         </div>
+
+        {/* Its own row under the teams rather than inside the middle column:
+            the cards are wider than that column has room for at tablet width. */}
+        {match.status === "upcoming" && (
+          <div className="mt-10 sm:mt-12">
+            <MatchdayCountdown kickoffIso={match.kickoff} size="lg" />
+          </div>
+        )}
 
         {!isFinished && match.status !== "postponed" && (
           <div className="mt-10 flex justify-center">

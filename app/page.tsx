@@ -1,7 +1,6 @@
 import { Suspense } from "react";
-import Image from "next/image";
 import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
-import MatchdayCountdown from "@/components/MatchdayCountdown";
+import NextMatchBand, { type NextMatch } from "@/components/NextMatchBand";
 import FixturesPreview from "@/components/FixturesPreview";
 import ResultsPreview from "@/components/ResultsPreview";
 import StandingsPreview from "@/components/StandingsPreview";
@@ -12,37 +11,13 @@ import ShopPreview from "@/components/ShopPreview";
 import PlayerCarousel from "@/components/PlayerCarousel";
 import PartnersSlogan from "@/components/PartnersSlogan";
 import { apiFetch } from "@/lib/api";
-import { isAllowedImageUrl } from "@/lib/imageHosts";
-import Link from "next/link";
 
 async function getHeroSlides(): Promise<HeroSlide[]> {
   return (await apiFetch<HeroSlide[]>("/news?limit=5", 600)) || [];
 }
 
-type NextMatch = {
-  _id: string;
-  opponent: string;
-  opponentLogoUrl?: string;
-  competition?: string;
-  venue?: string;
-  kickoff: string;
-  isHome: boolean;
-};
-
 async function getNextMatch(): Promise<NextMatch | null> {
   return await apiFetch<NextMatch>("/matches/next", 300);
-}
-
-function formatMatchDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Africa/Lagos",
-  });
 }
 
 // Each data-driven section below is its own async Server Component wrapped
@@ -108,84 +83,11 @@ export default async function HomePage() {
         <HeroCarousel slides={heroSlides} />
       </section>
 
-      {/* NEXT MATCH — the real next upcoming fixture (GET /api/matches/next,
+      {/* NEXT MATCH: the real next upcoming fixture (GET /api/matches/next,
           soonest kickoff first), not a hardcoded placeholder. Hides entirely
           if there's no upcoming match scheduled yet, rather than showing a
           fake opponent. */}
-      {nextMatch && (
-        <section className="bg-navy-dark px-6 py-12 sm:px-10 lg:px-16">
-          <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.3em] text-cyan sm:text-left">
-            Next Match
-          </p>
-          <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-            {/* Crests+VS stay a compact single row at every width; the clock
-                sits full-width beneath rather than squeezed inline between
-                them, which used to overflow past the viewport on mobile
-                once the clock display grew wide enough to need its own room. */}
-            <div className="flex flex-col items-center gap-6">
-              <div className="flex items-center justify-center gap-5 sm:gap-8">
-                <div className="flex flex-col items-center gap-3">
-                  <Image
-                    src="/brand/crest-mark.png"
-                    alt="Eko United FC"
-                    width={64}
-                    height={64}
-                    className="h-12 w-12 sm:h-16 sm:w-16"
-                  />
-                  <span className="text-xs font-semibold uppercase tracking-wide text-white/60">
-                    Eko United
-                  </span>
-                </div>
-                <p className="font-display text-xl text-white/40 sm:text-2xl">VS</p>
-                <div className="flex flex-col items-center gap-3">
-                  {nextMatch.opponentLogoUrl && isAllowedImageUrl(nextMatch.opponentLogoUrl) ? (
-                    <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/20 bg-white sm:h-16 sm:w-16">
-                      <Image
-                        src={nextMatch.opponentLogoUrl}
-                        alt={nextMatch.opponent}
-                        fill
-                        sizes="64px"
-                        className="object-contain p-1.5"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 sm:h-16 sm:w-16">
-                      <span className="font-display text-2xl text-white/70">
-                        {nextMatch.opponent.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                  <span className="max-w-[92px] text-center text-xs font-semibold uppercase tracking-wide text-white/60 sm:max-w-none">
-                    {nextMatch.opponent}
-                  </span>
-                </div>
-              </div>
-              <MatchdayCountdown kickoffIso={nextMatch.kickoff} />
-            </div>
-
-            <div className="text-center lg:text-right">
-              <p className="text-sm text-white/60">
-                {nextMatch.competition || "Friendly"} · {formatMatchDate(nextMatch.kickoff)}
-              </p>
-              {nextMatch.venue && <p className="text-sm text-white/40">{nextMatch.venue}</p>}
-              <div className="mt-4 flex flex-wrap justify-center gap-3 lg:justify-end">
-                <Link
-                  href="/news"
-                  className="rounded-full border border-white/30 px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition-colors duration-300 ease-smooth hover:border-white hover:bg-white/10"
-                >
-                  Get more updates
-                </Link>
-                <Link
-                  href="/tickets"
-                  className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
-                >
-                  Buy tickets
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+      {nextMatch && <NextMatchBand match={nextMatch} />}
 
       {/* MATCHES — next 3 fixtures + full league table, Eko United highlighted */}
       <section className="px-6 py-16 sm:px-10 lg:px-16">
