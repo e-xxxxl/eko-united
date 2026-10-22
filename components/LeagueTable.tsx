@@ -18,14 +18,8 @@ function Crest({ name, logoUrl, eko }: { name: string; logoUrl?: string; eko: bo
   const size = "h-7 w-7 sm:h-9 sm:w-9";
   if (logoUrl) {
     return (
-      <span
-        className={clsx(
-          "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white",
-          size,
-          !eko && "ring-1 ring-navy/10"
-        )}
-      >
-        <Image src={logoUrl} alt="" width={36} height={36} className="h-full w-full object-contain p-1" />
+      <span className={clsx("flex shrink-0 items-center justify-center", size)}>
+        <Image src={logoUrl} alt="" width={36} height={36} className="h-full w-full object-contain" />
       </span>
     );
   }

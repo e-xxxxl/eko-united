@@ -109,11 +109,17 @@ function TeamMark({
 }) {
   const showImage = src && isAllowedImageUrl(src);
   return (
-    <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white sm:h-28 sm:w-28">
+    <div className="relative flex h-20 w-20 items-center justify-center sm:h-28 sm:w-28">
       {showImage ? (
-        <Image src={src} alt={alt} fill sizes="112px" className="object-contain p-2.5" />
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="112px"
+          className="object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)]"
+        />
       ) : (
-        <span className="font-display text-3xl text-navy/70 sm:text-4xl">{fallbackLetter}</span>
+        <span className="font-display text-5xl text-white/80 sm:text-6xl">{fallbackLetter}</span>
       )}
     </div>
   );
