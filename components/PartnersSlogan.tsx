@@ -17,7 +17,7 @@ export default async function PartnersSlogan() {
   return (
     <>
       <section className="border-t border-navy/10 px-6 py-14 sm:px-10 lg:px-16">
-        <p className="mb-8 text-center text-xs font-semibold uppercase tracking-[0.3em] text-navy/40">
+        <p data-reveal="fade" className="mb-8 text-center text-xs font-semibold uppercase tracking-[0.3em] text-navy/40">
           Club Partners
         </p>
         {sponsors.length === 0 ? (
@@ -27,7 +27,7 @@ export default async function PartnersSlogan() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-wrap items-center justify-center gap-10">
+          <div data-reveal-stagger="scale" className="flex flex-wrap items-center justify-center gap-10">
             {sponsors.map((sponsor) => (
               <SafeImage
                 key={sponsor._id}
@@ -51,9 +51,10 @@ export default async function PartnersSlogan() {
           alt="Eko United FC crest"
           width={64}
           height={64}
+          data-reveal="scale"
           className="relative h-16 w-16"
         />
-        <p className="font-display relative text-4xl text-white sm:text-6xl">The Uga Boys</p>
+        <p data-reveal className="font-display relative text-4xl text-white sm:text-6xl">The Uga Boys</p>
       </section>
     </>
   );

@@ -240,7 +240,7 @@ export default function MatchForm({
                 key={s}
                 type="button"
                 onClick={() => setStatus(s)}
-                className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200 ease-smooth ${
+                className={`rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200 ease-smooth ${
                   status === s
                     ? "border-cyan bg-cyan/10 text-navy"
                     : "border-navy/15 text-navy/50 hover:border-navy/30"
@@ -420,7 +420,7 @@ export default function MatchForm({
         <button
           type="button"
           onClick={addEvent}
-          className="mt-3 rounded-full border border-navy/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+          className="btn-glass btn-glass-navy mt-3 px-5 py-2 text-xs font-semibold uppercase tracking-wide"
         >
           + Add event
         </button>
@@ -470,7 +470,7 @@ export default function MatchForm({
       <button
         type="submit"
         disabled={saving}
-        className="rounded-full bg-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105 disabled:opacity-60 disabled:hover:scale-100"
+        className="btn-glass btn-glass-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide disabled:opacity-60"
       >
         {saving ? "Saving…" : "Save match"}
       </button>

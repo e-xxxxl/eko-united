@@ -34,6 +34,17 @@ function formatKickoff(iso: string) {
   };
 }
 
+// Eko United is picked out in a solid navy tag wherever it appears in a
+// fixture list, so our side is spotted at a glance (home or away).
+export function TeamName({ name }: { name: string }) {
+  if (name !== "Eko United") return <span>{name}</span>;
+  return (
+    <span className="rounded-md bg-navy px-2.5 py-0.5 leading-snug text-white shadow-[0_4px_12px_-4px_rgba(10,36,77,0.5)]">
+      {name}
+    </span>
+  );
+}
+
 // A hairline-divided list row, not a bordered card — used stacked in a single
 // column by /fixtures and /results. Result/postponed badges are a documented
 // exception to "one yellow per page": each flags a real per-match fact, not
@@ -70,8 +81,10 @@ export default function MatchCard({ match }: { match: Match }) {
         {match.venue && <p className="mt-1 text-xs text-navy/40">{match.venue}</p>}
       </div>
 
-      <p className="font-display flex-1 text-lg sm:text-xl">
-        {home} <span className="text-navy/30">vs</span> {away}
+      <p className="font-display flex flex-1 flex-wrap items-center gap-x-2 gap-y-1 text-lg sm:text-xl">
+        <TeamName name={home} />
+        <span className="text-navy/30">vs</span>
+        <TeamName name={away} />
       </p>
 
       <div className="flex items-center gap-3 sm:w-36 sm:justify-end">

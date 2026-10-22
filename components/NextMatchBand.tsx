@@ -60,15 +60,19 @@ function TeamBadge({ name, logoUrl, glow }: { name: string; logoUrl?: string; gl
   const hasLogo = logoUrl && isAllowedImageUrl(logoUrl);
   return (
     <div className="flex min-w-0 flex-col items-center gap-3 text-center sm:gap-4">
-      <div
-        className={`relative aspect-square w-[var(--badge)] shrink-0 overflow-hidden rounded-full bg-white ring-4 ring-white/10 ${
-          glow ? "shadow-[0_0_70px_-8px_rgba(101,203,233,0.55)]" : "shadow-[0_0_50px_-12px_rgba(255,255,255,0.25)]"
-        }`}
-      >
+      <div className="relative aspect-square w-[var(--badge)] shrink-0">
         {hasLogo ? (
-          <Image src={logoUrl} alt={`${name} badge`} fill sizes="144px" className="object-contain p-[14%]" />
+          <Image
+            src={logoUrl}
+            alt={`${name} badge`}
+            fill
+            sizes="144px"
+            className={`object-contain ${
+              glow ? "drop-shadow-[0_0_24px_rgba(101,203,233,0.45)]" : "drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)]"
+            }`}
+          />
         ) : (
-          <span className="flex h-full w-full items-center justify-center font-display text-[calc(var(--badge)*0.42)] leading-none text-navy">
+          <span className="flex h-full w-full items-center justify-center font-display text-[calc(var(--badge)*0.6)] leading-none text-white/80">
             {name.charAt(0)}
           </span>
         )}
@@ -109,7 +113,7 @@ export default function NextMatchBand({ match }: { match: NextMatch }) {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_90%_at_50%_0%,rgba(101,203,233,0.18),transparent_70%),repeating-linear-gradient(115deg,transparent_0_46px,rgba(255,255,255,0.025)_46px_47px)]"
       />
 
-      <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-9 sm:gap-12">
+      <div data-reveal-stagger className="relative mx-auto flex max-w-5xl flex-col items-center gap-9 sm:gap-12">
         <div className="flex flex-col items-center gap-3 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Next Match</p>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
@@ -152,13 +156,13 @@ export default function NextMatchBand({ match }: { match: NextMatch }) {
         <div className="flex w-full max-w-md flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row">
           <Link
             href="/tickets"
-            className="rounded-full bg-yellow px-8 py-3 text-center text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+            className="btn-glass btn-glass-yellow px-8 py-3 text-center text-xs font-bold uppercase tracking-wide"
           >
             Buy tickets
           </Link>
           <Link
             href={`/fixtures/${match._id}`}
-            className="rounded-full border border-white/30 px-8 py-3 text-center text-xs font-bold uppercase tracking-wide text-white transition-colors duration-300 ease-smooth hover:border-white hover:bg-white/10"
+            className="btn-glass btn-glass-light px-8 py-3 text-center text-xs font-bold uppercase tracking-wide"
           >
             Match centre
           </Link>

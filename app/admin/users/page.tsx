@@ -76,7 +76,7 @@ export default function AdminUsersPage() {
             </div>
             <Link
               href="/admin/users/new"
-              className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+              className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
             >
               + Add staff account
             </Link>
@@ -107,7 +107,7 @@ export default function AdminUsersPage() {
                       value={user.role}
                       onChange={(e) => updateRole(user, e.target.value as StaffAccount["role"])}
                       disabled={updatingId === user._id}
-                      className="rounded-full border border-navy/20 bg-transparent px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-navy outline-none focus:border-cyan"
+                      className="rounded-xl border border-navy/20 bg-transparent px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-navy outline-none focus:border-cyan"
                     >
                       {Object.entries(roleLabels).map(([value, label]) => (
                         <option key={value} value={value}>

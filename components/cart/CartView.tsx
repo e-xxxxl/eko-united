@@ -67,13 +67,13 @@ export default function CartView() {
         <div className="mt-6 flex justify-center gap-4">
           <Link
             href="/shop"
-            className="rounded-full border border-navy/20 px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+            className="btn-glass btn-glass-navy px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
           >
             Visit shop
           </Link>
           <Link
             href="/tickets"
-            className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+            className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
           >
             Buy tickets
           </Link>
@@ -101,7 +101,7 @@ export default function CartView() {
                 <button
                   type="button"
                   onClick={() => updateQuantity(item.ref, item.size, item.quantity - 1)}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border border-navy/20 text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+                  className="btn-glass btn-glass-navy flex h-7 w-7 rounded-lg items-center justify-center"
                 >
                   −
                 </button>
@@ -109,7 +109,7 @@ export default function CartView() {
                 <button
                   type="button"
                   onClick={() => updateQuantity(item.ref, item.size, item.quantity + 1)}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border border-navy/20 text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+                  className="btn-glass btn-glass-navy flex h-7 w-7 rounded-lg items-center justify-center"
                 >
                   +
                 </button>
@@ -177,7 +177,7 @@ export default function CartView() {
           <button
             type="submit"
             disabled={submitting || cart.items.length === 0}
-            className="w-full rounded-full bg-yellow px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
+            className="btn-glass btn-glass-yellow w-full px-8 py-3.5 text-sm font-bold uppercase tracking-wide disabled:opacity-60"
           >
             {submitting ? "Processing…" : "Checkout"}
           </button>

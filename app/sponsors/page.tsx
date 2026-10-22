@@ -65,7 +65,7 @@ export default async function SponsorsPage() {
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-cyan">
                 {tierMeta.principal.heading}
               </p>
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div data-reveal-stagger className="grid gap-6 sm:grid-cols-2">
                 {principal.map((sponsor) => (
                   <SponsorLogo key={sponsor._id} sponsor={sponsor} size={140} />
                 ))}
@@ -78,7 +78,7 @@ export default async function SponsorsPage() {
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-navy/40">
                 {tierMeta.partner.heading}
               </p>
-              <div className="grid gap-5 sm:grid-cols-3 lg:grid-cols-4">
+              <div data-reveal-stagger className="grid gap-5 sm:grid-cols-3 lg:grid-cols-4">
                 {partner.map((sponsor) => (
                   <SponsorLogo key={sponsor._id} sponsor={sponsor} size={96} />
                 ))}
@@ -91,7 +91,7 @@ export default async function SponsorsPage() {
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-navy/40">
                 {tierMeta.supplier.heading}
               </p>
-              <div className="grid gap-5 sm:grid-cols-3 lg:grid-cols-4">
+              <div data-reveal-stagger className="grid gap-5 sm:grid-cols-3 lg:grid-cols-4">
                 {supplier.map((sponsor) => (
                   <SponsorLogo key={sponsor._id} sponsor={sponsor} size={96} />
                 ))}

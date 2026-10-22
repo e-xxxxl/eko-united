@@ -221,7 +221,7 @@ export default function Header() {
           <CartIndicator />
           <Link
             href="/tickets"
-            className="whitespace-nowrap rounded-full bg-yellow px-5 py-2 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+            className="btn-glass btn-glass-yellow whitespace-nowrap px-5 py-2 text-xs font-bold uppercase tracking-wide"
           >
             Tickets
           </Link>
@@ -282,7 +282,7 @@ export default function Header() {
             ))}
             <Link
               href="/tickets"
-              className="mt-3 rounded-full bg-yellow px-5 py-2.5 text-center text-xs font-bold uppercase tracking-wide text-navy-dark"
+              className="btn-glass btn-glass-yellow mt-3 px-5 py-2.5 text-center text-xs font-bold uppercase tracking-wide"
             >
               Tickets
             </Link>

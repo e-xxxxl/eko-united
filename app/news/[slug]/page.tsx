@@ -136,7 +136,7 @@ export default async function NewsArticlePage({
         // already right; 21/9 on desktop was the actual problem — that's an
         // ultra-panoramic ratio that slices away most of a normal landscape
         // photo's height. 16:9 is a much more moderate, standard banner crop.
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-navy-light sm:aspect-video">
+        <div data-reveal-skip className="relative aspect-[4/5] w-full overflow-hidden bg-navy-light sm:aspect-video">
           <Image
             src={article.coverImageUrl}
             alt={article.title}

@@ -272,7 +272,7 @@ export default function AdminSettingsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-full bg-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105 disabled:opacity-60 disabled:hover:scale-100"
+                className="btn-glass btn-glass-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide disabled:opacity-60"
               >
                 {saving ? "Saving…" : "Save settings"}
               </button>

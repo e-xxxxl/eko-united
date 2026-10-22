@@ -40,14 +40,14 @@ export default function ProductDetailPurchase({
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href="/cart"
-            className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+            className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
           >
             View cart
           </Link>
           <button
             type="button"
             onClick={() => setAdded(false)}
-            className="rounded-full border border-navy/20 px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+            className="btn-glass btn-glass-navy px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
           >
             Keep shopping
           </button>
@@ -69,7 +69,7 @@ export default function ProductDetailPurchase({
                 onClick={() => setSize(s)}
                 aria-pressed={size === s}
                 className={clsx(
-                  "flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition-colors duration-200 ease-smooth",
+                  "flex h-10 w-10 items-center justify-center rounded-xl border text-sm font-semibold transition-colors duration-200 ease-smooth",
                   size === s
                     ? "border-yellow bg-yellow text-navy-dark"
                     : "border-navy/15 text-navy/60 hover:border-navy/40"
@@ -88,7 +88,7 @@ export default function ProductDetailPurchase({
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-navy/20 text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+            className="btn-glass btn-glass-navy flex h-8 w-8 rounded-lg items-center justify-center"
           >
             −
           </button>
@@ -96,7 +96,7 @@ export default function ProductDetailPurchase({
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-navy/20 text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+            className="btn-glass btn-glass-navy flex h-8 w-8 rounded-lg items-center justify-center"
           >
             +
           </button>
@@ -112,7 +112,7 @@ export default function ProductDetailPurchase({
         type="button"
         onClick={handleAddToCart}
         disabled={outOfStock || isDemo}
-        className="w-full rounded-full bg-yellow px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-[1.02] disabled:cursor-not-allowed disabled:bg-navy/10 disabled:text-navy/30 disabled:hover:scale-100 sm:w-auto"
+        className="btn-glass btn-glass-yellow w-full px-8 py-3.5 text-sm font-bold uppercase tracking-wide sm:w-auto"
       >
         {isDemo ? "Coming soon" : outOfStock ? "Out of stock" : "Add to cart"}
       </button>

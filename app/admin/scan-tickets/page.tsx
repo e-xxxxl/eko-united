@@ -205,7 +205,7 @@ export default function ScanTicketsPage() {
                   <button
                     type="button"
                     onClick={stopScanner}
-                    className="w-full rounded-full border border-navy/20 px-6 py-3 text-sm font-bold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+                    className="btn-glass btn-glass-navy w-full px-6 py-3 text-sm font-bold uppercase tracking-wide"
                   >
                     Cancel scan
                   </button>
@@ -216,7 +216,7 @@ export default function ScanTicketsPage() {
                     <button
                       type="button"
                       onClick={startScanner}
-                      className="w-full rounded-full bg-navy-dark px-6 py-4 text-sm font-bold uppercase tracking-wide text-white transition-transform duration-300 ease-smooth hover:scale-[1.01]"
+                      className="btn-glass btn-glass-solid w-full px-6 py-4 text-sm font-bold uppercase tracking-wide"
                     >
                       📷 Scan QR code
                     </button>
@@ -235,12 +235,12 @@ export default function ScanTicketsPage() {
                       placeholder="6-DIGIT CODE"
                       maxLength={6}
                       autoCapitalize="characters"
-                      className="flex-1 rounded-full border-2 border-navy/20 bg-transparent px-6 py-4 text-center text-2xl font-bold uppercase tracking-[0.3em] text-navy outline-none focus:border-cyan"
+                      className="flex-1 rounded-xl border-2 border-navy/20 bg-transparent px-6 py-4 text-center text-2xl font-bold uppercase tracking-[0.3em] text-navy outline-none focus:border-cyan"
                     />
                     <button
                       type="submit"
                       disabled={status === "looking-up" || code.length < 4}
-                      className="shrink-0 rounded-full bg-yellow px-6 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                      className="btn-glass btn-glass-yellow shrink-0 px-6 text-sm font-bold uppercase tracking-wide disabled:opacity-50"
                     >
                       Check
                     </button>
@@ -290,7 +290,7 @@ export default function ScanTicketsPage() {
                         type="button"
                         onClick={handleAdmit}
                         disabled={admitting}
-                        className="rounded-full bg-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105 disabled:opacity-60"
+                        className="btn-glass btn-glass-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide disabled:opacity-60"
                       >
                         Admit
                       </button>
@@ -298,7 +298,7 @@ export default function ScanTicketsPage() {
                     <button
                       type="button"
                       onClick={reset}
-                      className="rounded-full border border-navy/20 px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+                      className="btn-glass btn-glass-navy px-8 py-3 text-sm font-bold uppercase tracking-wide"
                     >
                       Next ticket
                     </button>

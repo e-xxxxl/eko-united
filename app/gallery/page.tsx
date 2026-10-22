@@ -57,7 +57,7 @@ export default async function GalleryPage({
       {items.length === 0 ? (
         <p className="text-navy/50">Gallery items will appear here once uploaded by the club.</p>
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <div data-reveal-stagger="scale" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <div key={item._id} className="relative aspect-video overflow-hidden bg-navy-light">
               {item.type === "photo" ? (

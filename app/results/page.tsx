@@ -25,7 +25,7 @@ export default async function ResultsPage() {
       {results.length === 0 ? (
         <p className="text-navy/50">No results yet this season — check back after matchday one.</p>
       ) : (
-        <div className="border-t border-navy/10">
+        <div data-reveal-stagger className="border-t border-navy/10">
           {results.map((match) => (
             <MatchCard key={match._id} match={match} />
           ))}

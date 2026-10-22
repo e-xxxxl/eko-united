@@ -16,7 +16,7 @@ export default async function HistoryPreview() {
   const excerpt = history.length > 280 ? history.slice(0, 280).trim() + "…" : history;
 
   return (
-    <section className="px-6 py-16 sm:px-10 lg:px-16">
+    <section data-reveal className="px-6 py-16 sm:px-10 lg:px-16">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Since 2026</p>
       <h2 className="font-display text-2xl text-navy sm:text-3xl">Our History</h2>
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-navy/70">{excerpt}</p>

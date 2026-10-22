@@ -68,7 +68,7 @@ export default function Footer({ settings }: { settings?: FooterSettings | null 
 
   return (
     <footer className="border-t border-white/10 bg-navy-dark px-6 py-14 sm:px-10 lg:px-16">
-      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
+      <div data-reveal-stagger="fade" className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-3">
             <Image

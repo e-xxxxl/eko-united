@@ -61,7 +61,7 @@ export default function ProductCard({ product, badge }: { product: ShopProduct; 
           />
         ) : null}
         <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-navy-dark/0 opacity-0 transition-all duration-300 ease-smooth group-hover:bg-navy-dark/10 group-hover:opacity-100">
-          <span className="mb-4 translate-y-3 rounded-full bg-navy-dark px-5 py-2 text-xs font-bold uppercase tracking-wide text-white transition-transform duration-300 ease-smooth group-hover:translate-y-0">
+          <span className="btn-glass btn-glass-solid mb-4 translate-y-3 px-5 py-2 text-xs font-bold uppercase tracking-wide group-hover:translate-y-0">
             View product
           </span>
         </div>
@@ -85,7 +85,7 @@ export default function ProductCard({ product, badge }: { product: ShopProduct; 
                 onClick={() => setSize(s)}
                 aria-pressed={size === s}
                 className={clsx(
-                  "flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold transition-colors duration-200 ease-smooth",
+                  "flex h-7 w-7 items-center justify-center rounded-xl border text-xs font-semibold transition-colors duration-200 ease-smooth",
                   size === s
                     ? "border-yellow bg-yellow text-navy-dark"
                     : "border-navy/15 text-navy/60 hover:border-navy/40"
@@ -102,7 +102,7 @@ export default function ProductCard({ product, badge }: { product: ShopProduct; 
           onClick={handleAddToCart}
           disabled={outOfStock || isDemo}
           title={isDemo ? "Preview item — add real products via /admin/products to make this purchasable" : undefined}
-          className="mt-4 w-full rounded-full border border-navy px-4 py-2 text-xs font-bold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:bg-navy hover:text-white disabled:cursor-not-allowed disabled:border-navy/20 disabled:text-navy/30 disabled:hover:bg-transparent"
+          className="btn-glass btn-glass-navy mt-4 w-full px-4 py-2 text-xs font-bold uppercase tracking-wide"
         >
           {isDemo ? "Coming soon" : outOfStock ? "Out of stock" : added ? "Added ✓" : "Add to cart"}
         </button>

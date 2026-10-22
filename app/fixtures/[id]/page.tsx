@@ -156,7 +156,7 @@ export default async function MatchDetailPage({
       {/* Bold navy header band: the match "pops" here instead of reading
           as a plain text page: both crests, the score/kickoff, and the
           competition/venue eyebrow, mirroring the homepage Next Match band. */}
-      <section className="bg-navy-dark px-6 py-16 sm:px-10 lg:px-16">
+      <section data-reveal-skip className="bg-navy-dark px-6 py-16 sm:px-10 lg:px-16">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
           {match.competition || "Friendly"} · {match.venue || "Agege Stadium, Lagos"}
         </p>
@@ -210,7 +210,7 @@ export default async function MatchDetailPage({
           <div className="mt-10 flex justify-center">
             <Link
               href={`/tickets/${id}`}
-              className="rounded-full bg-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+              className="btn-glass btn-glass-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide"
             >
               Buy tickets
             </Link>

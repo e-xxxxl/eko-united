@@ -22,7 +22,7 @@ export default async function ClubHistoryPage() {
       {milestones.length === 0 ? (
         <p className="text-navy/50">The club's history will appear here once added.</p>
       ) : (
-        <ol className="relative space-y-10 border-l border-navy/15 pl-8">
+        <ol data-reveal-stagger className="relative space-y-10 border-l border-navy/15 pl-8">
           {milestones.map((m) => (
             <li key={m._id} className="relative">
               <span className="absolute -left-[calc(2rem+5px)] top-1 h-2.5 w-2.5 rounded-full bg-cyan" />

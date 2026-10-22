@@ -93,3 +93,174 @@ h1, h2, h3, .font-display {
   outline: 2px solid var(--yellow);
   outline-offset: 2px;
 }
+
+/* ------------------------------------------------------------------ */
+/* Liquid-glass buttons                                                */
+/*                                                                     */
+/* One shared button language for the whole site: a moderately rounded */
+/* pane of glass (not a pill) with a frosted blur, a bright top rim,   */
+/* a soft coloured glow and a specular sweep that glides across on     */
+/* hover. Sizing (padding, type size, width) stays in the utility      */
+/* classes on each button; these classes only own the surface.         */
+/*                                                                     */
+/*   btn-glass-yellow  the single primary CTA on a screen              */
+/*   btn-glass-light   frosted white, for use over navy or photography */
+/*   btn-glass-navy    frosted navy tint, for use over white           */
+/*   btn-glass-solid   deep navy glass, strongest contrast on white    */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .btn-glass {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 0.875rem;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: var(--glass-text);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(14px) saturate(170%);
+    backdrop-filter: blur(14px) saturate(170%);
+    text-decoration: none;
+    transition:
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      filter 0.3s ease;
+  }
+
+  /* Top-half gloss: the light catching the upper curve of the glass. */
+  .btn-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 46% 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+    opacity: var(--glass-gloss, 0.7);
+    pointer-events: none;
+  }
+
+  /* Specular sweep: a soft diagonal band of light, parked off to the left
+     until the button is hovered or keyboard-focused. */
+  .btn-glass::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    bottom: -20%;
+    left: 0;
+    width: 55%;
+    z-index: -1;
+    background: linear-gradient(
+      105deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.55) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: translateX(-130%) skewX(-18deg);
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .btn-glass:hover::before,
+  .btn-glass:focus-visible::before {
+    transform: translateX(260%) skewX(-18deg);
+  }
+
+  .btn-glass:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glass-shadow-hover);
+  }
+
+  .btn-glass:active {
+    transform: translateY(0) scale(0.975);
+    transition-duration: 0.12s;
+  }
+
+  .btn-glass:disabled,
+  .btn-glass[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+    filter: saturate(0.5);
+    transform: none;
+    box-shadow: var(--glass-shadow);
+  }
+
+  .btn-glass:disabled::before,
+  .btn-glass[aria-disabled="true"]::before {
+    display: none;
+  }
+
+  .btn-glass-yellow {
+    --glass-bg: linear-gradient(180deg, rgba(255, 224, 120, 0.96) 0%, rgba(255, 199, 44, 0.9) 100%);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-text: #071a38;
+    --glass-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -10px 16px -6px rgba(214, 150, 0, 0.4),
+      0 10px 24px -10px rgba(255, 199, 44, 0.85),
+      0 2px 4px rgba(10, 36, 77, 0.16);
+    --glass-shadow-hover:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -10px 16px -6px rgba(214, 150, 0, 0.35),
+      0 16px 30px -10px rgba(255, 199, 44, 0.95),
+      0 3px 6px rgba(10, 36, 77, 0.18);
+  }
+
+  .btn-glass-light {
+    --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.07) 100%);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-text: #ffffff;
+    --glass-gloss: 0.35;
+    --glass-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -8px 14px -8px rgba(101, 203, 233, 0.25),
+      0 10px 28px -12px rgba(0, 0, 0, 0.55);
+    --glass-shadow-hover:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -8px 14px -8px rgba(101, 203, 233, 0.35),
+      0 16px 32px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  .btn-glass-light:hover {
+    --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 100%);
+    --glass-border: rgba(255, 255, 255, 0.55);
+  }
+
+  .btn-glass-navy {
+    --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(10, 36, 77, 0.07) 100%);
+    --glass-border: rgba(10, 36, 77, 0.2);
+    --glass-text: #0a244d;
+    --glass-gloss: 0.5;
+    --glass-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -8px 14px -8px rgba(10, 36, 77, 0.12),
+      0 8px 20px -12px rgba(10, 36, 77, 0.4);
+    --glass-shadow-hover:
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -8px 14px -8px rgba(10, 36, 77, 0.16),
+      0 14px 26px -12px rgba(10, 36, 77, 0.5);
+  }
+
+  .btn-glass-navy:hover {
+    --glass-border: rgba(10, 36, 77, 0.45);
+    --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(101, 203, 233, 0.22) 100%);
+  }
+
+  .btn-glass-solid {
+    --glass-bg: linear-gradient(180deg, rgba(30, 72, 138, 0.96) 0%, rgba(7, 26, 56, 0.97) 100%);
+    --glass-border: rgba(255, 255, 255, 0.22);
+    --glass-text: #ffffff;
+    --glass-gloss: 0.28;
+    --glass-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -10px 16px -8px rgba(0, 0, 0, 0.45),
+      0 10px 24px -10px rgba(7, 26, 56, 0.7);
+    --glass-shadow-hover:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -10px 16px -8px rgba(0, 0, 0, 0.45),
+      0 16px 30px -10px rgba(7, 26, 56, 0.8);
+  }
+}

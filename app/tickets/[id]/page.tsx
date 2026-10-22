@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { DemoMatch, DemoTicketType } from "@/lib/demoData";
 import TicketPurchase from "@/components/tickets/TicketPurchase";
+import { TeamName } from "@/components/MatchCard";
 
 function formatKickoff(iso: string) {
   const date = new Date(iso);
@@ -104,8 +105,8 @@ export default async function MatchTicketsPage({
       <p className="text-xs font-semibold uppercase tracking-[0.15em] text-cyan">
         {match.competition || "Friendly"} · {match.venue || "Agege Stadium, Lagos"}
       </p>
-      <h1 className="display-title font-display mt-3">
-        {home} <span className="text-navy/30">vs</span> {away}
+      <h1 className="display-title font-display mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <TeamName name={home} /> <span className="text-navy/30">vs</span> <TeamName name={away} />
       </h1>
       <p className="mt-3 text-base text-navy/60">
         {date} · Kickoff {time}

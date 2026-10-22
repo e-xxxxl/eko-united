@@ -76,7 +76,7 @@ export default async function SocialsSection() {
       />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy-dark via-navy-dark/85 to-navy-dark/60" />
 
-      <div className="relative flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
+      <div data-reveal className="relative flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
             Follow The Uga Boys
@@ -96,7 +96,7 @@ export default async function SocialsSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={platformLabels[key]}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white transition-colors duration-200 ease-smooth hover:border-cyan hover:text-cyan"
+                className="btn-glass btn-glass-light flex h-12 w-12 items-center justify-center hover:border-cyan hover:text-cyan"
               >
                 <span className="h-5 w-5">{icon}</span>
               </a>

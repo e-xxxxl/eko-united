@@ -15,7 +15,7 @@ async function getStaff(role: "coach" | "technical_staff"): Promise<DemoPlayer[]
 
 function StaffGrid({ members }: { members: DemoPlayer[] }) {
   return (
-    <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div data-reveal-stagger className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {members.map((person) => (
         <Link key={person._id} href={`/team/${person.slug}`} className="group block">
           {person.photoUrl ? (

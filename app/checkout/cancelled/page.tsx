@@ -16,7 +16,7 @@ export default function CheckoutCancelledPage() {
       </p>
       <Link
         href="/cart"
-        className="mt-10 inline-block rounded-full bg-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+        className="btn-glass btn-glass-yellow mt-10 inline-block px-8 py-3 text-sm font-bold uppercase tracking-wide"
       >
         Back to cart
       </Link>

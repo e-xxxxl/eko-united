@@ -17,7 +17,7 @@ export default async function PlayerCarousel() {
 
   return (
     <section className="px-6 py-16 sm:px-10 lg:px-16">
-      <div className="mb-8 flex items-baseline justify-between gap-x-4">
+      <div data-reveal className="mb-8 flex items-baseline justify-between gap-x-4">
         <h2 className="font-display text-2xl text-navy sm:text-3xl">The Squad</h2>
         <Link
           href="/team"
@@ -35,7 +35,7 @@ export default async function PlayerCarousel() {
       <div className="relative -mx-6 sm:-mx-10 lg:-mx-16">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white to-transparent sm:w-10 lg:w-16" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-white to-transparent sm:w-10 lg:w-16" />
-        <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-2 sm:px-10 lg:gap-6 lg:px-16">
+        <div data-reveal-stagger className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-2 sm:px-10 lg:gap-6 lg:px-16">
           {squad.map((player) => (
             <Link
               key={player._id}
@@ -73,7 +73,7 @@ export default async function PlayerCarousel() {
 
                 {/* Hover reveal */}
                 <div className="absolute inset-0 flex items-center justify-center bg-navy-dark/0 opacity-0 transition-all duration-300 ease-smooth group-hover:bg-navy-dark/50 group-hover:opacity-100">
-                  <span className="translate-y-2 rounded-full border border-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-white transition-transform duration-300 ease-smooth group-hover:translate-y-0">
+                  <span className="btn-glass btn-glass-light translate-y-2 px-4 py-2 text-xs font-bold uppercase tracking-wide group-hover:translate-y-0">
                     View Profile
                   </span>
                 </div>

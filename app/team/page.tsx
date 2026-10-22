@@ -40,7 +40,7 @@ export default async function TeamPage() {
         // Every 5th tile spans two columns at a wider aspect ratio — breaks
         // the uniform grid rhythm deterministically, no "featured player"
         // flag required from the backend.
-        <div className="grid gap-x-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+        <div data-reveal-stagger className="grid gap-x-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
           {squad.map((player, i) => {
             const featured = i % 5 === 0;
             return (

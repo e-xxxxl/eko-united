@@ -77,6 +77,7 @@ export default async function HomePage() {
           effect runs; it's close enough to the header's real ~94-102px
           height (mobile/desktop) that the gap is imperceptible either way. */}
       <section
+        data-reveal-skip
         className="relative flex min-h-[max(92vh,56.25vw)] flex-col justify-end overflow-hidden"
         style={{ marginTop: "calc(-1 * var(--header-height, 100px))" }}
       >

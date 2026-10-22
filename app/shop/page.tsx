@@ -33,7 +33,7 @@ export default async function ShopPage() {
       {products.length === 0 ? (
         <p className="text-navy/50">Products will appear here once added by the club.</p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div data-reveal-stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}

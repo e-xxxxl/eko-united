@@ -74,7 +74,7 @@ export default function AdminShell({ children }: { children: (admin: AdminSessio
             <button
               type="button"
               onClick={() => logout(router)}
-              className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-colors duration-200 ease-smooth hover:border-white"
+              className="btn-glass btn-glass-light px-4 py-2 text-xs font-semibold uppercase tracking-wide"
             >
               Log out
             </button>

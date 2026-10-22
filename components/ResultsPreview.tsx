@@ -16,7 +16,7 @@ export default async function ResultsPreview() {
 
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between gap-x-4">
+      <div data-reveal className="mb-2 flex items-baseline justify-between gap-x-4">
         <h2 className="font-display text-2xl text-navy">Latest Results</h2>
         <Link
           href="/results"
@@ -25,7 +25,7 @@ export default async function ResultsPreview() {
           All results →
         </Link>
       </div>
-      <div className="border-t border-navy/10">
+      <div data-reveal-stagger className="border-t border-navy/10">
         {results.map((match) => (
           <MatchCard key={match._id} match={match} />
         ))}

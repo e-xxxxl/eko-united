@@ -41,7 +41,7 @@ export default async function NewsPreview() {
 
   return (
     <section className="border-t border-navy/10 py-16">
-      <div className="mb-8 flex items-baseline justify-between gap-x-4 px-6 sm:px-10 lg:px-16">
+      <div data-reveal className="mb-8 flex items-baseline justify-between gap-x-4 px-6 sm:px-10 lg:px-16">
         <h2 className="font-display text-2xl text-navy sm:text-3xl">More From The Club</h2>
         <Link
           href="/news"
@@ -51,7 +51,7 @@ export default async function NewsPreview() {
         </Link>
       </div>
 
-      <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-2 sm:px-10 lg:gap-6 lg:px-16">
+      <div data-reveal-stagger className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-2 sm:px-10 lg:gap-6 lg:px-16">
         {news.map((item) => (
           <Link
             key={item._id}

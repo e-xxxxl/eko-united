@@ -1,8 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
-import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
 import type { DemoStanding } from "@/lib/demoData";
+import LeagueTable from "@/components/LeagueTable";
 
 // Preview shows a slice CENTERED on Eko United's actual position: roughly
 // 2 clubs above and 2 below (5 rows total), rather than a flat top-N cutoff
@@ -30,17 +29,20 @@ function sliceAroundEkoUnited(standings: DemoStanding[]): DemoStanding[] {
   return standings.slice(start, end);
 }
 
-async function getStandings(): Promise<DemoStanding[]> {
-  const live = await apiFetch<DemoStanding[]>("/standings", 3600);
-  return sliceAroundEkoUnited(live || []);
+async function getStandings(): Promise<{ rows: DemoStanding[]; maxPoints: number }> {
+  const live = (await apiFetch<DemoStanding[]>("/standings", 3600)) || [];
+  return {
+    rows: sliceAroundEkoUnited(live),
+    maxPoints: Math.max(0, ...live.map((row) => row.points)),
+  };
 }
 
 export default async function StandingsPreview() {
-  const standings = await getStandings();
+  const { rows, maxPoints } = await getStandings();
 
   return (
     <div>
-      <div className="mb-6 flex items-baseline justify-between gap-x-4">
+      <div data-reveal className="mb-3 flex items-baseline justify-between gap-x-4">
         <h2 className="font-display text-2xl text-navy">League Table</h2>
         <Link
           href="/table"
@@ -49,67 +51,13 @@ export default async function StandingsPreview() {
           Full table →
         </Link>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[480px] border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-navy/10 text-left text-navy/40">
-              <th className="py-2.5 pr-3 font-medium">#</th>
-              <th className="py-2.5 pr-3 font-medium">Club</th>
-              <th className="py-2.5 pr-3 text-center font-medium">P</th>
-              <th className="py-2.5 pr-3 text-center font-medium">W</th>
-              <th className="py-2.5 pr-3 text-center font-medium">D</th>
-              <th className="py-2.5 pr-3 text-center font-medium">L</th>
-              <th className="py-2.5 text-center font-medium text-navy">Pts</th>
-            </tr>
-          </thead>
-          <tbody>
-            {standings.map((row) => (
-              <tr
-                key={row._id}
-                className={clsx(
-                  "border-b border-navy/5",
-                  row.isEkoUnited && "bg-yellow/20"
-                )}
-              >
-                <td className={clsx("py-2.5 pr-3", row.isEkoUnited ? "font-bold text-navy" : "text-navy/60")}>
-                  {row.position}
-                </td>
-                <td className="py-2.5 pr-3">
-                  <div className="flex items-center gap-2.5">
-                    {row.clubLogoUrl ? (
-                      <Image
-                        src={row.clubLogoUrl}
-                        alt=""
-                        width={20}
-                        height={20}
-                        className="h-5 w-5 rounded-full object-contain"
-                      />
-                    ) : (
-                      <div className="h-5 w-5 rounded-full bg-navy/10" aria-hidden />
-                    )}
-                    <span className={row.isEkoUnited ? "font-display text-base tracking-wide text-navy" : "text-navy/80"}>
-                      {row.clubName}
-                    </span>
-                  </div>
-                </td>
-                <td className={clsx("py-2.5 pr-3 text-center", row.isEkoUnited ? "font-semibold text-navy" : "text-navy/60")}>
-                  {row.played}
-                </td>
-                <td className={clsx("py-2.5 pr-3 text-center", row.isEkoUnited ? "font-semibold text-navy" : "text-navy/60")}>
-                  {row.won}
-                </td>
-                <td className={clsx("py-2.5 pr-3 text-center", row.isEkoUnited ? "font-semibold text-navy" : "text-navy/60")}>
-                  {row.drawn}
-                </td>
-                <td className={clsx("py-2.5 pr-3 text-center", row.isEkoUnited ? "font-semibold text-navy" : "text-navy/60")}>
-                  {row.lost}
-                </td>
-                <td className="py-2.5 text-center font-bold text-navy">{row.points}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {rows.length === 0 ? (
+        <p className="border-t border-navy/10 py-6 text-navy/50">
+          Standings will appear here once the season begins.
+        </p>
+      ) : (
+        <LeagueTable rows={rows} maxPoints={maxPoints} variant="preview" />
+      )}
     </div>
   );
 }

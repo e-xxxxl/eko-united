@@ -50,7 +50,7 @@ export default function AdminGalleryPage() {
             </div>
             <Link
               href="/admin/gallery/new"
-              className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+              className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
             >
               + Add item
             </Link>

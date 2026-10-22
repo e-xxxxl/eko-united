@@ -59,7 +59,7 @@ export default function AdminTicketTypesPage() {
             </div>
             <Link
               href="/admin/ticket-types/new"
-              className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+              className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
             >
               + Add ticket type
             </Link>

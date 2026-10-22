@@ -32,7 +32,7 @@ export default async function NewsPage() {
       {news.length === 0 ? (
         <p className="text-navy/50">Articles will appear here once published by the club.</p>
       ) : (
-        <div className="grid gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div data-reveal-stagger className="grid gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {news.map((item, i) => {
             const featured = i === 0;
             return (

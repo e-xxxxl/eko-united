@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import SiteChrome from "@/components/SiteChrome";
 import ScrollToTop from "@/components/ScrollToTop";
+import ScrollReveal from "@/components/ScrollReveal";
 import { apiFetch } from "@/lib/api";
 import "./globals.css";
 
@@ -101,6 +102,7 @@ export default async function RootLayout({
     <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <ScrollToTop />
+        <ScrollReveal />
         <SiteChrome settings={settings}>{children}</SiteChrome>
       </body>
     </html>

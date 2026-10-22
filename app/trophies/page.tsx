@@ -24,7 +24,7 @@ export default async function TrophiesPage() {
       {trophies.length === 0 ? (
         <p className="text-navy/50">Silverware will appear here once added by the club.</p>
       ) : (
-        <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div data-reveal-stagger className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {trophies.map((t) => (
             <div key={t._id} className="border-t-2 border-navy/10 pt-6">
               {isAllowedImageUrl(t.imageUrl) ? (

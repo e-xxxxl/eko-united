@@ -12,7 +12,7 @@ export default async function FixturesPreview() {
 
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between gap-x-4">
+      <div data-reveal className="mb-2 flex items-baseline justify-between gap-x-4">
         <h2 className="font-display text-2xl text-navy">Upcoming Fixtures</h2>
         <Link
           href="/fixtures"
@@ -26,7 +26,7 @@ export default async function FixturesPreview() {
           No upcoming fixtures scheduled yet — check back soon.
         </p>
       ) : (
-        <div className="border-t border-navy/10">
+        <div data-reveal-stagger className="border-t border-navy/10">
           {fixtures.map((match) => (
             <MatchCard key={match._id} match={match} />
           ))}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import type { DemoMatch } from "@/lib/demoData";
+import { TeamName } from "@/components/MatchCard";
 
 export const metadata: Metadata = {
   title: "Tickets",
@@ -50,7 +51,7 @@ export default async function TicketsPage() {
       {matches.length === 0 ? (
         <p className="text-navy/50">No upcoming fixtures on sale right now — check back soon.</p>
       ) : (
-        <div className="border-t border-navy/10">
+        <div data-reveal-stagger className="border-t border-navy/10">
           {matches.map((match) => {
             const { date, time } = formatKickoff(match.kickoff);
             const home = match.isHome ? "Eko United" : match.opponent;
@@ -64,8 +65,8 @@ export default async function TicketsPage() {
                   <p className="text-xs font-semibold uppercase tracking-[0.15em] text-navy/40">
                     {match.competition || "Friendly"} · {match.venue || "Agege Stadium, Lagos"}
                   </p>
-                  <p className="font-display mt-1 text-xl sm:text-2xl">
-                    {home} <span className="text-navy/30">vs</span> {away}
+                  <p className="font-display mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xl sm:text-2xl">
+                    <TeamName name={home} /> <span className="text-navy/30">vs</span> <TeamName name={away} />
                   </p>
                   <p className="mt-1 text-sm text-navy/60">
                     {date} · {time}
@@ -73,7 +74,7 @@ export default async function TicketsPage() {
                 </div>
                 <Link
                   href={`/tickets/${match._id}`}
-                  className="inline-block rounded-full bg-yellow px-8 py-3 text-center text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+                  className="btn-glass btn-glass-yellow inline-block px-8 py-3 text-center text-sm font-bold uppercase tracking-wide"
                 >
                   Buy tickets
                 </Link>

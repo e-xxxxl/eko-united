@@ -50,14 +50,14 @@ export default function TicketPurchase({
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             href="/cart"
-            className="rounded-full bg-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105"
+            className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
           >
             View cart
           </Link>
           <button
             type="button"
             onClick={() => setAdded(false)}
-            className="rounded-full border border-navy/20 px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+            className="btn-glass btn-glass-navy px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
           >
             Add more
           </button>
@@ -93,7 +93,7 @@ export default function TicketPurchase({
                   <button
                     type="button"
                     onClick={() => setQty(t._id, (quantities[t._id] || 0) - 1)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-navy/20 text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+                    className="btn-glass btn-glass-navy flex h-8 w-8 rounded-lg items-center justify-center"
                   >
                     −
                   </button>
@@ -103,7 +103,7 @@ export default function TicketPurchase({
                   <button
                     type="button"
                     onClick={() => setQty(t._id, Math.min(remaining, (quantities[t._id] || 0) + 1))}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-navy/20 text-navy transition-colors duration-200 ease-smooth hover:border-navy"
+                    className="btn-glass btn-glass-navy flex h-8 w-8 rounded-lg items-center justify-center"
                   >
                     +
                   </button>
@@ -118,7 +118,7 @@ export default function TicketPurchase({
         type="button"
         onClick={handleAddToCart}
         disabled={!anySelected}
-        className="mt-6 w-full rounded-full bg-yellow px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-[1.02] disabled:cursor-not-allowed disabled:bg-navy/10 disabled:text-navy/30 disabled:hover:scale-100 sm:w-auto"
+        className="btn-glass btn-glass-yellow mt-6 w-full px-8 py-3.5 text-sm font-bold uppercase tracking-wide sm:w-auto"
       >
         Add to cart
       </button>

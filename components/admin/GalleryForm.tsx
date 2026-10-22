@@ -61,7 +61,7 @@ export default function GalleryForm({
                 setType(t);
                 setUrl("");
               }}
-              className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200 ease-smooth ${
+              className={`rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200 ease-smooth ${
                 type === t
                   ? "border-cyan bg-cyan/10 text-navy"
                   : "border-navy/15 text-navy/50 hover:border-navy/30"
@@ -138,7 +138,7 @@ export default function GalleryForm({
       <button
         type="submit"
         disabled={saving}
-        className="rounded-full bg-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide text-navy-dark transition-transform duration-300 ease-smooth hover:scale-105 disabled:opacity-60 disabled:hover:scale-100"
+        className="btn-glass btn-glass-yellow px-8 py-3 text-sm font-bold uppercase tracking-wide disabled:opacity-60"
       >
         {saving ? "Saving…" : "Save gallery item"}
       </button>

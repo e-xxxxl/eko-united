@@ -41,7 +41,7 @@ export default async function FixturesPage() {
       {fixtures.length === 0 ? (
         <p className="text-navy/50">No upcoming fixtures scheduled yet — check back soon.</p>
       ) : (
-        <div className="border-t border-navy/10">
+        <div data-reveal-stagger className="border-t border-navy/10">
           {fixtures.map((match) => (
             <MatchCard key={match._id} match={match} />
           ))}

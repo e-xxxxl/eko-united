@@ -100,7 +100,7 @@ export default function CloudinaryUpload({
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={uploading}
-              className="rounded-full border border-navy/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-navy transition-colors duration-200 ease-smooth hover:border-navy disabled:opacity-60"
+              className="btn-glass btn-glass-navy px-5 py-2 text-xs font-semibold uppercase tracking-wide disabled:opacity-60"
             >
               {uploading ? "Uploading…" : value ? "Replace image" : "Upload image"}
             </button>
@@ -109,7 +109,7 @@ export default function CloudinaryUpload({
                 type="button"
                 onClick={() => onChange("")}
                 disabled={uploading}
-                className="rounded-full border border-navy/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-navy/50 transition-colors duration-200 ease-smooth hover:border-red-300 hover:text-red-500 disabled:opacity-60"
+                className="btn-glass btn-glass-navy px-5 py-2 text-xs font-semibold uppercase tracking-wide text-navy/50 hover:border-red-300 hover:text-red-500 disabled:opacity-60"
               >
                 Remove
               </button>
