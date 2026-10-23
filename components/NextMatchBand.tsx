@@ -107,7 +107,7 @@ export default function NextMatchBand({ match }: { match: NextMatch }) {
   const opponent = <TeamBadge name={match.opponent} logoUrl={match.opponentLogoUrl} />;
 
   return (
-    <section className="relative overflow-hidden border-t border-white/10 bg-navy-dark px-5 py-12 sm:px-10 sm:py-16 lg:px-16">
+    <section className="relative -mt-px overflow-hidden bg-navy-dark px-5 py-12 sm:px-10 sm:py-16 lg:px-16">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_90%_at_50%_0%,rgba(101,203,233,0.18),transparent_70%),repeating-linear-gradient(115deg,transparent_0_46px,rgba(255,255,255,0.025)_46px_47px)]"

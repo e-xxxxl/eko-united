@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { DemoNews } from "@/lib/demoData";
+import type { DemoNews, NewsBlock } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
-import CopyLinkButton from "@/components/CopyLinkButton";
+import ShareLinks from "@/components/ShareLinks";
 import SocialsSection from "@/components/SocialsSection";
 
 const categoryLabels: Record<DemoNews["category"], string> = {
@@ -75,23 +75,21 @@ export async function generateMetadata({
 // long-form piece reads like a real editorial layout instead of one photo up
 // top and a wall of text below. Any photos left over once the text runs out
 // are appended at the end rather than dropped.
-type ContentBlock = { type: "p"; text: string } | { type: "img"; src: string };
-
-function buildContent(body: string, images: string[]): ContentBlock[] {
+function buildContent(body: string, images: string[]): NewsBlock[] {
   const paragraphs = body.split(/\n+/).filter(Boolean);
-  const blocks: ContentBlock[] = [];
+  const blocks: NewsBlock[] = [];
   let imageIndex = 0;
 
   paragraphs.forEach((text, i) => {
-    blocks.push({ type: "p", text });
+    blocks.push({ kind: "paragraph", text });
     if ((i + 1) % 2 === 0 && imageIndex < images.length) {
-      blocks.push({ type: "img", src: images[imageIndex] });
+      blocks.push({ kind: "image", url: images[imageIndex] });
       imageIndex += 1;
     }
   });
 
   while (imageIndex < images.length) {
-    blocks.push({ type: "img", src: images[imageIndex] });
+    blocks.push({ kind: "image", url: images[imageIndex] });
     imageIndex += 1;
   }
 
@@ -119,7 +117,15 @@ export default async function NewsArticlePage({
     publisher: { "@type": "Organization", name: "Eko United FC" },
   };
 
-  const content = buildContent(article.body, article.images || []);
+  // Articles built in the block editor carry their own ordered blocks; older
+  // ones are laid out from the plain body plus loose photos as before.
+  const content: NewsBlock[] = article.blocks?.length
+    ? article.blocks
+    : buildContent(article.body, article.images || []);
+  const shareUrl = `https://ekounitedfc.com/news/${article.slug}`;
+  const words = content.reduce((n, b) => n + (b.kind === "paragraph" ? (b.text || "").split(/\s+/).length : 0), 0);
+  const readMinutes = Math.max(1, Math.round(words / 200));
+  const firstParagraph = content.findIndex((b) => b.kind === "paragraph");
 
   return (
     <main>
@@ -148,39 +154,101 @@ export default async function NewsArticlePage({
         </div>
       )}
 
-      <article className="mx-auto max-w-3xl px-6 py-16 sm:px-10 lg:px-16">
-        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-cyan">
-          {categoryLabels[article.category]}
-        </p>
-        <h1 className="display-title font-display mt-3">{article.title}</h1>
-        <p className="mt-4 text-sm text-navy/40">
-          {article.author} ·{" "}
-          {new Date(article.publishedAt).toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-            timeZone: "Africa/Lagos",
-          })}
-        </p>
+      <article className="px-6 py-14 sm:px-10 sm:py-20 lg:px-16">
+        <div className="mx-auto grid max-w-5xl gap-x-14 lg:grid-cols-[2.75rem_minmax(0,1fr)]">
+          {/* Share rail: sticks beside the story on desktop so the options
+              are always one click away while reading. Phones get the same
+              icons in a row under the byline and again at the end. */}
+          <aside className="hidden lg:block" aria-label="Share this story">
+            <div className="sticky top-32">
+              <p className="mb-3 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-navy/40">
+                Share
+              </p>
+              <ShareLinks url={shareUrl} title={article.title} vertical />
+            </div>
+          </aside>
 
-        <div className="mt-10 space-y-5 text-base leading-relaxed text-navy/80">
-          {content.map((block, i) =>
-            block.type === "p" ? (
-              <p key={i}>{block.text}</p>
-            ) : (
-              <FramedImage
-                key={i}
-                src={block.src}
-                alt={`${article.title} — additional photo`}
-                sizes="(min-width: 1024px) 62vw, 90vw"
-                className="!my-8 aspect-[4/3]"
-              />
-            )
-          )}
-        </div>
+          <div className="min-w-0 max-w-3xl">
+            <header>
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-md bg-cyan/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-navy">
+                  {categoryLabels[article.category]}
+                </span>
+                <span className="text-xs font-medium uppercase tracking-wide text-navy/45">
+                  {readMinutes} min read
+                </span>
+              </div>
+              <h1 className="display-title font-display mt-5">{article.title}</h1>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-y border-navy/10 py-4">
+                <p className="text-sm text-navy/55">
+                  <span className="font-semibold text-navy">{article.author}</span>
+                  <span className="mx-2 text-navy/25">|</span>
+                  {new Date(article.publishedAt).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                    timeZone: "Africa/Lagos",
+                  })}
+                </p>
+                <div className="lg:hidden">
+                  <ShareLinks url={shareUrl} title={article.title} />
+                </div>
+              </div>
+            </header>
 
-        <div className="mt-12 border-t border-navy/10 pt-6">
-          <CopyLinkButton url={`https://ekounitedfc.com/news/${article.slug}`} />
+            <div className="mt-10 space-y-7">
+              {content.map((block, i) => {
+                if (block.kind === "image") {
+                  if (!block.url) return null;
+                  // Photos show whole, at their own proportions: no frame,
+                  // crop or backdrop, just the picture at full story width.
+                  return (
+                    <figure key={i} className="!my-11">
+                      <Image
+                        src={block.url}
+                        alt={block.caption || `${article.title}, photo`}
+                        width={1600}
+                        height={1067}
+                        sizes="(min-width: 1024px) 768px, 100vw"
+                        className="h-auto w-full rounded-xl"
+                      />
+                      {block.caption && (
+                        <figcaption className="mt-3 text-sm leading-snug text-navy/50">{block.caption}</figcaption>
+                      )}
+                    </figure>
+                  );
+                }
+                const lead = i === firstParagraph;
+                if (block.bold) {
+                  return (
+                    <p
+                      key={i}
+                      className="border-l-4 border-cyan pl-5 text-xl font-semibold leading-snug text-navy sm:text-2xl"
+                    >
+                      {block.text}
+                    </p>
+                  );
+                }
+                return (
+                  <p
+                    key={i}
+                    className={
+                      lead
+                        ? "text-xl font-medium leading-relaxed text-navy sm:text-[1.65rem] sm:leading-snug"
+                        : "text-[1.0625rem] leading-[1.85] text-navy/80"
+                    }
+                  >
+                    {block.text}
+                  </p>
+                );
+              })}
+            </div>
+
+            <div className="mt-14 flex flex-wrap items-center justify-between gap-5 rounded-2xl bg-navy/[0.04] px-6 py-5">
+              <p className="font-display text-xl text-navy">Share this story</p>
+              <ShareLinks url={shareUrl} title={article.title} />
+            </div>
+          </div>
         </div>
       </article>
 

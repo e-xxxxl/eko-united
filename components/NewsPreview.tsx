@@ -11,10 +11,10 @@ const categoryLabels: Record<DemoNews["category"], string> = {
 
 async function getNews(): Promise<DemoNews[]> {
   const live = await apiFetch<DemoNews[]>("/news?limit=6", 600);
-  // Skip index 0 — that's the lead story already showcased in the hero
-  // carousel (see app/page.tsx). Showing it twice on the same page would
-  // feel redundant rather than "more news."
-  return (live || []).slice(1, 5);
+  // The newest stories first, the very latest included. The hero rotates
+  // through the latest few, so a visitor who lands mid-rotation would
+  // otherwise never see the newest story in this strip at all.
+  return (live || []).slice(0, 6);
 }
 
 function excerpt(body: string, len = 100) {

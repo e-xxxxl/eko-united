@@ -52,11 +52,22 @@ export type DemoStanding = {
   position: number;
 };
 
+export type NewsBlock = {
+  kind: "paragraph" | "image";
+  text?: string;
+  bold?: boolean;
+  url?: string;
+  caption?: string;
+};
+
 export type DemoNews = {
   _id: string;
   title: string;
   slug: string;
   body: string;
+  // The story as ordered blocks (paragraphs, optionally bold, and captioned
+  // photos placed after them). Older articles have none and render from `body`.
+  blocks?: NewsBlock[];
   coverImageUrl?: string;
   heroImageUrl?: string;
   images?: string[]; // additional photos shown within the article, separate from the cover

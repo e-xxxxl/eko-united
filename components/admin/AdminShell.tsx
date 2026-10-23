@@ -29,6 +29,7 @@ const navLinks: { href: string; label: string; roles?: string[] }[] = [
   { href: "/admin/trophies", label: "Trophies", roles: ["content_editor"] },
   { href: "/admin/history", label: "History", roles: ["content_editor"] },
   { href: "/admin/gallery", label: "Gallery", roles: ["content_editor"] },
+  { href: "/admin/videos", label: "Videos", roles: ["content_editor"] },
   { href: "/admin/standings", label: "League Table", roles: ["content_editor"] },
   { href: "/admin/contact", label: "Messages", roles: ["content_editor"] },
   { href: "/admin/products", label: "Products", roles: ["shop_manager", "inventory_manager"] },

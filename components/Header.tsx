@@ -25,6 +25,7 @@ const primaryLinks = [
 
 const moreLinks = [
   { href: "/table", label: "League Table" },
+  { href: "/videos", label: "Videos" },
   { href: "/gallery", label: "Gallery" },
   { href: "/sponsors", label: "Sponsors" },
   { href: "/trophies", label: "Trophy Cabinet" },
@@ -32,7 +33,19 @@ const moreLinks = [
   { href: "/media-accreditation", label: "Media Accreditation" },
 ];
 
-const allLinksForMobile = [...primaryLinks.slice(0, -1), ...moreLinks, primaryLinks[primaryLinks.length - 1]];
+// The phone menu is a full-screen sheet: the everyday destinations as big
+// display type, the rest as a quieter grid underneath.
+const mobileMain = [
+  { href: "/fixtures", label: "Fixtures" },
+  { href: "/results", label: "Results" },
+  { href: "/news", label: "News" },
+  { href: "/videos", label: "Videos" },
+  { href: "/team", label: "Team" },
+  { href: "/shop", label: "Shop" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
+const mobileMore = moreLinks.filter((l) => l.href !== "/videos");
 
 // Client component: needs interactive state for the mobile menu toggle and
 // route-change awareness to auto-close it, plus (on the homepage only) a
@@ -63,8 +76,13 @@ export default function Header() {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    if (open) document.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
@@ -128,7 +146,7 @@ export default function Header() {
 
       <div
         className={clsx(
-          "relative flex items-center justify-between gap-4 px-6 py-3 sm:px-10 lg:px-16",
+          "relative z-10 flex items-center justify-between gap-4 px-6 py-3 sm:px-10 lg:px-16",
           // No background layer to guarantee contrast once `solid` is gone
           // for good on the homepage, so a drop-shadow on the content itself
           // keeps the white crest/wordmark/links/hamburger readable over
@@ -227,7 +245,7 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-5 lg:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
           <CartIndicator />
           <button
             type="button"
@@ -235,59 +253,130 @@ export default function Header() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
+            className="btn-glass btn-glass-light relative flex h-11 w-11 items-center justify-center rounded-xl"
           >
-            <span
-              className={clsx(
-                "h-0.5 w-6 bg-white transition-transform duration-300 ease-smooth",
-                open && "translate-y-2 rotate-45"
-              )}
-            />
-            <span
-              className={clsx(
-                "h-0.5 w-6 bg-white transition-opacity duration-300 ease-smooth",
-                open && "opacity-0"
-              )}
-            />
-            <span
-              className={clsx(
-                "h-0.5 w-6 bg-white transition-transform duration-300 ease-smooth",
-                open && "-translate-y-2 -rotate-45"
-              )}
-            />
+            <span className="relative block h-4 w-5" aria-hidden>
+              <span
+                className={clsx(
+                  "absolute left-0 h-0.5 w-5 rounded-full bg-white transition-all duration-300 ease-smooth",
+                  open ? "top-[7px] rotate-45" : "top-0"
+                )}
+              />
+              <span
+                className={clsx(
+                  "absolute left-0 top-[7px] h-0.5 rounded-full bg-white transition-all duration-300 ease-smooth",
+                  open ? "w-0 opacity-0" : "w-3.5 opacity-100"
+                )}
+              />
+              <span
+                className={clsx(
+                  "absolute left-0 h-0.5 w-5 rounded-full bg-white transition-all duration-300 ease-smooth",
+                  open ? "top-[7px] -rotate-45" : "top-[14px]"
+                )}
+              />
+            </span>
           </button>
         </div>
       </div>
 
+      {/* Full-screen phone menu. It sits under the header bar (which keeps the
+          logo, cart and the close button on top of it), fades in, and its
+          links rise in one after another. Closed, it is invisible and inert
+          so it can't be tabbed into or read out. */}
       <div
         id="mobile-nav"
+        inert={!open}
+        aria-hidden={!open}
         className={clsx(
-          "relative grid overflow-hidden bg-navy-dark transition-[grid-template-rows] duration-300 ease-smooth lg:hidden",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          "fixed inset-0 z-0 overflow-y-auto bg-navy-dark transition-[opacity,visibility] duration-300 ease-smooth lg:hidden",
+          open ? "visible opacity-100" : "invisible opacity-0"
         )}
       >
-        <div className="overflow-hidden">
-          <nav
-            className="flex max-h-[calc(100vh-5rem)] flex-col gap-1 overflow-y-auto px-6 py-4 sm:px-10"
-            aria-label="Mobile"
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_50%_at_100%_0%,rgba(101,203,233,0.18),transparent_70%),repeating-linear-gradient(115deg,transparent_0_46px,rgba(255,255,255,0.025)_46px_47px)]"
+        />
+        <nav
+          aria-label="Mobile"
+          className="relative flex min-h-full flex-col px-6 pb-10 sm:px-10"
+          style={{ paddingTop: "calc(var(--header-height, 5.5rem) + 1.25rem)" }}
+        >
+          <ul>
+            {mobileMain.map((link, i) => {
+              const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+              return (
+                <li
+                  key={link.href}
+                  className={clsx(
+                    "border-b border-white/10 transition-all duration-500 ease-smooth",
+                    open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+                  )}
+                  style={{ transitionDelay: open ? `${80 + i * 45}ms` : "0ms" }}
+                >
+                  <Link
+                    href={link.href}
+                    className={clsx(
+                      "flex items-center justify-between py-3.5 font-display text-4xl uppercase leading-none tracking-wide transition-colors duration-200 ease-smooth",
+                      active ? "text-cyan" : "text-white active:text-cyan"
+                    )}
+                  >
+                    {link.label}
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={active ? "text-cyan" : "text-white/30"}
+                      aria-hidden
+                    >
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div
+            className={clsx(
+              "mt-8 transition-all duration-500 ease-smooth",
+              open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            )}
+            style={{ transitionDelay: open ? `${80 + mobileMain.length * 45}ms` : "0ms" }}
           >
-            {allLinksForMobile.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-wide text-white/80 transition-colors duration-200 ease-smooth hover:bg-white/5 hover:text-white"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-cyan">The Club</p>
+            <div className="grid grid-cols-2 gap-2">
+              {mobileMore.map((link) => {
+                const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={clsx(
+                      "rounded-xl px-4 py-3 text-xs font-semibold uppercase tracking-wide ring-1 transition-colors duration-200 ease-smooth",
+                      active
+                        ? "bg-cyan/15 text-cyan ring-cyan/40"
+                        : "bg-white/[0.04] text-white/80 ring-white/10 active:bg-white/10"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+
             <Link
               href="/tickets"
-              className="btn-glass btn-glass-yellow mt-3 px-5 py-2.5 text-center text-xs font-bold uppercase tracking-wide"
+              className="btn-glass btn-glass-yellow mt-8 block px-5 py-4 text-center text-sm font-bold uppercase tracking-wide"
             >
-              Tickets
+              Buy tickets
             </Link>
-          </nav>
-        </div>
+          </div>
+        </nav>
       </div>
     </header>
   );

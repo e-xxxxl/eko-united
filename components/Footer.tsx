@@ -39,6 +39,7 @@ const columns = [
     heading: "Media",
     links: [
       { href: "/news", label: "News" },
+      { href: "/videos", label: "Videos" },
       { href: "/gallery", label: "Gallery" },
     ],
   },

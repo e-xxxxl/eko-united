@@ -39,19 +39,11 @@ function ArtDirectedImage({
   const { props: portrait } = getImageProps({
     ...common,
     src: portraitSrc,
-    className: "object-contain sm:object-cover sm:object-center",
+    className: "object-cover object-top sm:object-center",
   });
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-navy-light">
-      <Image
-        src={portraitSrc}
-        alt=""
-        fill
-        aria-hidden
-        sizes="100vw"
-        className="scale-125 object-cover opacity-60 blur-2xl sm:hidden"
-      />
       <picture>
         <source media="(min-width: 640px)" srcSet={landscape.srcSet} sizes="100vw" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -143,14 +135,17 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                   priority={i === 0}
                   rounded={false}
                   fill
-                  fullBleedFromSm
+                  position="50% 0%"
                   sizes="100vw"
                 />
               );
             }
             return <div className="absolute inset-0 bg-navy-dark" />;
           })()}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/50 to-navy-dark/10" />
+          {/* Shade only where text sits: a soft top band so the header reads
+              over any photo, and a deep fade at the bottom for the headline. */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-navy-dark/70 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/40 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 px-6 pb-16 pt-32 sm:px-10 sm:pb-24 lg:px-16">
             <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-cyan">
