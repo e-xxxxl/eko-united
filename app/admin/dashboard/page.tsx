@@ -14,6 +14,7 @@ const sections: { href: string; label: string; description: string; roles?: stri
   { href: "/admin/trophies", label: "Trophies", description: "Honours cabinet", roles: ["content_editor"] },
   { href: "/admin/history", label: "History", description: "Club timeline milestones", roles: ["content_editor"] },
   { href: "/admin/contact", label: "Messages", description: "Contact form submissions", roles: ["content_editor"] },
+  { href: "/admin/membership", label: "Memberships", description: "Club membership applications", roles: ["content_editor"] },
   { href: "/admin/products", label: "Products", description: "Club shop merchandise", roles: ["shop_manager", "inventory_manager"] },
   { href: "/admin/ticket-types", label: "Ticket Types", description: "Priced ticket categories per match", roles: ["ticket_manager"] },
   { href: "/admin/orders", label: "Orders", description: "Shop and ticket sales", roles: ["shop_manager", "ticket_manager", "inventory_manager"] },

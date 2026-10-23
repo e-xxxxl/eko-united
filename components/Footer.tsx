@@ -22,6 +22,7 @@ const columns = [
     links: [
       { href: "/about", label: "About" },
       { href: "/team", label: "Team" },
+      { href: "/membership", label: "Club Membership" },
       { href: "/club-history", label: "Club History" },
       { href: "/trophies", label: "Trophy Cabinet" },
       { href: "/careers", label: "Careers" },
@@ -85,6 +86,12 @@ export default function Footer({ settings }: { settings?: FooterSettings | null 
             The Uga Boys — Nigeria National League. Official news, fixtures,
             tickets and club shop.
           </p>
+          <Link
+            href="/membership"
+            className="btn-glass btn-glass-light mt-5 inline-flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-wide"
+          >
+            Join club membership <span aria-hidden>→</span>
+          </Link>
           {(settings?.clubInfo?.address ||
             settings?.clubInfo?.phone ||
             settings?.clubInfo?.email) && (
