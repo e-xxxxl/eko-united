@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
 import { adminFetch } from "@/lib/adminApi";
-import { tiers } from "@/lib/membership";
+import MembershipTabs from "@/components/admin/MembershipTabs";
 
 type Application = {
   _id: string;
@@ -11,12 +11,12 @@ type Application = {
   email: string;
   phone: string;
   tier: string;
+  tierName?: string;
   emailed: boolean;
   read: boolean;
   createdAt: string;
 };
 
-const tierName = (id: string) => tiers.find((t) => t.id === id)?.name || id;
 
 export default function AdminMembershipPage() {
   const [items, setItems] = useState<Application[] | null>(null);
@@ -52,7 +52,8 @@ export default function AdminMembershipPage() {
         <div className="px-6 py-16 sm:px-10">
           <div className="mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Content</p>
-            <h1 className="display-title font-display mt-2">Membership Applications</h1>
+            <h1 className="display-title font-display mt-2 mb-6">Membership</h1>
+            <MembershipTabs current="/admin/membership" />
             {items !== null && (
               <p className="mt-2 text-sm text-navy/50">
                 {waiting === 0 ? "All applications handled." : `${waiting} waiting to be followed up.`}
@@ -79,7 +80,7 @@ export default function AdminMembershipPage() {
                       <p className="font-medium text-navy">
                         {item.name}
                         <span className="ml-2 rounded-md bg-navy px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                          {tierName(item.tier)}
+                          {item.tierName || item.tier}
                         </span>
                         {!item.read && (
                           <span className="ml-2 rounded-md bg-cyan/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy">
