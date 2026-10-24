@@ -129,10 +129,7 @@ function TierCard({
           <button
             type="button"
             onClick={onChoose}
-            className={clsx(
-              "btn-glass w-full px-5 py-3 text-xs font-bold uppercase tracking-wide",
-              selected ? "btn-glass-solid" : "btn-glass-navy"
-            )}
+            className="btn-glass btn-glass-yellow w-full px-5 py-3 text-xs font-bold uppercase tracking-wide"
           >
             {selected ? "Selected, complete the form" : "Apply for this package"}
           </button>
