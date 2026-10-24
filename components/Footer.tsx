@@ -88,7 +88,7 @@ export default function Footer({ settings }: { settings?: FooterSettings | null 
           </p>
           <Link
             href="/membership"
-            className="btn-glass btn-glass-light mt-5 inline-flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-wide"
+            className="btn-glass btn-glass-yellow mt-5 inline-flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-wide"
           >
             Join club membership <span aria-hidden>→</span>
           </Link>
