@@ -16,8 +16,8 @@ export default function ProductGallery({ images, name }: { images: string[]; nam
   const go = (dir: -1 | 1) => setIndex((i) => (i + dir + images.length) % images.length);
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row-reverse">
-      <div className="relative aspect-[4/5] flex-1 overflow-hidden rounded-2xl">
+    <div className="flex min-w-0 flex-col gap-3 lg:flex-row-reverse lg:gap-4">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl lg:flex-1">
         {images.map((src, i) => (
           <Image
             key={src}
@@ -62,7 +62,7 @@ export default function ProductGallery({ images, name }: { images: string[]; nam
       </div>
 
       {images.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto lg:w-24 lg:flex-col lg:overflow-visible">
+        <div className="-mx-6 flex max-w-[100vw] gap-2.5 overflow-x-auto px-6 pb-1 sm:-mx-10 sm:px-10 lg:mx-0 lg:w-24 lg:max-w-none lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
           {images.map((src, i) => (
             <button
               key={src}
