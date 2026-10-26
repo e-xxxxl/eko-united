@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { clsx } from "clsx";
@@ -76,13 +76,43 @@ function formatDate(iso: string) {
 // gets an awkward crop the way a plain object-cover fill would.
 export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0);
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
 
+  // Advances every 6 seconds. Keyed on `index` so any change, automatic or
+  // by swipe or dot, restarts the countdown: a slide someone just moved to
+  // always gets its full time on screen.
   useEffect(() => {
     if (slides.length <= 1) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = setInterval(() => setIndex((i) => (i + 1) % slides.length), 6000);
-    return () => clearInterval(timer);
-  }, [slides.length]);
+    const timer = setTimeout(() => setIndex((i) => (i + 1) % slides.length), 6000);
+    return () => clearTimeout(timer);
+  }, [slides.length, index]);
+
+  function go(dir: -1 | 1) {
+    setIndex((i) => (i + dir + slides.length) % slides.length);
+  }
+
+  // Swipe left for the next story, right for the previous. Only a clearly
+  // horizontal gesture counts, so scrolling the page up and down still works,
+  // and a swipe never counts as a tap on the story link underneath.
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touch.current = { x: t.clientX, y: t.clientY };
+    swiped.current = false;
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const start = touch.current;
+    touch.current = null;
+    if (!start || slides.length <= 1) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+      swiped.current = true;
+      go(dx < 0 ? 1 : -1);
+    }
+  }
 
   // No news published yet (a brand-new site, before the first article) —
   // a branded fallback so the homepage never shows a blank void here,
@@ -102,7 +132,18 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div
+      className="absolute inset-0 touch-pan-y overflow-hidden"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onClickCapture={(e) => {
+        if (swiped.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          swiped.current = false;
+        }
+      }}
+    >
       {slides.map((slide, i) => (
         <Link
           key={slide._id}

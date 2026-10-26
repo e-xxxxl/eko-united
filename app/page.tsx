@@ -78,7 +78,7 @@ export default async function HomePage() {
           height (mobile/desktop) that the gap is imperceptible either way. */}
       <section
         data-reveal-skip
-        className="relative flex min-h-[min(140vw,88svh)] flex-col justify-end overflow-hidden sm:min-h-[max(92vh,56.25vw)]"
+        className="relative flex min-h-[min(172vw,90svh)] flex-col justify-end overflow-hidden sm:min-h-[max(92vh,56.25vw)]"
         style={{ marginTop: "calc(-1 * var(--header-height, 100px))" }}
       >
         <HeroCarousel slides={heroSlides} />

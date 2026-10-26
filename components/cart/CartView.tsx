@@ -38,6 +38,18 @@ export default function CartView() {
       });
       const body = await res.json();
       if (!res.ok) {
+        // The shop was updated since this item was added (a product replaced
+        // or removed), so the cart is holding something that no longer
+        // exists. Drop that item and say so, instead of a bare "not found".
+        const missing = res.status === 404 ? String(body.error || "").match(/not found: (\w+)/) : null;
+        if (missing) {
+          cart.items.filter((i) => i.ref === missing[1]).forEach((i) => removeFromCart(i.ref, i.size));
+          setError(
+            "An item in your cart is no longer available because the club has updated the shop, so we removed it. Please check your cart and try again."
+          );
+          setSubmitting(false);
+          return;
+        }
         setError(body.error || "Something went wrong placing your order. Please try again.");
         setSubmitting(false);
         return;
@@ -63,6 +75,11 @@ export default function CartView() {
   if (cart.items.length === 0 && !notice) {
     return (
       <div className="border-t border-navy/10 py-16 text-center">
+        {error && (
+          <p className="mx-auto mb-6 max-w-md text-sm text-red-500" role="alert">
+            {error}
+          </p>
+        )}
         <p className="text-navy/50">Your cart is empty.</p>
         <div className="mt-6 flex justify-center gap-4">
           <Link
