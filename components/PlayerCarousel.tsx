@@ -42,40 +42,33 @@ export default async function PlayerCarousel() {
               href={`/team/${player.slug}`}
               className="group relative block w-48 shrink-0 snap-start sm:w-56 lg:w-72 xl:w-80"
             >
-              <div className="relative aspect-[3/4] overflow-hidden bg-navy-light">
+              {/* The photo stands alone: no panel, scrim or overlay behind or
+                  over it, so a cut-out or full photo both show cleanly. The
+                  number, name and position sit underneath. */}
+              <div className="relative aspect-[3/4] overflow-hidden">
                 {player.photoUrl ? (
                   <Image
                     src={player.photoUrl}
                     alt={player.name}
                     fill
                     sizes="(min-width: 1280px) 320px, (min-width: 1024px) 288px, (min-width: 640px) 224px, 192px"
-                    className="object-cover transition-transform duration-500 ease-smooth group-hover:scale-105"
+                    className="object-cover object-top transition-transform duration-500 ease-smooth group-hover:scale-105"
                   />
                 ) : null}
-
-                {/* Scrim so name/number/position stay legible over any photo */}
-                <div className="absolute inset-0 bg-gradient-to-t from-navy-dark/95 via-navy-dark/10 to-transparent" />
-
+              </div>
+              <div className="mt-3 flex items-baseline gap-3">
                 {typeof player.squadNumber === "number" && (
-                  <span className="font-display absolute left-3 top-3 text-3xl text-white/90 drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] lg:text-4xl">
-                    {player.squadNumber}
-                  </span>
+                  <span className="font-display text-3xl leading-none text-cyan lg:text-4xl">{player.squadNumber}</span>
                 )}
-
-                <div className="absolute inset-x-0 bottom-0 p-4 lg:p-5">
-                  <p className="font-display text-lg text-white lg:text-2xl">{player.name}</p>
+                <div className="min-w-0">
+                  <p className="truncate font-display text-lg leading-tight text-navy transition-colors duration-200 ease-smooth group-hover:text-cyan lg:text-2xl">
+                    {player.name}
+                  </p>
                   {player.position && (
-                    <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-cyan lg:text-sm">
+                    <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-navy/50 lg:text-sm">
                       {player.position}
                     </p>
                   )}
-                </div>
-
-                {/* Hover reveal */}
-                <div className="absolute inset-0 flex items-center justify-center bg-navy-dark/0 opacity-0 transition-all duration-300 ease-smooth group-hover:bg-navy-dark/50 group-hover:opacity-100">
-                  <span className="btn-glass btn-glass-light translate-y-2 px-4 py-2 text-xs font-bold uppercase tracking-wide group-hover:translate-y-0">
-                    View Profile
-                  </span>
                 </div>
               </div>
             </Link>

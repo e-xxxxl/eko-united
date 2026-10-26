@@ -21,7 +21,7 @@ const tierMeta = {
 function SponsorLogo({ sponsor, size }: { sponsor: DemoSponsor; size: number }) {
   const content = (
     <div
-      className="flex items-center justify-center border border-navy/10 p-6 transition-colors duration-300 ease-smooth hover:border-cyan"
+      className="flex items-center justify-center p-4 opacity-90 transition-opacity duration-300 ease-smooth hover:opacity-100"
       style={{ height: size }}
     >
       <SafeImage

@@ -56,21 +56,13 @@ function PinIcon() {
 // centre), and the name sits in a min-w-0 column: it wraps to at most two
 // lines and breaks inside a long word, so no club name can push the row past
 // its container, however long it is or however narrow the screen.
-function TeamBadge({ name, logoUrl, glow }: { name: string; logoUrl?: string; glow?: boolean }) {
+function TeamBadge({ name, logoUrl }: { name: string; logoUrl?: string }) {
   const hasLogo = logoUrl && isAllowedImageUrl(logoUrl);
   return (
     <div className="flex min-w-0 flex-col items-center gap-3 text-center sm:gap-4">
       <div className="relative aspect-square w-[var(--badge)] shrink-0">
         {hasLogo ? (
-          <Image
-            src={logoUrl}
-            alt={`${name} badge`}
-            fill
-            sizes="144px"
-            className={`object-contain ${
-              glow ? "drop-shadow-[0_0_24px_rgba(101,203,233,0.45)]" : "drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)]"
-            }`}
-          />
+          <Image src={logoUrl} alt={`${name} badge`} fill sizes="144px" className="object-contain" />
         ) : (
           <span className="flex h-full w-full items-center justify-center font-display text-[calc(var(--badge)*0.6)] leading-none text-white/80">
             {name.charAt(0)}
@@ -103,14 +95,14 @@ function InfoChip({ icon, label, value, className = "" }: { icon: React.ReactNod
 // left, same convention as the match page, so an away fixture reads
 // "Opponent vs Eko United" rather than always putting us first.
 export default function NextMatchBand({ match }: { match: NextMatch }) {
-  const eko = <TeamBadge name="Eko United" logoUrl="/brand/crest-mark.png" glow />;
+  const eko = <TeamBadge name="Eko United" logoUrl="/brand/crest-mark.png" />;
   const opponent = <TeamBadge name={match.opponent} logoUrl={match.opponentLogoUrl} />;
 
   return (
     <section className="relative -mt-px overflow-hidden bg-navy-dark px-5 py-12 sm:px-10 sm:py-16 lg:px-16">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_90%_at_50%_0%,rgba(101,203,233,0.18),transparent_70%),repeating-linear-gradient(115deg,transparent_0_46px,rgba(255,255,255,0.025)_46px_47px)]"
+        className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(115deg,transparent_0_46px,rgba(255,255,255,0.025)_46px_47px)]"
       />
 
       <div data-reveal-stagger className="relative mx-auto flex max-w-5xl flex-col items-center gap-9 sm:gap-12">

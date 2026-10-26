@@ -40,6 +40,7 @@ const columns = [
     heading: "Media",
     links: [
       { href: "/news", label: "News" },
+      { href: "/events", label: "Events" },
       { href: "/videos", label: "Videos" },
       { href: "/gallery", label: "Gallery" },
     ],

@@ -62,7 +62,7 @@ export default async function PlayerProfilePage({
       />
 
       <section className="grid gap-10 px-6 py-16 sm:px-10 lg:grid-cols-[380px_1fr] lg:px-16">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-navy-light">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl">
           {player.photoUrl ? (
             <Image
               src={player.photoUrl}
@@ -70,18 +70,16 @@ export default async function PlayerProfilePage({
               fill
               priority
               sizes="(min-width: 1024px) 380px, 90vw"
-              className="object-cover"
+              className="object-cover object-top"
             />
           ) : null}
-          {typeof player.squadNumber === "number" && (
-            <span className="font-display absolute left-4 top-4 text-5xl text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
-              {player.squadNumber}
-            </span>
-          )}
         </div>
 
         <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
+          <p className="mb-3 flex items-baseline gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
+            {typeof player.squadNumber === "number" && (
+              <span className="font-display text-5xl leading-none tracking-normal">{player.squadNumber}</span>
+            )}
             {player.position || "Eko United FC"}
           </p>
           <h1 className="display-title font-display">{player.name}</h1>

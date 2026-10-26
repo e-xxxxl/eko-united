@@ -10,6 +10,8 @@ export type ProductFormValues = {
   slug: string;
   description: string;
   price: number;
+  kidsPrice: number | null;
+  kidsSizes: string[];
   category: "jersey" | "apparel" | "accessories" | "other";
   images: string[];
   sizes: string[];
@@ -19,7 +21,7 @@ export type ProductFormValues = {
 const fieldClass =
   "w-full border-b border-navy/20 bg-transparent px-1 py-3 text-sm text-navy outline-none transition-colors duration-200 ease-smooth placeholder:text-navy/30 focus:border-cyan";
 const labelClass = "mb-2 block text-xs font-semibold uppercase tracking-wide text-navy/50";
-const MAX_IMAGES = 4;
+const MAX_IMAGES = 6;
 
 export default function ProductForm({
   initial,
@@ -37,6 +39,7 @@ export default function ProductForm({
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [category, setCategory] = useState<ProductFormValues["category"]>(initial?.category || "jersey");
   const [images, setImages] = useState<string[]>(initial?.images?.length ? initial.images : [""]);
+  const [kidsSizesInput, setKidsSizesInput] = useState((initial?.kidsSizes || []).join(", "));
   const [sizesInput, setSizesInput] = useState((initial?.sizes || ["S", "M", "L", "XL"]).join(", "));
 
   const validImages = images.filter(Boolean);
@@ -51,6 +54,11 @@ export default function ProductForm({
       slug: slug || slugify(name),
       description: String(data.get("description") || ""),
       price: Number(data.get("price") || 0),
+      kidsPrice: String(data.get("kidsPrice") || "").trim() === "" ? null : Number(data.get("kidsPrice")),
+      kidsSizes: kidsSizesInput
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
       category,
       images: validImages,
       sizes: sizesInput
@@ -139,6 +147,37 @@ export default function ProductForm({
       </div>
 
       <div>
+        <label htmlFor="kidsPrice" className={labelClass}>
+          Kids price (₦, optional)
+        </label>
+        <input
+          id="kidsPrice"
+          name="kidsPrice"
+          type="number"
+          min={0}
+          defaultValue={initial?.kidsPrice ?? ""}
+          placeholder="Leave empty if there is no kids version"
+          className={fieldClass}
+        />
+        <p className="mt-2 text-xs text-navy/45">
+          When set, shoppers see an Adult / Kids switch on the product page. Choosing Kids shows and charges this price.
+        </p>
+      </div>
+
+      <div>
+        <label htmlFor="kidsSizes" className={labelClass}>
+          Kids sizes (comma-separated, optional)
+        </label>
+        <input
+          id="kidsSizes"
+          value={kidsSizesInput}
+          onChange={(e) => setKidsSizesInput(e.target.value)}
+          placeholder="e.g. 4-6, 8-10, 12-14 (empty uses the sizes above)"
+          className={fieldClass}
+        />
+      </div>
+
+      <div>
         <label htmlFor="sizes" className={labelClass}>
           Sizes (comma-separated, leave blank for "one size")
         </label>
@@ -160,7 +199,7 @@ export default function ProductForm({
               value={url}
               onChange={(next) => setImages((prev) => prev.map((u, idx) => (idx === i ? next : u)))}
               folder="eko-united-fc/products"
-              hint="Recommended: square, plain background, at least 1000×1000px."
+              hint="Best: portrait 4:5, at least 1200×1500px, JPG or WebP under 1MB. Photos fill their frame edge to edge on the shop and product pages, so keep the product centred. The first photo is the main one; the others appear in the gallery and the second shows when a shopper hovers the product in the shop."
             />
           ))}
         </div>

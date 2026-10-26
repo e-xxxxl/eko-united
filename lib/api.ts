@@ -35,4 +35,11 @@ export async function apiFetch<T>(path: string, revalidate = 3600): Promise<T | 
   }
 }
 
+// For endpoints that return a list: always hands back an array, so a page can
+// never crash (or fail a build) because a reply was missing or the wrong shape.
+export async function apiList<T>(path: string, revalidate = 3600): Promise<T[]> {
+  const result = await apiFetch<unknown>(path, revalidate);
+  return Array.isArray(result) ? (result as T[]) : [];
+}
+
 export { API_URL };

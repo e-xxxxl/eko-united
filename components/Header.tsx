@@ -19,6 +19,7 @@ const primaryLinks = [
   { href: "/fixtures", label: "Fixtures" },
   { href: "/results", label: "Results" },
   { href: "/news", label: "News" },
+  { href: "/events", label: "Events" },
   { href: "/shop", label: "Shop" },
   { href: "/contact", label: "Contact" },
 ];
@@ -41,6 +42,7 @@ const mobileMain = [
   { href: "/results", label: "Results" },
   { href: "/news", label: "News" },
   { href: "/videos", label: "Videos" },
+  { href: "/events", label: "Events" },
   { href: "/team", label: "Team" },
   { href: "/shop", label: "Shop" },
   { href: "/about", label: "About" },

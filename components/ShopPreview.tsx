@@ -4,7 +4,8 @@ import type { DemoProduct } from "@/lib/demoData";
 import ProductCard from "@/components/shop/ProductCard";
 
 async function getProducts(): Promise<DemoProduct[]> {
-  return ((await apiFetch<DemoProduct[]>("/products", 900)) || []).slice(0, 2);
+  const list = await apiFetch<DemoProduct[]>("/products", 900);
+  return (Array.isArray(list) ? list : []).slice(0, 4);
 }
 
 export default async function ShopPreview() {
@@ -28,9 +29,9 @@ export default async function ShopPreview() {
         </Link>
       </div>
 
-      <div data-reveal-stagger className="grid gap-5 sm:grid-cols-2">
+      <div data-reveal-stagger className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-6">
         {products.map((product) => (
-          <ProductCard key={product._id} product={product} badge="New" />
+          <ProductCard key={product._id} product={product} badge="New" dark />
         ))}
       </div>
     </section>

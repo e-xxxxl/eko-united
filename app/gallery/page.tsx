@@ -57,32 +57,33 @@ export default async function GalleryPage({
       {items.length === 0 ? (
         <p className="text-navy/50">Gallery items will appear here once uploaded by the club.</p>
       ) : (
-        <div data-reveal-stagger="scale" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        // A masonry wall: every photo shows whole, at its own proportions, with
+        // no frame, crop, panel or overlay. Captions sit underneath.
+        <div data-reveal-stagger="scale" className="columns-1 gap-3 sm:columns-2 lg:columns-3">
           {items.map((item) => (
-            <div key={item._id} className="relative aspect-video overflow-hidden bg-navy-light">
+            <figure key={item._id} className="group mb-3 break-inside-avoid">
               {item.type === "photo" ? (
-                <Image
-                  src={item.url}
-                  alt={item.caption || "Eko United FC"}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                  className="object-cover transition-transform duration-500 ease-smooth hover:scale-105"
-                />
+                <div className="overflow-hidden rounded-xl">
+                  <Image
+                    src={item.url}
+                    alt={item.caption || "Eko United FC"}
+                    width={1600}
+                    height={1067}
+                    sizes="(min-width: 1024px) 31vw, (min-width: 640px) 47vw, 100vw"
+                    className="h-auto w-full transition-transform duration-700 ease-smooth group-hover:scale-[1.03]"
+                  />
+                </div>
               ) : (
                 // eslint-disable-next-line jsx-a11y/media-has-caption
                 <video
                   src={item.url}
                   controls
                   preload="none"
-                  className="h-full w-full object-cover"
+                  className="aspect-video w-full rounded-xl bg-navy-dark object-contain"
                 />
               )}
-              {item.caption && (
-                <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-navy-dark/90 to-transparent p-3 text-xs text-white/80">
-                  {item.caption}
-                </p>
-              )}
-            </div>
+              {item.caption && <figcaption className="mt-2 text-xs leading-snug text-navy/55">{item.caption}</figcaption>}
+            </figure>
           ))}
         </div>
       )}

@@ -37,7 +37,7 @@ export default function FramedImage({
     <div
       className={clsx(
         fill ? "absolute inset-0" : "relative",
-        "overflow-hidden bg-navy-light",
+        "overflow-hidden",
         rounded && "rounded-2xl",
         className
       )}

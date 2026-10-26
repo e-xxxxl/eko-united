@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, apiList } from "@/lib/api";
 
 const base = "https://ekounitedfc.com";
 
@@ -13,6 +13,7 @@ const staticRoutes = [
   "/news",
   "/gallery",
   "/videos",
+  "/events",
   "/membership",
   "/tickets",
   "/shop",
@@ -28,9 +29,9 @@ const staticRoutes = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [news, players, products] = await Promise.all([
-    apiFetch<{ slug: string }[]>("/news?limit=50"),
-    apiFetch<{ slug: string; role: string }[]>("/players"),
-    apiFetch<{ slug: string }[]>("/products"),
+    apiList<{ slug: string }>("/news?limit=50"),
+    apiList<{ slug: string; role: string }>("/players"),
+    apiList<{ slug: string }>("/products"),
   ]);
 
   const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({

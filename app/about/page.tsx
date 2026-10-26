@@ -103,7 +103,7 @@ export default async function AboutPage() {
           <div data-reveal-stagger className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {management.map((person) => (
               <div key={person._id}>
-                <div className="relative aspect-square overflow-hidden bg-navy-light">
+                <div className="relative aspect-square overflow-hidden">
                   {person.photoUrl ? (
                     <Image
                       src={person.photoUrl}

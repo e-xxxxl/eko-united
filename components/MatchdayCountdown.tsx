@@ -112,10 +112,6 @@ export default function MatchdayCountdown({
   if (time?.isPast) {
     return (
       <div className={clsx("mx-auto flex items-center justify-center gap-2", className)} role="timer">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan/60" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan" />
-        </span>
         <span className="font-display text-2xl tracking-wide text-cyan">Kickoff!</span>
       </div>
     );
@@ -140,10 +136,6 @@ export default function MatchdayCountdown({
       )}
     >
       <div className="mb-3 flex items-center justify-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-cyan sm:mb-4">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan/60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" />
-        </span>
         {isMatchday ? "Matchday · Kickoff in" : "Kickoff in"}
       </div>
 

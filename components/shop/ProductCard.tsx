@@ -1,11 +1,7 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { formatNaira } from "@/lib/format";
-import { addToCart } from "@/lib/cart";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import { isRealId } from "@/lib/isRealId";
 
@@ -14,99 +10,110 @@ export type ShopProduct = {
   name: string;
   slug: string;
   price: number;
+  kidsPrice?: number | null;
+  kidsSizes?: string[];
   images: string[];
   sizes: string[];
   stock: number;
+  category?: "jersey" | "apparel" | "accessories" | "other";
 };
 
-// Used on both the homepage teaser (ShopPreview) and the full /shop grid —
-// one real add-to-cart flow instead of the old decorative-only size picker.
-export default function ProductCard({ product, badge }: { product: ShopProduct; badge?: string }) {
-  const [size, setSize] = useState(product.sizes[0] || "");
-  const [added, setAdded] = useState(false);
-  const image = product.images.find(isAllowedImageUrl);
-  const isDemo = !isRealId(product._id);
-  const outOfStock = !isDemo && product.stock <= 0;
+export const categoryLabels: Record<NonNullable<ShopProduct["category"]>, string> = {
+  jersey: "Jersey",
+  apparel: "Apparel",
+  accessories: "Accessories",
+  other: "Merchandise",
+};
 
-  function handleAddToCart() {
-    addToCart("shop", {
-      refType: "Product",
-      ref: product._id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      size: size || undefined,
-      imageUrl: image,
-    });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
-  }
+// One product in the shop grid and on the homepage. The photo is the card:
+// it fills a tall frame edge to edge with nothing behind it, and a second
+// photo (when the product has one) fades in on hover so shoppers see another
+// angle without opening the page. Everything else (adding to the cart, kids
+// sizes) happens on the product page, where there is room to do it properly.
+export default function ProductCard({
+  product,
+  badge,
+  dark = false,
+}: {
+  product: ShopProduct;
+  badge?: string;
+  dark?: boolean;
+}) {
+  const photos = product.images.filter(isAllowedImageUrl);
+  const outOfStock = isRealId(product._id) && product.stock <= 0;
+  const hasKids = product.kidsPrice !== undefined && product.kidsPrice !== null;
+  const lowStock = !outOfStock && isRealId(product._id) && product.stock > 0 && product.stock <= 5;
 
   return (
-    <div className="group relative overflow-hidden bg-white">
-      {badge && (
-        <span className="absolute left-3 top-3 z-10 rounded-full border border-navy/20 bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-navy">
-          {badge}
-        </span>
-      )}
-
-      <Link href={`/shop/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-navy-light">
-        {image ? (
+    <Link href={`/shop/${product.slug}`} className="group block">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-xl">
+        {photos[0] ? (
           <Image
-            src={image}
+            src={photos[0]}
             alt={product.name}
             fill
-            sizes="(min-width: 640px) 45vw, 90vw"
-            className="object-contain p-3 transition-transform duration-500 ease-smooth group-hover:scale-110"
+            sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
+            className={clsx(
+              "object-cover transition-all duration-700 ease-smooth",
+              photos[1] ? "group-hover:opacity-0" : "group-hover:scale-105"
+            )}
           />
-        ) : null}
-        <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-navy-dark/0 opacity-0 transition-all duration-300 ease-smooth group-hover:bg-navy-dark/10 group-hover:opacity-100">
-          <span className="btn-glass btn-glass-solid mb-4 translate-y-3 px-5 py-2 text-xs font-bold uppercase tracking-wide group-hover:translate-y-0">
-            View product
-          </span>
-        </div>
-      </Link>
-
-      <div className="border-t border-navy/10 p-4">
-        <div className="flex items-baseline justify-between">
-          <Link href={`/shop/${product.slug}`} className="text-sm font-medium text-navy hover:text-cyan">
-            {product.name}
-          </Link>
-          <p className="text-sm font-semibold text-navy">{formatNaira(product.price)}</p>
-        </div>
-
-        {product.sizes.length > 0 && (
-          <div className="mt-3 flex items-center gap-2">
-            <span className="mr-1 text-[10px] font-semibold uppercase tracking-wide text-navy/40">Size</span>
-            {product.sizes.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setSize(s)}
-                aria-pressed={size === s}
-                className={clsx(
-                  "flex h-7 w-7 items-center justify-center rounded-xl border text-xs font-semibold transition-colors duration-200 ease-smooth",
-                  size === s
-                    ? "border-yellow bg-yellow text-navy-dark"
-                    : "border-navy/15 text-navy/60 hover:border-navy/40"
-                )}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+        ) : (
+          <div className={clsx("absolute inset-0", dark ? "bg-white/10" : "bg-navy/[0.06]")} />
+        )}
+        {photos[1] && (
+          <Image
+            src={photos[1]}
+            alt=""
+            fill
+            sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
+            className="object-cover opacity-0 transition-opacity duration-700 ease-smooth group-hover:opacity-100"
+          />
         )}
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={outOfStock || isDemo}
-          title={isDemo ? "Preview item — add real products via /admin/products to make this purchasable" : undefined}
-          className="btn-glass btn-glass-navy mt-4 w-full px-4 py-2 text-xs font-bold uppercase tracking-wide"
-        >
-          {isDemo ? "Coming soon" : outOfStock ? "Out of stock" : added ? "Added ✓" : "Add to cart"}
-        </button>
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+          {outOfStock ? (
+            <span className="rounded-md bg-navy-dark px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              Sold out
+            </span>
+          ) : (
+            <>
+              {badge && (
+                <span className="rounded-md bg-navy-dark px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                  {badge}
+                </span>
+              )}
+              {lowStock && (
+                <span className="rounded-md bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-navy">
+                  Only {product.stock} left
+                </span>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+
+      <div className="pt-4">
+        {product.category && (
+          <p className={clsx("text-[10px] font-semibold uppercase tracking-[0.2em]", dark ? "text-cyan" : "text-navy/40")}>
+            {categoryLabels[product.category]}
+          </p>
+        )}
+        <p
+          className={clsx(
+            "mt-1 line-clamp-2 text-base font-medium leading-snug transition-colors duration-200 ease-smooth",
+            dark ? "text-white group-hover:text-cyan" : "text-navy group-hover:text-cyan"
+          )}
+        >
+          {product.name}
+        </p>
+        <p className={clsx("mt-1.5 flex flex-wrap items-baseline gap-x-3 text-sm", dark ? "text-white" : "text-navy")}>
+          <span className="font-semibold">{formatNaira(product.price)}</span>
+          {hasKids && (
+            <span className={dark ? "text-white/60" : "text-navy/50"}>Kids {formatNaira(product.kidsPrice as number)}</span>
+          )}
+        </p>
+      </div>
+    </Link>
   );
 }

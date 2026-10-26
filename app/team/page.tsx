@@ -51,7 +51,7 @@ export default async function TeamPage() {
               >
                 <div
                   className={clsx(
-                    "relative overflow-hidden bg-navy-light",
+                    "relative overflow-hidden",
                     featured ? "aspect-[16/10]" : "aspect-[3/4]"
                   )}
                 >
@@ -65,21 +65,21 @@ export default async function TeamPage() {
                           ? "(min-width: 1024px) 46vw, 90vw"
                           : "(min-width: 1024px) 23vw, (min-width: 640px) 30vw, 90vw"
                       }
-                      className="object-cover transition-transform duration-500 ease-smooth group-hover:scale-105"
+                      className="object-cover object-top transition-transform duration-500 ease-smooth group-hover:scale-105"
                     />
                   ) : null}
-                  {typeof player.squadNumber === "number" && (
-                    <span className="font-display absolute left-3 top-3 text-3xl text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
-                      {player.squadNumber}
-                    </span>
-                  )}
                 </div>
-                <p className="mt-3 font-display text-base text-navy group-hover:text-cyan">
-                  {player.name}
-                </p>
-                {player.position && (
-                  <p className="text-sm text-navy/50">{player.position}</p>
-                )}
+                <div className="mt-3 flex items-baseline gap-3">
+                  {typeof player.squadNumber === "number" && (
+                    <span className="font-display text-3xl leading-none text-cyan">{player.squadNumber}</span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="truncate font-display text-lg leading-tight text-navy group-hover:text-cyan">
+                      {player.name}
+                    </p>
+                    {player.position && <p className="text-sm text-navy/50">{player.position}</p>}
+                  </div>
+                </div>
               </Link>
             );
           })}
