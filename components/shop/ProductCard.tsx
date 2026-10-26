@@ -107,12 +107,20 @@ export default function ProductCard({
         >
           {product.name}
         </p>
-        <p className={clsx("mt-1.5 flex flex-wrap items-baseline gap-x-3 text-sm", dark ? "text-white" : "text-navy")}>
-          <span className="font-semibold">{formatNaira(product.price)}</span>
-          {hasKids && (
-            <span className={dark ? "text-white/60" : "text-navy/50"}>Kids {formatNaira(product.kidsPrice as number)}</span>
-          )}
-        </p>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <p className={clsx("min-w-0 text-sm", dark ? "text-white" : "text-navy")}>
+            <span className="block font-semibold">{formatNaira(product.price)}</span>
+            {hasKids && (
+              <span className={clsx("block text-xs", dark ? "text-white/60" : "text-navy/50")}>
+                Kids {formatNaira(product.kidsPrice as number)}
+              </span>
+            )}
+          </p>
+          {/* A span, not a button: the whole card is already the link to the product. */}
+          <span className="btn-glass btn-glass-yellow shrink-0 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wide sm:px-4 sm:text-xs">
+            {outOfStock ? "View" : "Shop now"}
+          </span>
+        </div>
       </div>
     </Link>
   );
