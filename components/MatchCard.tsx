@@ -34,15 +34,12 @@ function formatKickoff(iso: string) {
   };
 }
 
-// Eko United is picked out in a solid navy tag wherever it appears in a
-// fixture list, so our side is spotted at a glance (home or away).
+// Eko United is picked out in bold cyan wherever it appears in a fixture
+// list, so our side is spotted at a glance (home or away).
 export function TeamName({ name }: { name: string }) {
   if (name !== "Eko United") return <span>{name}</span>;
-  return (
-    <span className="rounded-md bg-navy px-2.5 py-0.5 leading-snug text-white shadow-[0_4px_12px_-4px_rgba(10,36,77,0.5)]">
-      {name}
-    </span>
-  );
+  // No panel behind it: just a different, bolder colour than the opponent.
+  return <span className="font-bold text-cyan-dark">{name}</span>;
 }
 
 // A hairline-divided list row, not a bordered card — used stacked in a single

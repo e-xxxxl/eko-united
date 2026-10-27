@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { apiFetch } from "@/lib/api";
+import { apiList } from "@/lib/api";
+import { playerPhotoUrl, sortSquad } from "@/lib/squad";
 import type { DemoPlayer } from "@/lib/demoData";
 
 async function getSquad(): Promise<DemoPlayer[]> {
-  return (await apiFetch<DemoPlayer[]>("/players?role=player", 1800)) || [];
+  return sortSquad(await apiList<DemoPlayer>("/players?role=player", 1800));
 }
 
 // Native CSS scroll-snap, not a JS carousel library — lightweight, no extra
@@ -48,7 +49,7 @@ export default async function PlayerCarousel() {
               <div className="relative aspect-[3/4] overflow-hidden">
                 {player.photoUrl ? (
                   <Image
-                    src={player.photoUrl}
+                    src={playerPhotoUrl(player.photoUrl, player.photoCutout) as string}
                     alt={player.name}
                     fill
                     sizes="(min-width: 1280px) 320px, (min-width: 1024px) 288px, (min-width: 640px) 224px, 192px"
@@ -58,14 +59,14 @@ export default async function PlayerCarousel() {
               </div>
               <div className="mt-3 flex items-baseline gap-3">
                 {typeof player.squadNumber === "number" && (
-                  <span className="font-display text-3xl leading-none text-cyan lg:text-4xl">{player.squadNumber}</span>
+                  <span className="font-display text-3xl font-bold leading-none text-cyan lg:text-4xl">{player.squadNumber}</span>
                 )}
                 <div className="min-w-0">
-                  <p className="truncate font-display text-lg leading-tight text-navy transition-colors duration-200 ease-smooth group-hover:text-cyan lg:text-2xl">
+                  <p className="truncate font-display text-lg font-bold leading-tight text-navy transition-colors duration-200 ease-smooth group-hover:text-cyan lg:text-2xl">
                     {player.name}
                   </p>
                   {player.position && (
-                    <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-navy/50 lg:text-sm">
+                    <p className="mt-0.5 text-xs font-bold uppercase tracking-wide text-navy/70 lg:text-sm">
                       {player.position}
                     </p>
                   )}

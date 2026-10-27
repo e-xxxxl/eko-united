@@ -13,13 +13,20 @@ async function getTrophies(): Promise<DemoTrophy[]> {
   return (await apiFetch<DemoTrophy[]>("/trophies", 3600)) || [];
 }
 
+import PageIntro from "@/components/PageIntro";
+import { getPagePhotos } from "@/lib/pagePhotos";
+
 export default async function TrophiesPage() {
   const trophies = await getTrophies();
 
   return (
     <main className="px-6 py-16 sm:px-10 lg:px-16">
-      <h1 className="display-title font-display mb-2">Trophy Cabinet</h1>
-      <p className="mb-10 text-navy/50">Honours won by Eko United FC.</p>
+      <PageIntro
+        eyebrow="Honours"
+        title="Trophy Cabinet"
+        intro="Honours won by Eko United FC."
+        photos={await getPagePhotos("trophies")}
+      />
 
       {trophies.length === 0 ? (
         <p className="text-navy/50">Silverware will appear here once added by the club.</p>

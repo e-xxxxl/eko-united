@@ -18,6 +18,8 @@ export type DemoPlayer = {
   dateOfBirth?: string;
   nationality?: string;
   photoUrl?: string;
+  extraPhotos?: string[];
+  photoCutout?: boolean;
   bio?: string;
   stats?: { appearances?: number; goals?: number; assists?: number };
   role: "player" | "coach" | "technical_staff" | "management";

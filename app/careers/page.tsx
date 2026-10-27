@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
+import PageIntro from "@/components/PageIntro";
+import { getPagePhotos } from "@/lib/pagePhotos";
 
 export const metadata: Metadata = {
   title: "Careers",
-  description: "Join the Eko United FC team — current opportunities at the club.",
+  description: "Join the Eko United FC team: current opportunities at the club.",
 };
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const photos = await getPagePhotos("careers");
   return (
     <main className="px-6 py-16 sm:px-10 lg:px-16">
-      <h1 className="display-title font-display mb-6">Join the Club</h1>
-      <p className="max-w-2xl text-navy/70">
-        We're always open to hearing from people who want to help build Eko
-        United FC. Current openings will be listed here — check back soon,
-        or reach out through our{" "}
-        <a href="/contact" className="text-cyan underline underline-offset-4">
-          contact page
-        </a>
-        .
-      </p>
+      <PageIntro
+        eyebrow="Careers"
+        title="Join the Club"
+        photos={photos}
+        intro={
+          <>
+            We are always open to hearing from people who want to help build Eko United FC. Current openings will be
+            listed here, so check back soon, or reach out through our{" "}
+            <a href="/contact" className="font-semibold text-cyan underline underline-offset-4">
+              contact page
+            </a>
+            .
+          </>
+        }
+      />
     </main>
   );
 }

@@ -10,6 +10,7 @@ const sections: { href: string; label: string; description: string; roles?: stri
   { href: "/admin/sponsors", label: "Sponsors", description: "Club partners and logos", roles: ["content_editor"] },
   { href: "/admin/standings", label: "League Table", description: "Standings that power /table", roles: ["content_editor"] },
   { href: "/admin/gallery", label: "Gallery", description: "Matchday photos and videos", roles: ["content_editor"] },
+  { href: "/admin/page-photos", label: "Page photos", description: "Photo collages for contact, careers, media and more", roles: ["content_editor"] },
   { href: "/admin/events", label: "Events", description: "Fan days and club occasions with photos", roles: ["content_editor"] },
   { href: "/admin/videos", label: "Videos", description: "YouTube links shown on /videos", roles: ["content_editor"] },
   { href: "/admin/trophies", label: "Trophies", description: "Honours cabinet", roles: ["content_editor"] },

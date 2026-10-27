@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import ContactForm from "@/components/ContactForm";
+import PageIntro from "@/components/PageIntro";
+import { getPagePhotos } from "@/lib/pagePhotos";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -34,14 +36,17 @@ export default async function ContactPage() {
     { label: "TikTok", url: social.tiktok },
   ].filter((entry) => entry.url);
 
+  const photos = await getPagePhotos("contact");
   const mapQuery = encodeURIComponent(clubInfo.address || "Agege Stadium, Lagos, Nigeria");
 
   return (
     <main className="px-6 py-16 sm:px-10 lg:px-16">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
-        Get In Touch
-      </p>
-      <h1 className="display-title font-display mb-10">Contact Us</h1>
+      <PageIntro
+        eyebrow="Get In Touch"
+        title="Contact Us"
+        intro="Questions about tickets, the shop, partnerships or the club? Send us a message or find us below and we will get back to you."
+        photos={photos}
+      />
 
       <div className="grid gap-12 lg:grid-cols-2">
         <div>

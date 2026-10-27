@@ -11,13 +11,20 @@ async function getHistory(): Promise<DemoMilestone[]> {
   return (await apiFetch<DemoMilestone[]>("/history", 3600)) || [];
 }
 
+import PageIntro from "@/components/PageIntro";
+import { getPagePhotos } from "@/lib/pagePhotos";
+
 export default async function ClubHistoryPage() {
   const milestones = await getHistory();
 
   return (
     <main className="px-6 py-16 sm:px-10 lg:px-16">
-      <h1 className="display-title font-display mb-2">Club History</h1>
-      <p className="mb-12 text-navy/50">The story of The Uga Boys.</p>
+      <PageIntro
+        eyebrow="Our story"
+        title="Club History"
+        intro="The story of The Uga Boys."
+        photos={await getPagePhotos("club-history")}
+      />
 
       {milestones.length === 0 ? (
         <p className="text-navy/50">The club's history will appear here once added.</p>

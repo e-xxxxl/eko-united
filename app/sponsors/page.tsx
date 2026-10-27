@@ -43,6 +43,9 @@ function SponsorLogo({ sponsor, size }: { sponsor: DemoSponsor; size: number }) 
   );
 }
 
+import PageIntro from "@/components/PageIntro";
+import { getPagePhotos } from "@/lib/pagePhotos";
+
 export default async function SponsorsPage() {
   const sponsors = await getSponsors();
   const principal = sponsors.filter((s) => s.tier === "principal");
@@ -51,10 +54,12 @@ export default async function SponsorsPage() {
 
   return (
     <main className="px-6 py-16 sm:px-10 lg:px-16">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
-        Proud Partners
-      </p>
-      <h1 className="display-title font-display mb-10">Sponsors</h1>
+      <PageIntro
+        eyebrow="Proud Partners"
+        title="Sponsors"
+        intro="The businesses and brands that stand behind Eko United FC and The Uga Boys."
+        photos={await getPagePhotos("sponsors")}
+      />
 
       {sponsors.length === 0 ? (
         <p className="text-navy/50">Sponsor profiles will appear here once added by the club.</p>
