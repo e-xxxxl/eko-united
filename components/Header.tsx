@@ -172,7 +172,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-5 lg:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-5 xl:flex" aria-label="Primary">
           {primaryLinks.map((link) => {
             const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
             return (
@@ -239,7 +239,7 @@ export default function Header() {
           </div>
         </nav>
 
-        <div className="hidden shrink-0 items-center gap-5 lg:flex">
+        <div className="hidden shrink-0 items-center gap-5 xl:flex">
           <CartIndicator />
           <Link
             href="/tickets"
@@ -249,7 +249,7 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-3 lg:hidden">
+        <div className="flex items-center gap-3 xl:hidden">
           <CartIndicator />
           <button
             type="button"
@@ -292,7 +292,7 @@ export default function Header() {
         inert={!open}
         aria-hidden={!open}
         className={clsx(
-          "fixed inset-0 z-0 overflow-y-auto bg-navy-dark transition-[opacity,visibility] duration-300 ease-smooth lg:hidden",
+          "fixed inset-0 z-0 overflow-y-auto bg-navy-dark transition-[opacity,visibility] duration-300 ease-smooth xl:hidden",
           open ? "visible opacity-100" : "invisible opacity-0"
         )}
       >

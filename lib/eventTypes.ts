@@ -8,6 +8,7 @@ export type ClubEvent = {
   imageUrl?: string;
   images: string[];
   isActive: boolean;
+  showInHero?: boolean;
 };
 
 export function formatEventDate(iso?: string | null, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" }) {

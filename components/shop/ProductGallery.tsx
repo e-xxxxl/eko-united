@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { clsx } from "clsx";
+import LightboxTrigger from "@/components/Lightbox";
 
 // Every photo of a product: one large frame and a thumbnail strip. The photos
 // fill their frames edge to edge with nothing behind or around them.
@@ -32,6 +33,14 @@ export default function ProductGallery({ images, name }: { images: string[]; nam
             )}
           />
         ))}
+        <LightboxTrigger
+          photos={images.map((src, i) => ({ src, alt: `${name}, photo ${i + 1}` }))}
+          index={index}
+          label="Enlarge photo"
+          className="absolute inset-0 h-full"
+        >
+          {null}
+        </LightboxTrigger>
         {images.length > 1 && (
           <>
             <button

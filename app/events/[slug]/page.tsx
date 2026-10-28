@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api";
 import FramedImage from "@/components/FramedImage";
 import ShareLinks from "@/components/ShareLinks";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
+import LightboxTrigger, { type LightboxPhoto } from "@/components/Lightbox";
 import { formatEventDate, type ClubEvent } from "@/lib/eventTypes";
 
 async function getEvent(slug: string): Promise<ClubEvent | null> {
@@ -33,6 +34,10 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
 
   const cover = event.imageUrl && isAllowedImageUrl(event.imageUrl) ? event.imageUrl : null;
   const photos = (event.images || []).filter(isAllowedImageUrl);
+  const viewerPhotos: LightboxPhoto[] = [
+    ...(cover ? [{ src: cover, alt: event.name }] : []),
+    ...photos.map((src, i) => ({ src, alt: `${event.name}, photo ${i + 1}` })),
+  ];
   const paragraphs = (event.description || "").split(/\n+/).filter(Boolean);
   const url = `https://ekounitedfc.com/events/${event.slug}`;
   const meta = [formatEventDate(event.eventDate, { weekday: "long", day: "numeric", month: "long", year: "numeric" }), event.location]
@@ -42,7 +47,9 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
     <main>
       {cover && (
         <div data-reveal-skip className="relative aspect-[4/5] w-full overflow-hidden bg-navy-dark sm:aspect-[16/8]">
-          <Image src={cover} alt={event.name} fill priority sizes="100vw" className="object-cover object-top" />
+          <LightboxTrigger photos={viewerPhotos} index={0} label="Enlarge cover photo" className="absolute inset-0 h-full">
+            <Image src={cover} alt={event.name} fill priority sizes="100vw" className="object-cover object-top" />
+          </LightboxTrigger>
         </div>
       )}
 
@@ -77,13 +84,21 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         {photos.length > 0 && (
           <div data-reveal-stagger="scale" className="mx-auto mt-14 grid max-w-5xl gap-3 sm:grid-cols-2">
             {photos.map((src, i) => (
-              <FramedImage
-                key={src}
-                src={src}
-                alt={`${event.name}, photo ${i + 1}`}
-                sizes="(min-width: 1024px) 40vw, (min-width: 640px) 45vw, 100vw"
-                className={`aspect-[4/3] ${photos.length % 2 === 1 && i === 0 ? "sm:col-span-2 sm:aspect-[16/9]" : ""}`}
-              />
+              <div key={src} className={`relative aspect-[4/3] ${photos.length % 2 === 1 && i === 0 ? "sm:col-span-2 sm:aspect-[16/9]" : ""}`}>
+                <LightboxTrigger
+                  photos={viewerPhotos}
+                  index={(cover ? 1 : 0) + i}
+                  label={`Enlarge photo ${i + 1}`}
+                  className="absolute inset-0 h-full"
+                >
+                  <FramedImage
+                    src={src}
+                    alt={`${event.name}, photo ${i + 1}`}
+                    sizes="(min-width: 1024px) 40vw, (min-width: 640px) 45vw, 100vw"
+                    fill
+                  />
+                </LightboxTrigger>
+              </div>
             ))}
           </div>
         )}

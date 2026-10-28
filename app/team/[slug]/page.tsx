@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/api";
 import type { DemoPlayer } from "@/lib/demoData";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import { playerPhotoUrl } from "@/lib/squad";
+import LightboxTrigger, { type LightboxPhoto } from "@/components/Lightbox";
 
 async function getPlayer(slug: string): Promise<DemoPlayer | null> {
   return await apiFetch<DemoPlayer>(`/players/${slug}`, 1800);
@@ -56,6 +57,11 @@ export default async function PlayerProfilePage({
     .slice(0, 2)
     .map((u) => playerPhotoUrl(u, player.photoCutout) as string);
 
+  const viewerPhotos: LightboxPhoto[] = [
+    ...(mainPhoto ? [{ src: mainPhoto, alt: player.name }] : []),
+    ...extraPhotos.map((src, i) => ({ src, alt: `${player.name}, photo ${i + 2}` })),
+  ];
+
   const stats = [
     { label: "Appearances", value: player.stats?.appearances ?? 0 },
     { label: "Goals", value: player.stats?.goals ?? 0 },
@@ -73,14 +79,16 @@ export default async function PlayerProfilePage({
         <div className="min-w-0">
           <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden rounded-2xl lg:max-w-none">
             {mainPhoto ? (
-              <Image
-                src={mainPhoto}
-                alt={player.name}
-                fill
-                priority
-                sizes="(min-width: 1024px) 380px, 90vw"
-                className="object-cover object-top"
-              />
+              <LightboxTrigger photos={viewerPhotos} index={0} label={`Enlarge photo of ${player.name}`} className="absolute inset-0 h-full">
+                <Image
+                  src={mainPhoto}
+                  alt={player.name}
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 380px, 90vw"
+                  className="object-cover object-top"
+                />
+              </LightboxTrigger>
             ) : (
               <div className="absolute inset-0 rounded-2xl bg-navy/[0.06]" />
             )}
@@ -89,13 +97,20 @@ export default async function PlayerProfilePage({
             <div className="mx-auto mt-3 grid max-w-md grid-cols-2 gap-3 lg:max-w-none">
               {extraPhotos.map((src, i) => (
                 <div key={src} className="relative aspect-[3/4] overflow-hidden rounded-xl">
-                  <Image
-                    src={src}
-                    alt={`${player.name}, photo ${i + 2}`}
-                    fill
-                    sizes="(min-width: 1024px) 190px, 45vw"
-                    className="object-cover object-top"
-                  />
+                  <LightboxTrigger
+                    photos={viewerPhotos}
+                    index={(mainPhoto ? 1 : 0) + i}
+                    label={`Enlarge photo ${i + 2} of ${player.name}`}
+                    className="absolute inset-0 h-full"
+                  >
+                    <Image
+                      src={src}
+                      alt={`${player.name}, photo ${i + 2}`}
+                      fill
+                      sizes="(min-width: 1024px) 190px, 45vw"
+                      className="object-cover object-top"
+                    />
+                  </LightboxTrigger>
                 </div>
               ))}
             </div>

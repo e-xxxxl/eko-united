@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { apiList } from "@/lib/api";
 import type { DemoPlayer } from "@/lib/demoData";
+import { isAllowedImageUrl } from "@/lib/imageHosts";
 import { groupMeta, groupSquad, playerPhotoUrl } from "@/lib/squad";
 
 export const metadata: Metadata = {
@@ -65,6 +66,9 @@ export default async function TeamPage() {
                 <div data-reveal-stagger className="grid grid-cols-2 gap-x-3 gap-y-9 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-4 xl:grid-cols-5">
                   {players.map((player) => {
                     const photo = playerPhotoUrl(player.photoUrl, player.photoCutout);
+                    // The player's second photo fades in over the first on hover.
+                    const alt = (player.extraPhotos || []).filter(isAllowedImageUrl)[0];
+                    const altPhoto = alt ? playerPhotoUrl(alt, player.photoCutout) : undefined;
                     return (
                       <Link key={player._id} href={`/team/${player.slug}`} className="group block">
                         <div className="relative aspect-[3/4] overflow-hidden rounded-xl">
@@ -78,6 +82,16 @@ export default async function TeamPage() {
                             />
                           ) : (
                             <div className="absolute inset-0 rounded-xl bg-navy/[0.06]" />
+                          )}
+                          {photo && altPhoto && (
+                            <Image
+                              src={altPhoto}
+                              alt=""
+                              aria-hidden
+                              fill
+                              sizes="(min-width: 1280px) 18vw, (min-width: 1024px) 23vw, (min-width: 640px) 30vw, 48vw"
+                              className="object-cover object-top opacity-0 transition-[opacity,transform] duration-500 ease-smooth group-hover:scale-105 group-hover:opacity-100 group-focus-visible:opacity-100"
+                            />
                           )}
                         </div>
                         <div className="mt-3 flex items-start gap-2.5">

@@ -11,8 +11,11 @@ export type HeroSlide = {
   _id: string;
   slug: string;
   title: string;
-  category: "article" | "match_report" | "press_release";
+  category: "article" | "match_report" | "press_release" | "event";
   publishedAt: string;
+  // Set on event slides: where the slide goes and the line shown under the headline.
+  href?: string;
+  subline?: string;
   coverImageUrl?: string;
   heroImageUrl?: string;
 };
@@ -57,6 +60,7 @@ const categoryLabels: Record<HeroSlide["category"], string> = {
   article: "Article",
   match_report: "Match Report",
   press_release: "Press Release",
+  event: "Event",
 };
 
 function formatDate(iso: string) {
@@ -147,7 +151,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
       {slides.map((slide, i) => (
         <Link
           key={slide._id}
-          href={`/news/${slide.slug}`}
+          href={slide.href || `/news/${slide.slug}`}
           aria-hidden={i !== index}
           tabIndex={i === index ? 0 : -1}
           className={clsx(
@@ -203,7 +207,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 date-formatted text rather than letting it fail hydration for
                 the whole page. */}
             <p className="mt-6 text-sm text-white/60" suppressHydrationWarning>
-              {formatDate(slide.publishedAt)} · Read the full story →
+              {slide.subline || `${formatDate(slide.publishedAt)} · Read the full story →`}
             </p>
           </div>
         </Link>

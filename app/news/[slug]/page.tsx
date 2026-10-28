@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { DemoNews, NewsBlock } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
+import LightboxTrigger, { type LightboxPhoto } from "@/components/Lightbox";
 import ShareLinks from "@/components/ShareLinks";
 import SocialsSection from "@/components/SocialsSection";
 
@@ -127,6 +128,15 @@ export default async function NewsArticlePage({
   const readMinutes = Math.max(1, Math.round(words / 200));
   const firstParagraph = content.findIndex((b) => b.kind === "paragraph");
 
+  // Every photo in the story, in reading order, so the viewer can step through them.
+  const viewerPhotos: LightboxPhoto[] = [
+    ...(article.coverImageUrl ? [{ src: article.coverImageUrl, alt: article.title }] : []),
+    ...content.flatMap((b) =>
+      b.kind === "image" && b.url ? [{ src: b.url, alt: b.caption || `${article.title}, photo`, caption: b.caption }] : []
+    ),
+  ];
+  let inlinePhoto = article.coverImageUrl ? 0 : -1;
+
   return (
     <main>
       <script
@@ -143,14 +153,16 @@ export default async function NewsArticlePage({
         // ultra-panoramic ratio that slices away most of a normal landscape
         // photo's height. 16:9 is a much more moderate, standard banner crop.
         <div data-reveal-skip className="relative aspect-[4/5] w-full overflow-hidden sm:aspect-video">
-          <Image
-            src={article.coverImageUrl}
-            alt={article.title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
+          <LightboxTrigger photos={viewerPhotos} index={0} label="Enlarge cover photo" className="absolute inset-0 h-full">
+            <Image
+              src={article.coverImageUrl}
+              alt={article.title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </LightboxTrigger>
         </div>
       )}
 
@@ -200,18 +212,21 @@ export default async function NewsArticlePage({
               {content.map((block, i) => {
                 if (block.kind === "image") {
                   if (!block.url) return null;
+                  inlinePhoto += 1;
                   // Photos show whole, at their own proportions: no frame,
                   // crop or backdrop, just the picture at full story width.
                   return (
                     <figure key={i} className="!my-11">
-                      <Image
-                        src={block.url}
-                        alt={block.caption || `${article.title}, photo`}
-                        width={1600}
-                        height={1067}
-                        sizes="(min-width: 1024px) 768px, 100vw"
-                        className="h-auto w-full rounded-xl"
-                      />
+                      <LightboxTrigger photos={viewerPhotos} index={inlinePhoto} label="Enlarge photo">
+                        <Image
+                          src={block.url}
+                          alt={block.caption || `${article.title}, photo`}
+                          width={1600}
+                          height={1067}
+                          sizes="(min-width: 1024px) 768px, 100vw"
+                          className="h-auto w-full rounded-xl"
+                        />
+                      </LightboxTrigger>
                       {block.caption && (
                         <figcaption className="mt-3 text-sm leading-snug text-navy/50">{block.caption}</figcaption>
                       )}

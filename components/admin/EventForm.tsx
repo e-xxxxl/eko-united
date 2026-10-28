@@ -14,6 +14,7 @@ export type EventFormValues = {
   imageUrl: string;
   images: string[];
   isActive: boolean;
+  showInHero: boolean;
 };
 
 const fieldClass =
@@ -38,6 +39,7 @@ export default function EventForm({
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl || "");
   const [images, setImages] = useState<string[]>(initial?.images || []);
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
+  const [showInHero, setShowInHero] = useState(initial?.showInHero ?? false);
 
   const dateValue = initial?.eventDate ? initial.eventDate.slice(0, 10) : "";
 
@@ -55,6 +57,7 @@ export default function EventForm({
       imageUrl,
       images: images.filter((u) => u && isAllowedImageUrl(u)),
       isActive,
+      showInHero: isActive && showInHero,
     });
   }
 
@@ -169,6 +172,25 @@ export default function EventForm({
         <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4 accent-navy" />
         Show on the website
       </label>
+
+      <div className="rounded-xl bg-navy/[0.04] p-4">
+        <label className="flex cursor-pointer items-start gap-3 text-sm text-navy">
+          <input
+            type="checkbox"
+            checked={showInHero}
+            disabled={!isActive}
+            onChange={(e) => setShowInHero(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-navy"
+          />
+          <span>
+            <span className="font-semibold">Add to the homepage hero carousel</span>
+            <span className="mt-1 block text-xs leading-relaxed text-navy/55">
+              The cover photo, name, date and place appear as a slide at the top of the homepage, linking to this event.
+              It comes off by itself the day after the event date. Use a landscape cover photo for the best result.
+            </span>
+          </span>
+        </label>
+      </div>
 
       {error && (
         <p className="text-sm text-red-500" role="alert">

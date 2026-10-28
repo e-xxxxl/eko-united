@@ -11,9 +11,27 @@ import ShopPreview from "@/components/ShopPreview";
 import PlayerCarousel from "@/components/PlayerCarousel";
 import PartnersSlogan from "@/components/PartnersSlogan";
 import { apiFetch } from "@/lib/api";
+import { formatEventDate, type ClubEvent } from "@/lib/eventTypes";
 
+// Events the club switched on for the hero come first, then the latest news.
 async function getHeroSlides(): Promise<HeroSlide[]> {
-  return (await apiFetch<HeroSlide[]>("/news?limit=5", 600)) || [];
+  const [news, events] = await Promise.all([
+    apiFetch<HeroSlide[]>("/news?limit=5", 600),
+    apiFetch<ClubEvent[]>("/events/hero", 600),
+  ]);
+  const eventSlides: HeroSlide[] = (Array.isArray(events) ? events : []).map((e) => ({
+    _id: `event-${e._id}`,
+    slug: e.slug,
+    title: e.name,
+    category: "event",
+    publishedAt: e.eventDate || "",
+    coverImageUrl: e.imageUrl,
+    heroImageUrl: e.imageUrl,
+    href: `/events/${e.slug}`,
+    subline: [formatEventDate(e.eventDate), e.location, "See the details →"].filter(Boolean).join(" · "),
+  }));
+  const newsSlides = Array.isArray(news) ? news : [];
+  return [...eventSlides, ...newsSlides].slice(0, 6);
 }
 
 async function getNextMatch(): Promise<NextMatch | null> {

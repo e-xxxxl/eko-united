@@ -3,6 +3,7 @@ import Image from "next/image";
 import { apiList } from "@/lib/api";
 import { groupMeta, playerPhotoUrl, positionGroup, sortSquad } from "@/lib/squad";
 import type { DemoPlayer } from "@/lib/demoData";
+import { isAllowedImageUrl } from "@/lib/imageHosts";
 import RailArrows from "@/components/RailArrows";
 
 async function getSquad(): Promise<DemoPlayer[]> {
@@ -49,6 +50,8 @@ export default async function PlayerCarousel() {
           >
             {squad.map((player) => {
               const photo = playerPhotoUrl(player.photoUrl, player.photoCutout);
+              const second = (player.extraPhotos || []).filter(isAllowedImageUrl)[0];
+              const secondPhoto = second ? playerPhotoUrl(second, player.photoCutout) : undefined;
               const group = groupMeta[positionGroup(player.position)].singular;
               return (
                 <Link
@@ -68,6 +71,16 @@ export default async function PlayerCarousel() {
                       />
                     ) : (
                       <div className="absolute inset-0 bg-navy/[0.06]" />
+                    )}
+                    {photo && secondPhoto && (
+                      <Image
+                        src={secondPhoto}
+                        alt=""
+                        aria-hidden
+                        fill
+                        sizes="(min-width: 1280px) 320px, (min-width: 1024px) 288px, (min-width: 640px) 240px, 62vw"
+                        className="origin-top scale-[1.14] object-cover object-top opacity-0 transition-[opacity,transform] duration-700 ease-smooth group-hover:scale-[1.22] group-hover:opacity-100 group-focus-visible:opacity-100"
+                      />
                     )}
                   </div>
 

@@ -75,7 +75,7 @@ export default function AdminEventsPage() {
                       <p className="truncate font-medium text-navy">{ev.name}</p>
                       <p className="text-xs uppercase tracking-wide text-navy/40">
                         {ev.eventDate ? new Date(ev.eventDate).toLocaleDateString("en-GB") : "No date"}
-                        {ev.location ? ` · ${ev.location}` : ""} · {ev.isActive ? "Showing" : "Hidden"}
+                        {ev.location ? ` · ${ev.location}` : ""} · {ev.isActive ? "Showing" : "Hidden"}{ev.showInHero ? " · In hero carousel" : ""}
                       </p>
                     </div>
                   </div>
