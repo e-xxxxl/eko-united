@@ -10,6 +10,7 @@ export const PAGE_PHOTO_PAGES = [
   { key: "sponsors", label: "Sponsors" },
   { key: "trophies", label: "Trophy cabinet" },
   { key: "club-history", label: "Club history" },
+  { key: "volunteer", label: "Volunteer" },
 ] as const;
 
 export type PagePhotoKey = (typeof PAGE_PHOTO_PAGES)[number]["key"];
@@ -32,6 +33,7 @@ const DEFAULTS: Record<PagePhotoKey, string[]> = {
   sponsors: [LIGHTS, CROWD, BALLS],
   trophies: [BALL_FOOT, STADIUM, KICK],
   "club-history": [STADIUM, KICK, CROWD],
+  volunteer: [CROWD, BALLS, KICK],
 };
 
 // The club's own photos for a page if it has set any, otherwise the defaults.

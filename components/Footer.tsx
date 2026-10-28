@@ -23,6 +23,7 @@ const columns = [
       { href: "/about", label: "About" },
       { href: "/team", label: "Team" },
       { href: "/membership", label: "Club Membership" },
+      { href: "/volunteer", label: "Volunteer" },
       { href: "/club-history", label: "Club History" },
       { href: "/trophies", label: "Trophy Cabinet" },
       { href: "/careers", label: "Careers" },

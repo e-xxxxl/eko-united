@@ -26,6 +26,7 @@ const primaryLinks = [
 
 const moreLinks = [
   { href: "/membership", label: "Club Membership" },
+  { href: "/volunteer", label: "Volunteer" },
   { href: "/table", label: "League Table" },
   { href: "/videos", label: "Videos" },
   { href: "/gallery", label: "Gallery" },

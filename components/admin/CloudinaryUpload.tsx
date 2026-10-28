@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { adminFetch } from "@/lib/adminApi";
 import { isAllowedImageUrl, ALLOWED_IMAGE_HOSTS } from "@/lib/imageHosts";
+import MediaPicker from "@/components/admin/MediaPicker";
 
 type SignatureResponse = {
   signature: string;
@@ -11,6 +12,7 @@ type SignatureResponse = {
   apiKey: string;
   cloudName: string;
   folder: string;
+  transformation?: string;
 };
 
 // Direct-to-Cloudinary upload, matching the signed-upload flow already built
@@ -32,6 +34,7 @@ export default function CloudinaryUpload({
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(file: File) {
@@ -47,6 +50,7 @@ export default function CloudinaryUpload({
       formData.append("file", file);
       formData.append("timestamp", String(sig.timestamp));
       formData.append("folder", sig.folder);
+      if (sig.transformation) formData.append("transformation", sig.transformation);
       formData.append("api_key", sig.apiKey);
       formData.append("signature", sig.signature);
 
@@ -104,6 +108,14 @@ export default function CloudinaryUpload({
             >
               {uploading ? "Uploading…" : value ? "Replace image" : "Upload image"}
             </button>
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              disabled={uploading}
+              className="btn-glass btn-glass-navy px-5 py-2 text-xs font-semibold uppercase tracking-wide disabled:opacity-60"
+            >
+              Choose from library
+            </button>
             {value && (
               <button
                 type="button"
@@ -148,6 +160,16 @@ export default function CloudinaryUpload({
           (a Google Images link, for example, won't). Upload the image instead, or paste a link
           from one of those.
         </p>
+      )}
+      {pickerOpen && (
+        <MediaPicker
+          onClose={() => setPickerOpen(false)}
+          onSelect={(url) => {
+            onChange(url);
+            setError("");
+            setPickerOpen(false);
+          }}
+        />
       )}
     </div>
   );

@@ -15,6 +15,7 @@ const staticRoutes = [
   "/videos",
   "/events",
   "/membership",
+  "/volunteer",
   "/tickets",
   "/shop",
   "/sponsors",
