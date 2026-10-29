@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import MediaAccreditationForm from "@/components/MediaAccreditationForm";
 import PageIntro from "@/components/PageIntro";
 import { getPagePhotos } from "@/lib/pagePhotos";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Media Accreditation",
-  description: "Request media accreditation to cover Eko United FC matches and events.",
-};
+export const metadata: Metadata = sectionMeta("mediaAccreditation");
 
 const steps = [
   { title: "Tell us who you are", text: "Your outlet, your role and how to reach you." },

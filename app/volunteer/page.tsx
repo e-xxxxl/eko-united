@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import VolunteerForm from "@/components/VolunteerForm";
 import PageIntro from "@/components/PageIntro";
 import { getPagePhotos } from "@/lib/pagePhotos";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Volunteer",
-  description: "Volunteer with Eko United FC: matchday support, community outreach, media, youth and events.",
-};
+export const metadata: Metadata = sectionMeta("volunteer");
 
 const ways = [
   { title: "Matchday support", text: "Welcome supporters, help with stewarding and make home games run smoothly." },

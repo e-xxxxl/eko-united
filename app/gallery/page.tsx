@@ -5,11 +5,9 @@ import { clsx } from "clsx";
 import { apiFetch } from "@/lib/api";
 import type { DemoGalleryItem } from "@/lib/demoData";
 import LightboxTrigger from "@/components/Lightbox";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Gallery",
-  description: "Photos and videos from Eko United FC matchdays and behind the scenes.",
-};
+export const metadata: Metadata = sectionMeta("gallery");
 
 async function getGallery(type?: string): Promise<DemoGalleryItem[]> {
   return (await apiFetch<DemoGalleryItem[]>(`/gallery${type ? `?type=${type}` : ""}`, 900)) || [];

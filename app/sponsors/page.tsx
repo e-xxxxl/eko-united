@@ -3,10 +3,7 @@ import { apiFetch } from "@/lib/api";
 import type { DemoSponsor } from "@/lib/demoData";
 import SafeImage from "@/components/SafeImage";
 
-export const metadata: Metadata = {
-  title: "Sponsors & Partners",
-  description: "The sponsors and partners who support Eko United FC.",
-};
+export const metadata: Metadata = sectionMeta("sponsors");
 
 async function getSponsors(): Promise<DemoSponsor[]> {
   return (await apiFetch<DemoSponsor[]>("/sponsors", 3600)) || [];
@@ -45,6 +42,7 @@ function SponsorLogo({ sponsor, size }: { sponsor: DemoSponsor; size: number }) 
 
 import PageIntro from "@/components/PageIntro";
 import { getPagePhotos } from "@/lib/pagePhotos";
+import { sectionMeta } from "@/lib/seo";
 
 export default async function SponsorsPage() {
   const sponsors = await getSponsors();

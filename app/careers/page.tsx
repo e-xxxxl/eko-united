@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import PageIntro from "@/components/PageIntro";
 import { getPagePhotos } from "@/lib/pagePhotos";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Careers",
-  description: "Join the Eko United FC team: current opportunities at the club.",
-};
+export const metadata: Metadata = sectionMeta("careers");
 
 export default async function CareersPage() {
   const photos = await getPagePhotos("careers");

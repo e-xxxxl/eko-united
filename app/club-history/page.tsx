@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import type { DemoMilestone } from "@/lib/demoData";
 
-export const metadata: Metadata = {
-  title: "Club History",
-  description: "The story of Eko United FC, from founding to today.",
-};
+export const metadata: Metadata = sectionMeta("clubHistory");
 
 async function getHistory(): Promise<DemoMilestone[]> {
   return (await apiFetch<DemoMilestone[]>("/history", 3600)) || [];
@@ -13,6 +10,7 @@ async function getHistory(): Promise<DemoMilestone[]> {
 
 import PageIntro from "@/components/PageIntro";
 import { getPagePhotos } from "@/lib/pagePhotos";
+import { sectionMeta } from "@/lib/seo";
 
 export default async function ClubHistoryPage() {
   const milestones = await getHistory();

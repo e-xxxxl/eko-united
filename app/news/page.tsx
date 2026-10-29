@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import type { DemoNews } from "@/lib/demoData";
 import NewsBrowser from "@/components/NewsBrowser";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "News",
-  description: "The latest news, match reports and press releases from Eko United FC.",
-};
+export const metadata: Metadata = sectionMeta("news");
 
 async function getNews(): Promise<DemoNews[]> {
   return (await apiFetch<DemoNews[]>("/news?limit=50", 600)) || [];

@@ -3,12 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import type { DemoPlayer } from "@/lib/demoData";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "About Eko United FC — club history, vision & mission, stadium information, and the management team behind The Uga Boys.",
-};
+export const metadata: Metadata = sectionMeta("about");
 
 type SiteSettings = {
   clubInfo?: {

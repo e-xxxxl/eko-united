@@ -3,11 +3,9 @@ import { apiFetch } from "@/lib/api";
 import ContactForm from "@/components/ContactForm";
 import PageIntro from "@/components/PageIntro";
 import { getPagePhotos } from "@/lib/pagePhotos";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Get in touch with Eko United FC — address, phone, email and social media.",
-};
+export const metadata: Metadata = sectionMeta("contact");
 
 type SiteSettings = {
   clubInfo?: { address?: string; phone?: string; email?: string };

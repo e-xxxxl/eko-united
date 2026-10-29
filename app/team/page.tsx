@@ -5,11 +5,9 @@ import { apiList } from "@/lib/api";
 import type { DemoPlayer } from "@/lib/demoData";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import { groupMeta, groupSquad, playerPhotoUrl } from "@/lib/squad";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "First Team Squad",
-  description: "Meet the Eko United FC first team squad: The Uga Boys.",
-};
+export const metadata: Metadata = sectionMeta("team");
 
 async function getSquad(): Promise<DemoPlayer[]> {
   return apiList<DemoPlayer>("/players?role=player", 1800);

@@ -3,11 +3,9 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import type { DemoPlayer } from "@/lib/demoData";
 import FramedImage from "@/components/FramedImage";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Coaching & Technical Staff",
-  description: "Meet the coaching and technical staff behind Eko United FC.",
-};
+export const metadata: Metadata = sectionMeta("coachingStaff");
 
 async function getStaff(role: "coach" | "technical_staff"): Promise<DemoPlayer[]> {
   return (await apiFetch<DemoPlayer[]>(`/players?role=${role}`, 1800)) || [];

@@ -4,10 +4,7 @@ import { apiFetch } from "@/lib/api";
 import type { DemoTrophy } from "@/lib/demoData";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 
-export const metadata: Metadata = {
-  title: "Trophy Cabinet",
-  description: "Honours and silverware won by Eko United FC.",
-};
+export const metadata: Metadata = sectionMeta("trophies");
 
 async function getTrophies(): Promise<DemoTrophy[]> {
   return (await apiFetch<DemoTrophy[]>("/trophies", 3600)) || [];
@@ -15,6 +12,7 @@ async function getTrophies(): Promise<DemoTrophy[]> {
 
 import PageIntro from "@/components/PageIntro";
 import { getPagePhotos } from "@/lib/pagePhotos";
+import { sectionMeta } from "@/lib/seo";
 
 export default async function TrophiesPage() {
   const trophies = await getTrophies();

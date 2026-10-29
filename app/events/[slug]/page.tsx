@@ -7,6 +7,7 @@ import FramedImage from "@/components/FramedImage";
 import ShareLinks from "@/components/ShareLinks";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import LightboxTrigger, { type LightboxPhoto } from "@/components/Lightbox";
+import { pageMeta } from "@/lib/seo";
 import { formatEventDate, type ClubEvent } from "@/lib/eventTypes";
 
 async function getEvent(slug: string): Promise<ClubEvent | null> {
@@ -17,14 +18,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const event = await getEvent(slug);
   if (!event) return { title: "Event Not Found" };
-  const description = (event.description || `${event.name}, an Eko United FC event.`).slice(0, 155);
-  return {
-    title: event.name,
-    description,
-    alternates: { canonical: `https://ekounitedfc.com/events/${event.slug}` },
-    openGraph: { type: "website", siteName: "Eko United FC", title: event.name, description },
-    twitter: { card: "summary_large_image", title: event.name, description },
-  };
+  const when = formatEventDate(event.eventDate);
+  const lead = [when, event.location].filter(Boolean).join(", ");
+  const text = (event.description || "").replace(/s+/g, " ").trim();
+  const description = (lead ? `${lead}. ${text}` : text || `${event.name}, an Eko United FC event.`).slice(0, 155);
+  return pageMeta({ title: event.name, description, path: `/events/${event.slug}` });
 }
 
 export default async function EventPage({ params }: { params: Promise<{ slug: string }> }) {

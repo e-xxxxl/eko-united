@@ -3,19 +3,9 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import type { DemoMatch } from "@/lib/demoData";
 import { TeamName } from "@/components/MatchCard";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Tickets",
-  description: "Buy tickets for upcoming Eko United FC matches at Agege Stadium, Lagos.",
-  alternates: { canonical: "https://ekounitedfc.com/tickets" },
-  openGraph: {
-    type: "website",
-    siteName: "Eko United FC",
-    title: "Match Tickets | Eko United FC",
-    description: "Buy tickets for upcoming Eko United FC matches at Agege Stadium, Lagos.",
-    url: "https://ekounitedfc.com/tickets",
-  },
-};
+export const metadata: Metadata = sectionMeta("tickets");
 
 function formatKickoff(iso: string) {
   const date = new Date(iso);

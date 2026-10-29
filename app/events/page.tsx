@@ -5,11 +5,9 @@ import EventCard from "@/components/EventCard";
 import FramedImage from "@/components/FramedImage";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import { formatEventDate, type ClubEvent } from "@/lib/eventTypes";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Events",
-  description: "Fan days, community events and club occasions from Eko United FC.",
-};
+export const metadata: Metadata = sectionMeta("events");
 
 async function getEvents(): Promise<ClubEvent[]> {
   return (await apiFetch<ClubEvent[]>("/events", 600)) || [];

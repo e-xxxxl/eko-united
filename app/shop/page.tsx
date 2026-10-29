@@ -2,19 +2,9 @@ import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import type { DemoProduct } from "@/lib/demoData";
 import ShopBrowser from "@/components/shop/ShopBrowser";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Club Shop",
-  description: "Official Eko United FC merchandise: 2026 home and away kits, and more.",
-  alternates: { canonical: "https://ekounitedfc.com/shop" },
-  openGraph: {
-    type: "website",
-    siteName: "Eko United FC",
-    title: "Club Shop | Eko United FC",
-    description: "Official Eko United FC merchandise: 2026 home and away kits, and more.",
-    url: "https://ekounitedfc.com/shop",
-  },
-};
+export const metadata: Metadata = sectionMeta("shop");
 
 async function getProducts(): Promise<DemoProduct[]> {
   // Guard against any non-list reply so a bad response can never break the build.

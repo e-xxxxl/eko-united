@@ -5,12 +5,9 @@ import FramedImage from "@/components/FramedImage";
 import MembershipPlans from "@/components/MembershipPlans";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import type { MembershipContent, MembershipTier } from "@/lib/membershipTypes";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Club Membership",
-  description:
-    "Join Eko United FC as a Gold, Diamond or Platinum member, or partner with the club as a Platinum Corporate sponsor. See every package and its perks, and apply online.",
-};
+export const metadata: Metadata = sectionMeta("membership");
 
 type PlansResponse = { content: MembershipContent; tiers: MembershipTier[] };
 

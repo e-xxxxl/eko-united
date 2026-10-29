@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import type { DemoStanding } from "@/lib/demoData";
 import LeagueTable from "@/components/LeagueTable";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "League Table",
-  description: "Nigeria National League standings.",
-};
+export const metadata: Metadata = sectionMeta("table");
 
 async function getStandings(): Promise<DemoStanding[]> {
   return (await apiFetch<DemoStanding[]>("/standings", 3600)) || [];

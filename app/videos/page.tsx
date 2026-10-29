@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import VideoThumb from "@/components/VideoThumb";
 import { watchUrl } from "@/lib/youtube";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Videos",
-  description: "Match highlights, interviews and behind the scenes from Eko United FC, on YouTube.",
-};
+export const metadata: Metadata = sectionMeta("videos");
 
 type Video = {
   _id: string;

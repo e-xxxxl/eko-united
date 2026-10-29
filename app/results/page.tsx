@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import type { DemoMatch } from "@/lib/demoData";
 import MatchCard from "@/components/MatchCard";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Results",
-  description: "Recent Eko United FC match results — Nigeria National League.",
-};
+export const metadata: Metadata = sectionMeta("results");
 
 async function getResults(): Promise<DemoMatch[]> {
   return (await apiFetch<DemoMatch[]>("/matches?status=finished", 600)) || [];
