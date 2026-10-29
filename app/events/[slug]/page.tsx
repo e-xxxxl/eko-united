@@ -8,7 +8,7 @@ import ShareLinks from "@/components/ShareLinks";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
 import LightboxTrigger, { type LightboxPhoto } from "@/components/Lightbox";
 import { pageMeta } from "@/lib/seo";
-import { formatEventDate, type ClubEvent } from "@/lib/eventTypes";
+import { CSR_LABEL, formatEventDate, type ClubEvent } from "@/lib/eventTypes";
 
 async function getEvent(slug: string): Promise<ClubEvent | null> {
   return await apiFetch<ClubEvent>(`/events/${slug}`, 600);
@@ -56,6 +56,11 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           <Link href="/events" className="text-xs font-semibold uppercase tracking-wide text-cyan transition-colors duration-200 ease-smooth hover:text-navy">
             ← All events
           </Link>
+          {event.isCsr && (
+            <p className="mt-5 inline-block rounded-md bg-cyan/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-navy">
+              {CSR_LABEL}
+            </p>
+          )}
           <h1 className="display-title font-display mt-5">{event.name}</h1>
           {meta.length > 0 && (
             <p className="mt-5 flex flex-wrap gap-x-4 gap-y-1 border-y border-navy/10 py-4 text-sm font-semibold uppercase tracking-wide text-navy/60">

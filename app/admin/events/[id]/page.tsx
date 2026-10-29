@@ -44,7 +44,7 @@ export default function EditEventPage() {
     <AdminShell>
       {() => (
         <div className="px-6 py-16 sm:px-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Events</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Events and CSR</p>
           <h1 className="display-title font-display mt-2 mb-10">Edit Event</h1>
           {error && !event && (
             <p className="text-sm text-red-500" role="alert">

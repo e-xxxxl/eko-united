@@ -16,6 +16,7 @@ const staticRoutes = [
   "/events",
   "/membership",
   "/volunteer",
+  "/campus-ambassador",
   "/tickets",
   "/shop",
   "/sponsors",

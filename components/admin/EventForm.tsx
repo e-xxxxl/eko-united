@@ -15,6 +15,7 @@ export type EventFormValues = {
   images: string[];
   isActive: boolean;
   showInHero: boolean;
+  isCsr: boolean;
 };
 
 const fieldClass =
@@ -40,6 +41,7 @@ export default function EventForm({
   const [images, setImages] = useState<string[]>(initial?.images || []);
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
   const [showInHero, setShowInHero] = useState(initial?.showInHero ?? false);
+  const [isCsr, setIsCsr] = useState(initial?.isCsr ?? false);
 
   const dateValue = initial?.eventDate ? initial.eventDate.slice(0, 10) : "";
 
@@ -58,6 +60,7 @@ export default function EventForm({
       images: images.filter((u) => u && isAllowedImageUrl(u)),
       isActive,
       showInHero: isActive && showInHero,
+      isCsr,
     });
   }
 
@@ -93,6 +96,19 @@ export default function EventForm({
           }}
           className={fieldClass}
         />
+      </div>
+
+      <div className="rounded-xl bg-navy/[0.04] p-4">
+        <label className="flex cursor-pointer items-start gap-3 text-sm text-navy">
+          <input type="checkbox" checked={isCsr} onChange={(e) => setIsCsr(e.target.checked)} className="mt-0.5 h-4 w-4 accent-navy" />
+          <span>
+            <span className="font-semibold">This is a CSR activity (Community Social Responsibility)</span>
+            <span className="mt-1 block text-xs leading-relaxed text-navy/55">
+              Tick for outreach, donations, school visits and other community work. It is tagged
+              &quot;Community Social Responsibility&quot; on the Events and CSR page and can be filtered there.
+            </span>
+          </span>
+        </label>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">

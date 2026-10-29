@@ -75,11 +75,11 @@ export const sections = {
   },
   events: {
     path: "/events",
-    title: "Events",
-    description: "Fan days, community outreach and club occasions from Eko United FC. See what is coming up.",
+    title: "Events and CSR",
+    description: "Fan days, club events and Community Social Responsibility (CSR) activities from Eko United FC.",
     eyebrow: "Club life",
-    headline: "Events",
-    subline: "Fan days and community days",
+    headline: "Events and CSR",
+    subline: "Fan days and community work",
   },
   gallery: {
     path: "/gallery",
@@ -128,6 +128,14 @@ export const sections = {
     eyebrow: "Get involved",
     headline: "Volunteer With Us",
     subline: "Be part of The Uga Boys",
+  },
+  campusAmbassador: {
+    path: "/campus-ambassador",
+    title: "Campus Ambassador",
+    description: "Represent Eko United FC on your campus. Students can apply to become a club campus ambassador.",
+    eyebrow: "Students",
+    headline: "Campus Ambassador",
+    subline: "Represent the Uga Boys on campus",
   },
   mediaAccreditation: {
     path: "/media-accreditation",

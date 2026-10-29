@@ -208,7 +208,7 @@ export async function collageCard(
 ) {
   const s = sections[key];
   const photos = (
-    await Promise.all(items.slice(0, 3).map((it) => cardPhoto(it.url, 420, 880, { cutout: it.cutout })))
+    await Promise.all(items.slice(0, 3).map((it) => cardPhoto(it.url, 340, 880)))
   ).filter((p): p is string => Boolean(p));
   if (photos.length === 0) return sectionCard(key);
   if (photos.length === 1) {
@@ -262,7 +262,7 @@ export async function squadCard(players: DemoPlayer[]) {
 
 // One player: photo on the right over a cyan panel, name and number on the left.
 export async function playerCard(player: DemoPlayer) {
-  const photo = await cardPhoto(player.photoUrl, 560, 1000, { cutout: player.photoCutout });
+  const photo = await cardPhoto(player.photoUrl, 500, 630);
   const name = fitText(player.name, 34).toUpperCase();
   const isPlayer = player.role === "player";
   const eyebrow = isPlayer ? player.position || "First Team" : player.title || player.position || "Eko United FC";

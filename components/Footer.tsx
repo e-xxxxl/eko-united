@@ -24,6 +24,7 @@ const columns = [
       { href: "/team", label: "Team" },
       { href: "/membership", label: "Club Membership" },
       { href: "/volunteer", label: "Volunteer" },
+      { href: "/campus-ambassador", label: "Campus Ambassador" },
       { href: "/club-history", label: "Club History" },
       { href: "/trophies", label: "Trophy Cabinet" },
       { href: "/careers", label: "Careers" },
@@ -41,7 +42,7 @@ const columns = [
     heading: "Media",
     links: [
       { href: "/news", label: "News" },
-      { href: "/events", label: "Events" },
+      { href: "/events", label: "Events & CSR" },
       { href: "/videos", label: "Videos" },
       { href: "/gallery", label: "Gallery" },
     ],

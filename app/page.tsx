@@ -23,7 +23,7 @@ async function getHeroSlides(): Promise<HeroSlide[]> {
     _id: `event-${e._id}`,
     slug: e.slug,
     title: e.name,
-    category: "event",
+    category: e.isCsr ? "csr" : "event",
     publishedAt: e.eventDate || "",
     coverImageUrl: e.imageUrl,
     heroImageUrl: e.imageUrl,

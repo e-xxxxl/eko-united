@@ -13,7 +13,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
   if (!event) return sectionCard("events");
   return storyCard({
     photo: event.imageUrl || event.images?.[0],
-    eyebrow: "Event",
+    eyebrow: event.isCsr ? "Community Social Responsibility" : "Event",
     title: event.name,
     meta: [formatEventDate(event.eventDate), event.location].filter(Boolean).join(" | ") || "Eko United FC",
     fallbackKey: "events",

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import FramedImage from "@/components/FramedImage";
 import { isAllowedImageUrl } from "@/lib/imageHosts";
-import { formatEventDate, type ClubEvent } from "@/lib/eventTypes";
+import { CSR_LABEL, formatEventDate, type ClubEvent } from "@/lib/eventTypes";
 
 function DateChip({ iso }: { iso: string }) {
   const day = formatEventDate(iso, { day: "numeric" });
@@ -34,6 +34,11 @@ export default function EventCard({ event, muted = false }: { event: ClubEvent; 
           <div className="absolute inset-0 bg-[linear-gradient(160deg,#123568,#071a38)]" />
         )}
         {event.eventDate && <DateChip iso={event.eventDate} />}
+        {event.isCsr && (
+          <span className="absolute right-3 top-3 max-w-[60%] rounded-lg bg-navy-dark/90 px-2.5 py-1.5 text-[10px] font-bold uppercase leading-tight tracking-wide text-white backdrop-blur-sm">
+            <span className="text-cyan">CSR</span> <span className="hidden sm:inline">{CSR_LABEL}</span>
+          </span>
+        )}
       </div>
       <p className="mt-4 line-clamp-2 font-display text-2xl leading-tight text-navy transition-colors duration-200 ease-smooth group-hover:text-cyan">
         {event.name}

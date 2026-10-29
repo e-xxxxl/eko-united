@@ -7,7 +7,7 @@ import { adminFetch } from "@/lib/adminApi";
 
 type Enquiry = {
   _id: string;
-  type: "volunteer" | "media";
+  type: "volunteer" | "media" | "campus_ambassador";
   name: string;
   email: string;
   phone?: string;
@@ -17,11 +17,11 @@ type Enquiry = {
   createdAt: string;
 };
 
-const typeLabel = { volunteer: "Volunteer", media: "Media accreditation" } as const;
+const typeLabel = { volunteer: "Volunteer", campus_ambassador: "Campus ambassador", media: "Media accreditation" } as const;
 
 export default function AdminEnquiriesPage() {
   const [items, setItems] = useState<Enquiry[] | null>(null);
-  const [filter, setFilter] = useState<"all" | "volunteer" | "media">("all");
+  const [filter, setFilter] = useState<"all" | "volunteer" | "campus_ambassador" | "media">("all");
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
@@ -56,13 +56,13 @@ export default function AdminEnquiriesPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Content</p>
           <h1 className="display-title font-display mt-2">Enquiries</h1>
           <p className="mb-6 mt-2 text-sm text-navy/50">
-            Volunteer applications and media accreditation requests.{" "}
+            Volunteer and campus ambassador applications and media accreditation requests.{" "}
             {items !== null && (waiting === 0 ? "All handled." : `${waiting} waiting.`)} Each one is also emailed to the
             marketing team.
           </p>
 
           <div className="mb-8 flex flex-wrap gap-2">
-            {(["all", "volunteer", "media"] as const).map((f) => (
+            {(["all", "volunteer", "campus_ambassador", "media"] as const).map((f) => (
               <button
                 key={f}
                 type="button"

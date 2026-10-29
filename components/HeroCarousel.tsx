@@ -11,7 +11,7 @@ export type HeroSlide = {
   _id: string;
   slug: string;
   title: string;
-  category: "article" | "match_report" | "press_release" | "event";
+  category: "article" | "match_report" | "press_release" | "event" | "csr";
   publishedAt: string;
   // Set on event slides: where the slide goes and the line shown under the headline.
   href?: string;
@@ -61,6 +61,7 @@ const categoryLabels: Record<HeroSlide["category"], string> = {
   match_report: "Match Report",
   press_release: "Press Release",
   event: "Event",
+  csr: "Community Social Responsibility",
 };
 
 function formatDate(iso: string) {

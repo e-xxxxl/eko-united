@@ -9,7 +9,10 @@ export type ClubEvent = {
   images: string[];
   isActive: boolean;
   showInHero?: boolean;
+  isCsr?: boolean; // a Community Social Responsibility activity
 };
+
+export const CSR_LABEL = "Community Social Responsibility";
 
 export function formatEventDate(iso?: string | null, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" }) {
   if (!iso) return "";

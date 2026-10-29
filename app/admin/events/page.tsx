@@ -40,7 +40,7 @@ export default function AdminEventsPage() {
           <div className="mb-8 flex items-baseline justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Content</p>
-              <h1 className="display-title font-display mt-2">Events</h1>
+              <h1 className="display-title font-display mt-2">Events and CSR</h1>
             </div>
             <Link
               href="/admin/events/new"
@@ -75,7 +75,7 @@ export default function AdminEventsPage() {
                       <p className="truncate font-medium text-navy">{ev.name}</p>
                       <p className="text-xs uppercase tracking-wide text-navy/40">
                         {ev.eventDate ? new Date(ev.eventDate).toLocaleDateString("en-GB") : "No date"}
-                        {ev.location ? ` · ${ev.location}` : ""} · {ev.isActive ? "Showing" : "Hidden"}{ev.showInHero ? " · In hero carousel" : ""}
+                        {ev.location ? ` · ${ev.location}` : ""} · {ev.isActive ? "Showing" : "Hidden"}{ev.isCsr ? " · CSR" : ""}{ev.showInHero ? " · In hero carousel" : ""}
                       </p>
                     </div>
                   </div>

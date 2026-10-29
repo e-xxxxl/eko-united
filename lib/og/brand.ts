@@ -91,11 +91,11 @@ export async function cardPhoto(
   opts: { cutout?: boolean } = {}
 ): Promise<string | null> {
   if (!url) return null;
-  if (opts.cutout) {
-    const cut = await fetchAsDataUri(sizedUrl(url, w, h, true), 6000);
-    if (cut) return cut;
-  }
-  return fetchAsDataUri(sizedUrl(url, w, h, false), 6000);
+  // Cut-outs are deliberately not used here: the background removal can take
+  // several seconds the first time, and X gives up on a slow card. A plain,
+  // pre-cropped photo comes back in well under a second.
+  void opts;
+  return fetchAsDataUri(sizedUrl(url, w, h, false), 4000);
 }
 
 export function fitText(text: string, max: number): string {

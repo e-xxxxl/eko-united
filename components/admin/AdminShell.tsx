@@ -30,7 +30,7 @@ const navLinks: { href: string; label: string; roles?: string[] }[] = [
   { href: "/admin/history", label: "History", roles: ["content_editor"] },
   { href: "/admin/gallery", label: "Gallery", roles: ["content_editor"] },
   { href: "/admin/videos", label: "Videos", roles: ["content_editor"] },
-  { href: "/admin/events", label: "Events", roles: ["content_editor"] },
+  { href: "/admin/events", label: "Events and CSR", roles: ["content_editor"] },
   { href: "/admin/page-photos", label: "Page photos", roles: ["content_editor"] },
   { href: "/admin/media", label: "Photo library", roles: ["content_editor", "shop_manager"] },
   { href: "/admin/enquiries", label: "Enquiries", roles: ["content_editor"] },

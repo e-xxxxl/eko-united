@@ -19,7 +19,7 @@ const primaryLinks = [
   { href: "/fixtures", label: "Fixtures" },
   { href: "/results", label: "Results" },
   { href: "/news", label: "News" },
-  { href: "/events", label: "Events" },
+  { href: "/events", label: "Events & CSR" },
   { href: "/shop", label: "Shop" },
   { href: "/contact", label: "Contact" },
 ];
@@ -27,6 +27,7 @@ const primaryLinks = [
 const moreLinks = [
   { href: "/membership", label: "Club Membership" },
   { href: "/volunteer", label: "Volunteer" },
+  { href: "/campus-ambassador", label: "Campus Ambassador" },
   { href: "/table", label: "League Table" },
   { href: "/videos", label: "Videos" },
   { href: "/gallery", label: "Gallery" },
@@ -43,7 +44,7 @@ const mobileMain = [
   { href: "/results", label: "Results" },
   { href: "/news", label: "News" },
   { href: "/videos", label: "Videos" },
-  { href: "/events", label: "Events" },
+  { href: "/events", label: "Events & CSR" },
   { href: "/team", label: "Team" },
   { href: "/shop", label: "Shop" },
   { href: "/about", label: "About" },
