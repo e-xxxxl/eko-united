@@ -22,7 +22,7 @@ export async function generateMetadata({
   const product = await getProduct(slug);
   if (!product) return { title: "Product Not Found" };
 
-  const description = product.description || `${product.name}, ${formatNaira(product.price)}. Official Eko United FC merchandise.`;
+  const description = product.description || `${product.name}, ${formatNaira(product.replicaPrice ?? product.price)}. Official Eko United FC merchandise.`;
   const url = `https://ekounitedfc.com/shop/${product.slug}`;
 
   return {
@@ -68,7 +68,7 @@ export default async function ProductDetailPage({
     offers: {
       "@type": "Offer",
       priceCurrency: "NGN",
-      price: product.price,
+      price: product.replicaPrice ?? product.price,
       availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
     },
   };

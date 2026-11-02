@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/admin/AdminShell";
 import { adminFetch, revalidatePublicPaths } from "@/lib/adminApi";
-import { formatNaira } from "@/lib/format";
+import { formatPrice } from "@/lib/format";
+import { fetchMatchOptions } from "@/lib/adminMatches";
 
 type Match = { _id: string; opponent: string; kickoff: string; isHome: boolean };
 type TicketType = {
@@ -24,7 +25,7 @@ export default function AdminTicketTypesPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   function load() {
-    Promise.all([adminFetch<TicketType[]>("/ticket-types"), adminFetch<Match[]>("/matches")])
+    Promise.all([adminFetch<TicketType[]>("/ticket-types"), fetchMatchOptions()])
       .then(([types, allMatches]) => {
         setTicketTypes(types);
         setMatches(Object.fromEntries(allMatches.map((m) => [m._id, m])));
@@ -57,12 +58,20 @@ export default function AdminTicketTypesPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Tickets</p>
               <h1 className="display-title font-display mt-2">Ticket Types</h1>
             </div>
-            <Link
-              href="/admin/ticket-types/new"
-              className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
-            >
-              + Add ticket type
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/admin/ticket-types/standard"
+                className="btn-glass btn-glass-yellow px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
+              >
+                + Standard tickets for a match
+              </Link>
+              <Link
+                href="/admin/ticket-types/new"
+                className="btn-glass btn-glass-navy px-6 py-2.5 text-xs font-bold uppercase tracking-wide"
+              >
+                + Add one ticket type
+              </Link>
+            </div>
           </div>
 
           {error && (
@@ -87,7 +96,7 @@ export default function AdminTicketTypesPage() {
                         {t.name} {match ? `— ${match.isHome ? "vs" : "at"} ${match.opponent}` : ""}
                       </p>
                       <p className="text-xs uppercase tracking-wide text-navy/40">
-                        {formatNaira(t.price)} · {t.quantitySold}/{t.quantityAvailable} sold ·{" "}
+                        {formatPrice(t.price)} · {t.quantitySold}/{t.quantityAvailable} sold ·{" "}
                         {t.isActive ? "Active" : "Hidden"}
                       </p>
                     </div>

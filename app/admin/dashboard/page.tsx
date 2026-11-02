@@ -22,6 +22,7 @@ const sections: { href: string; label: string; description: string; roles?: stri
   { href: "/admin/products", label: "Products", description: "Club shop merchandise", roles: ["shop_manager", "inventory_manager"] },
   { href: "/admin/ticket-types", label: "Ticket Types", description: "Priced ticket categories per match", roles: ["ticket_manager"] },
   { href: "/admin/orders", label: "Orders", description: "Shop and ticket sales", roles: ["shop_manager", "ticket_manager", "inventory_manager"] },
+  { href: "/admin/referrals", label: "Referral Codes", description: "Discount and tracking codes tied to a person", roles: ["shop_manager", "ticket_manager", "inventory_manager"] },
   { href: "/admin/scan-tickets", label: "Scan Tickets", description: "Matchday gate check-in", roles: ["ticket_manager", "inventory_manager"] },
   { href: "/admin/settings", label: "Settings", description: "Hero banners, club info, socials", roles: ["content_editor"] },
   { href: "/admin/analytics", label: "Analytics", description: "Season record, ticket + shop revenue", roles: ["super_admin"] },

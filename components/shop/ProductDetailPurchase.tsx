@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
-import { addToCart } from "@/lib/cart";
+import { addToCart, versionLabels } from "@/lib/cart";
 import { formatNaira } from "@/lib/format";
 import { isRealId } from "@/lib/isRealId";
 import type { ShopProduct } from "@/components/shop/ProductCard";
 
 type Fit = "adult" | "kids";
+type Version = "replica" | "player";
 
 // Price, fit (adult or kids), size, quantity and add-to-cart for one product.
 // Choosing Kids switches the price to the product's kids price and the sizes
@@ -23,8 +24,10 @@ export default function ProductDetailPurchase({
 }) {
   const hasKids = product.kidsPrice !== undefined && product.kidsPrice !== null;
   const kidsSizes = product.kidsSizes?.length ? product.kidsSizes : product.sizes;
+  const hasReplica = product.replicaPrice !== undefined && product.replicaPrice !== null;
 
   const [fit, setFit] = useState<Fit>("adult");
+  const [version, setVersion] = useState<Version>("replica");
   const [size, setSize] = useState(product.sizes[0] || "");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -32,7 +35,15 @@ export default function ProductDetailPurchase({
   const isDemo = !isRealId(product._id);
   const outOfStock = !isDemo && product.stock <= 0;
   const sizes = fit === "kids" ? kidsSizes : product.sizes;
-  const price = fit === "kids" && hasKids ? (product.kidsPrice as number) : product.price;
+  // Kids has its own price; otherwise a jersey with a replica price is charged
+  // that or the player-version price, depending on the version chosen.
+  const showVersions = hasReplica && fit !== "kids";
+  const price =
+    fit === "kids" && hasKids
+      ? (product.kidsPrice as number)
+      : showVersions && version === "replica"
+        ? (product.replicaPrice as number)
+        : product.price;
 
   function chooseFit(next: Fit) {
     setFit(next);
@@ -50,6 +61,7 @@ export default function ProductDetailPurchase({
       // Kids lines carry "Kids" in the size, which is how checkout knows to
       // charge the kids price.
       size: fit === "kids" ? (size ? `Kids ${size}` : "Kids") : size || undefined,
+      version: showVersions ? version : undefined,
       imageUrl: image,
     });
     setAdded(true);
@@ -59,6 +71,7 @@ export default function ProductDetailPurchase({
     <div>
       <p className="mt-5 flex items-baseline gap-3">
         <span className="text-3xl font-semibold text-navy">{formatNaira(price)}</span>
+        {showVersions && <span className="text-sm text-navy/45">{versionLabels[version]}</span>}
         {hasKids && (
           <span className="text-sm text-navy/45">{fit === "kids" ? "Kids price" : `Kids ${formatNaira(product.kidsPrice as number)}`}</span>
         )}
@@ -91,6 +104,32 @@ export default function ProductDetailPurchase({
         </div>
       ) : (
         <div className="mt-8 space-y-7 border-t border-navy/10 pt-7">
+          {showVersions && (
+            <div>
+              <span className="mb-3 block text-xs font-semibold uppercase tracking-wide text-navy/50">Version</span>
+              <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Replica or player version">
+                {(["replica", "player"] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    role="radio"
+                    aria-checked={version === v}
+                    onClick={() => setVersion(v)}
+                    className={clsx(
+                      "rounded-xl px-4 py-3 text-left ring-1 transition-colors duration-200 ease-smooth",
+                      version === v ? "bg-navy text-white ring-navy" : "bg-white text-navy ring-navy/20 hover:ring-navy/50"
+                    )}
+                  >
+                    <span className="block text-sm font-semibold">{versionLabels[v]}</span>
+                    <span className={clsx("mt-0.5 block text-xs", version === v ? "text-white/70" : "text-navy/50")}>
+                      {formatNaira(v === "replica" ? (product.replicaPrice as number) : product.price)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {hasKids && (
             <div>
               <span className="mb-3 block text-xs font-semibold uppercase tracking-wide text-navy/50">Fit</span>

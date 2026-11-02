@@ -10,6 +10,7 @@ export type ProductFormValues = {
   slug: string;
   description: string;
   price: number;
+  replicaPrice: number | null;
   kidsPrice: number | null;
   kidsSizes: string[];
   category: "jersey" | "apparel" | "accessories" | "other";
@@ -54,6 +55,8 @@ export default function ProductForm({
       slug: slug || slugify(name),
       description: String(data.get("description") || ""),
       price: Number(data.get("price") || 0),
+      replicaPrice:
+        category !== "jersey" || String(data.get("replicaPrice") || "").trim() === "" ? null : Number(data.get("replicaPrice")),
       kidsPrice: String(data.get("kidsPrice") || "").trim() === "" ? null : Number(data.get("kidsPrice")),
       kidsSizes: kidsSizesInput
         .split(",")
@@ -134,7 +137,7 @@ export default function ProductForm({
       <div className="grid grid-cols-2 gap-5">
         <div>
           <label htmlFor="price" className={labelClass}>
-            Price (₦)
+            {category === "jersey" ? "Player version price (₦)" : "Price (₦)"}
           </label>
           <input id="price" name="price" type="number" min={0} required defaultValue={initial?.price} className={fieldClass} />
         </div>
@@ -145,6 +148,27 @@ export default function ProductForm({
           <input id="stock" name="stock" type="number" min={0} defaultValue={initial?.stock ?? 0} className={fieldClass} />
         </div>
       </div>
+
+      {category === "jersey" && (
+        <div>
+          <label htmlFor="replicaPrice" className={labelClass}>
+            Replica price (₦)
+          </label>
+          <input
+            id="replicaPrice"
+            name="replicaPrice"
+            type="number"
+            min={0}
+            defaultValue={initial?.replicaPrice ?? ""}
+            placeholder="e.g. 20000 (leave empty if there is no replica)"
+            className={fieldClass}
+          />
+          <p className="mt-2 text-xs text-navy/45">
+            A jersey comes in two versions: the player version (the price above) and a replica. When a replica price is set,
+            shoppers choose between them on the product page and are charged the matching price.
+          </p>
+        </div>
+      )}
 
       <div>
         <label htmlFor="kidsPrice" className={labelClass}>

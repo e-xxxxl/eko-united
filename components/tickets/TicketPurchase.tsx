@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { formatNaira } from "@/lib/format";
+import { formatPrice } from "@/lib/format";
 import { addToCart } from "@/lib/cart";
 import { isRealId } from "@/lib/isRealId";
 
@@ -13,6 +13,9 @@ export type TicketTypeOption = {
   quantityAvailable: number;
   quantitySold: number;
 };
+
+// The most free tickets one order can claim (the server enforces the same limit).
+const FREE_MAX = 4;
 
 export default function TicketPurchase({
   ticketTypes,
@@ -80,7 +83,7 @@ export default function TicketPurchase({
               <div>
                 <p className="font-display text-lg text-navy">{t.name}</p>
                 <p className="text-sm text-navy/50">
-                  {formatNaira(t.price)}{" "}
+                  {formatPrice(t.price)}{t.price === 0 && !soldOut && !isDemo ? ` · up to ${FREE_MAX} per order` : ""}{" "}
                   {soldOut ? (
                     <span className="text-red-500">— Sold out</span>
                   ) : isDemo ? (
@@ -102,7 +105,7 @@ export default function TicketPurchase({
                   </span>
                   <button
                     type="button"
-                    onClick={() => setQty(t._id, Math.min(remaining, (quantities[t._id] || 0) + 1))}
+                    onClick={() => setQty(t._id, Math.min(remaining, t.price === 0 ? FREE_MAX : remaining, (quantities[t._id] || 0) + 1))}
                     className="btn-glass btn-glass-navy flex h-8 w-8 rounded-lg items-center justify-center"
                   >
                     +

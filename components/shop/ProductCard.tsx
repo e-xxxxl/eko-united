@@ -10,6 +10,7 @@ export type ShopProduct = {
   name: string;
   slug: string;
   price: number;
+  replicaPrice?: number | null;
   kidsPrice?: number | null;
   kidsSizes?: string[];
   images: string[];
@@ -42,6 +43,7 @@ export default function ProductCard({
   const photos = product.images.filter(isAllowedImageUrl);
   const outOfStock = isRealId(product._id) && product.stock <= 0;
   const hasKids = product.kidsPrice !== undefined && product.kidsPrice !== null;
+  const hasReplica = product.replicaPrice !== undefined && product.replicaPrice !== null;
   const lowStock = !outOfStock && isRealId(product._id) && product.stock > 0 && product.stock <= 5;
 
   return (
@@ -109,7 +111,16 @@ export default function ProductCard({
         </p>
         <div className="mt-2 flex items-center justify-between gap-2">
           <p className={clsx("min-w-0 text-sm", dark ? "text-white" : "text-navy")}>
-            <span className="block font-semibold">{formatNaira(product.price)}</span>
+            {hasReplica ? (
+              <>
+                <span className="block font-semibold">Replica {formatNaira(product.replicaPrice as number)}</span>
+                <span className={clsx("block text-xs", dark ? "text-white/60" : "text-navy/50")}>
+                  Player version {formatNaira(product.price)}
+                </span>
+              </>
+            ) : (
+              <span className="block font-semibold">{formatNaira(product.price)}</span>
+            )}
             {hasKids && (
               <span className={clsx("block text-xs", dark ? "text-white/60" : "text-navy/50")}>
                 Kids {formatNaira(product.kidsPrice as number)}

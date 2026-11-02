@@ -20,9 +20,13 @@ type TicketResult = {
 
 type Summary = { total: number; used: number };
 
-// Matchday gate tool: select the match, then either type the 6-character
-// code a fan reads off their ticket, or scan the QR code with the device
-// camera (native BarcodeDetector API, no extra library, and it just quietly
+// Matchday gate tool: select the match, then either type the 8-digit number
+// a fan reads off their ticket, or scan the QR code with the device
+// camera. With "check in automatically" on (the default) a scan or a typed
+// number admits the ticket straight away; a ticket already used, or one for a
+// different match, is flagged instead. Turn it off to see the ticket first and
+// press Admit yourself.
+// (native BarcodeDetector API, no extra library, and it just quietly
 // doesn't offer the camera option on browsers that don't support it, since
 // the manual code entry always works regardless).
 export default function ScanTicketsPage() {
@@ -33,6 +37,8 @@ export default function ScanTicketsPage() {
   const [result, setResult] = useState<TicketResult | null>(null);
   const [status, setStatus] = useState<"idle" | "looking-up" | "found" | "not-found">("idle");
   const [admitting, setAdmitting] = useState(false);
+  const [autoCheckIn, setAutoCheckIn] = useState(true);
+  const [admittedNow, setAdmittedNow] = useState(false);
   const [error, setError] = useState("");
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannerSupported, setScannerSupported] = useState(false);
@@ -69,15 +75,28 @@ export default function ScanTicketsPage() {
   }
 
   async function handleLookup(rawCode: string) {
-    const cleaned = rawCode.trim().toUpperCase();
+    // Spaces and dashes are ignored: "1234 5678" is the same ticket as "12345678".
+    const cleaned = rawCode.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
     if (cleaned.length < 4) return;
     setStatus("looking-up");
     setError("");
     setResult(null);
+    setAdmittedNow(false);
     try {
+      if (autoCheckIn) {
+        const ticket = await adminFetch<TicketResult>("/tickets/validate", {
+          method: "POST",
+          body: JSON.stringify({ code: cleaned, matchId }),
+        });
+        setResult(ticket);
+        setAdmittedNow(!ticket.alreadyUsed);
+        setStatus("found");
+        if (matchId) refreshSummary(matchId);
+        return;
+      }
       const ticket = await adminFetch<TicketResult>("/tickets/lookup", {
         method: "POST",
-        body: JSON.stringify({ code: cleaned }),
+        body: JSON.stringify({ code: cleaned, matchId }),
       });
       setResult(ticket);
       setStatus("found");
@@ -93,9 +112,10 @@ export default function ScanTicketsPage() {
     try {
       const updated = await adminFetch<TicketResult>("/tickets/validate", {
         method: "POST",
-        body: JSON.stringify({ code: result.code }),
+        body: JSON.stringify({ code: result.code, matchId }),
       });
       setResult(updated);
+      setAdmittedNow(!updated.alreadyUsed);
       if (matchId) refreshSummary(matchId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to check in this ticket.");
@@ -109,6 +129,7 @@ export default function ScanTicketsPage() {
     setResult(null);
     setStatus("idle");
     setError("");
+    setAdmittedNow(false);
   }
 
   async function startScanner() {
@@ -222,6 +243,16 @@ export default function ScanTicketsPage() {
                     </button>
                   )}
 
+                  <label className="flex cursor-pointer items-center gap-3 text-sm text-navy">
+                    <input
+                      type="checkbox"
+                      checked={autoCheckIn}
+                      onChange={(e) => setAutoCheckIn(e.target.checked)}
+                      className="h-4 w-4 accent-navy"
+                    />
+                    Check in automatically after a scan or a typed number
+                  </label>
+
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -231,18 +262,19 @@ export default function ScanTicketsPage() {
                   >
                     <input
                       value={code}
-                      onChange={(e) => setCode(e.target.value.toUpperCase())}
-                      placeholder="6-DIGIT CODE"
-                      maxLength={6}
-                      autoCapitalize="characters"
-                      className="flex-1 rounded-xl border-2 border-navy/20 bg-transparent px-6 py-4 text-center text-2xl font-bold uppercase tracking-[0.3em] text-navy outline-none focus:border-cyan"
+                      onChange={(e) => setCode(e.target.value)}
+                      placeholder="8-DIGIT NUMBER"
+                      maxLength={12}
+                      inputMode="numeric"
+                      autoComplete="off"
+                      className="min-w-0 flex-1 rounded-xl border-2 border-navy/20 bg-transparent px-4 py-4 text-center text-2xl font-bold uppercase tracking-[0.2em] text-navy outline-none placeholder:text-base placeholder:tracking-normal placeholder:text-navy/30 focus:border-cyan"
                     />
                     <button
                       type="submit"
-                      disabled={status === "looking-up" || code.length < 4}
+                      disabled={status === "looking-up" || code.replace(/[^a-zA-Z0-9]/g, "").length < 4}
                       className="btn-glass btn-glass-yellow shrink-0 px-6 text-sm font-bold uppercase tracking-wide disabled:opacity-50"
                     >
-                      Check
+                      {autoCheckIn ? "Check in" : "Check"}
                     </button>
                   </form>
                 </div>
@@ -250,7 +282,7 @@ export default function ScanTicketsPage() {
 
               {status === "not-found" && (
                 <div className="mt-6 rounded-2xl bg-red-50 p-6 text-center">
-                  <p className="text-lg font-bold text-red-600">✕ Not found</p>
+                  <p className="text-lg font-bold text-red-600">✕ Cannot admit</p>
                   <p className="mt-1 text-sm text-red-500">{error}</p>
                   <button
                     type="button"
@@ -266,11 +298,12 @@ export default function ScanTicketsPage() {
                 <div
                   className={`mt-6 rounded-2xl p-6 text-center ${result.used ? "bg-yellow/10" : "bg-cyan/10"}`}
                 >
-                  <p className={`text-lg font-bold ${result.used ? "text-navy" : "text-navy"}`}>
-                    {result.used ? "⚠ Already checked in" : "✓ Valid ticket"}
+                  <p className="text-lg font-bold text-navy">
+                    {admittedNow ? "✓ Checked in" : result.used ? "⚠ Already checked in" : "✓ Valid ticket"}
                   </p>
                   <p className="mt-3 font-display text-2xl text-navy">{result.holderName}</p>
                   <p className="mt-1 text-sm text-navy/60">{result.ticketTypeName}</p>
+                  <p className="mt-1 text-xs tracking-wide text-navy/40">{result.code.length === 8 ? `${result.code.slice(0, 4)} ${result.code.slice(4)}` : result.code}</p>
                   {result.used && result.usedAt && (
                     <p className="mt-2 text-xs text-navy/40">
                       Checked in{" "}
@@ -297,10 +330,13 @@ export default function ScanTicketsPage() {
                     )}
                     <button
                       type="button"
-                      onClick={reset}
+                      onClick={() => {
+                        reset();
+                        if (scannerSupported) startScanner();
+                      }}
                       className="btn-glass btn-glass-navy px-8 py-3 text-sm font-bold uppercase tracking-wide"
                     >
-                      Next ticket
+                      {scannerSupported ? "Scan next" : "Next ticket"}
                     </button>
                   </div>
                 </div>

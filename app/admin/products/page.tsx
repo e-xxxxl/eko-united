@@ -10,6 +10,7 @@ type Product = {
   _id: string;
   name: string;
   price: number;
+  replicaPrice?: number | null;
   category: string;
   stock: number;
   isActive: boolean;
@@ -79,7 +80,7 @@ export default function AdminProductsPage() {
                   <div>
                     <p className="font-medium text-navy">{product.name}</p>
                     <p className="text-xs uppercase tracking-wide text-navy/40">
-                      {product.category} · {formatNaira(product.price)} · {product.stock} in stock ·{" "}
+                      {product.category} · {product.replicaPrice != null ? `Replica ${formatNaira(product.replicaPrice)}, Player ${formatNaira(product.price)}` : formatNaira(product.price)} · {product.stock} in stock ·{" "}
                       {product.isActive ? "Active" : "Hidden"}
                     </p>
                   </div>

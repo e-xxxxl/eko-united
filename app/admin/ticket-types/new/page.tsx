@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import TicketTypeForm, { type TicketTypeFormValues, type MatchOption } from "@/components/admin/TicketTypeForm";
 import { adminFetch, revalidatePublicPaths } from "@/lib/adminApi";
+import { fetchMatchOptions } from "@/lib/adminMatches";
 
 export default function NewTicketTypePage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function NewTicketTypePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    adminFetch<MatchOption[]>("/matches").then(setMatches).catch(() => setMatches([]));
+    fetchMatchOptions().then(setMatches);
   }, []);
 
   async function handleSave(values: TicketTypeFormValues) {

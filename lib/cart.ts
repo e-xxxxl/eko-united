@@ -15,6 +15,7 @@ export type CartItem = {
   price: number;
   quantity: number;
   size?: string;
+  version?: "replica" | "player"; // jerseys sold in two versions
   imageUrl?: string;
   matchLabel?: string; // ticket items only, e.g. "vs Ikorodu City — 12 Sep"
 };
@@ -48,9 +49,11 @@ function writeCart(cart: Cart) {
   window.dispatchEvent(new Event(EVENT_NAME));
 }
 
-function sameLine(a: CartItem, b: { ref: string; size?: string }) {
-  return a.ref === b.ref && (a.size || "") === (b.size || "");
+function sameLine(a: CartItem, b: { ref: string; size?: string; version?: string }) {
+  return a.ref === b.ref && (a.size || "") === (b.size || "") && (a.version || "") === (b.version || "");
 }
+
+export const versionLabels = { replica: "Replica", player: "Player version" } as const;
 
 // Adding an item of a different type than what's currently in the cart
 // starts a fresh cart — a shop order and a ticket order can't be mixed into
@@ -68,16 +71,16 @@ export function addToCart(type: CartItemType, item: CartItem) {
   writeCart({ type, items });
 }
 
-export function updateQuantity(ref: string, size: string | undefined, quantity: number) {
+export function updateQuantity(ref: string, size: string | undefined, quantity: number, version?: string) {
   const current = readCart();
   const items = current.items
-    .map((i) => (sameLine(i, { ref, size }) ? { ...i, quantity } : i))
+    .map((i) => (sameLine(i, { ref, size, version }) ? { ...i, quantity } : i))
     .filter((i) => i.quantity > 0);
   writeCart({ type: items.length > 0 ? current.type : null, items });
 }
 
-export function removeFromCart(ref: string, size?: string) {
-  updateQuantity(ref, size, 0);
+export function removeFromCart(ref: string, size?: string, version?: string) {
+  updateQuantity(ref, size, 0, version);
 }
 
 export function clearCart() {

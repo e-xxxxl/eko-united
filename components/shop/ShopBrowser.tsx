@@ -27,7 +27,7 @@ export default function ShopBrowser({ products }: { products: ShopProduct[] }) {
 
   const shown = useMemo(() => {
     const list = category === "all" ? [...products] : products.filter((p) => p.category === category);
-    if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
+    if (sort === "price-asc") list.sort((a, b) => (a.replicaPrice ?? a.price) - (b.replicaPrice ?? b.price));
     if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
     return list;
   }, [products, category, sort]);
