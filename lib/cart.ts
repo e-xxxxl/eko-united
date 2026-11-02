@@ -33,7 +33,9 @@ function readCart(): Cart {
     if (!raw) return EMPTY_CART;
     const parsed = JSON.parse(raw);
     if (!parsed || !Array.isArray(parsed.items)) return EMPTY_CART;
-    return parsed;
+    // Kids sizes were removed from the shop; drop any left in an old cart.
+    const items = (parsed.items as CartItem[]).filter((i) => !/^Kids(\s|$)/.test(i.size || ""));
+    return { ...parsed, items, type: items.length > 0 ? parsed.type : null };
   } catch {
     return EMPTY_CART;
   }

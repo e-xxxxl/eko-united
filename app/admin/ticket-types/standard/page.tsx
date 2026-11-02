@@ -34,7 +34,7 @@ export default function StandardTicketsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchMatchOptions().then(setMatches);
+    fetchMatchOptions({ homeOnly: true }).then(setMatches);
   }, []);
 
   const priceOf = (r: Row) => (r.key === "premium" && firstGame ? 0 : Number(r.price) || 0);
@@ -97,8 +97,7 @@ export default function StandardTicketsPage() {
                 <option value="">Select a match…</option>
                 {matches.map((m) => (
                   <option key={m._id} value={m._id}>
-                    {m.isHome ? "vs " : "at "}
-                    {m.opponent} ·{" "}
+                    vs {m.opponent} ·{" "}
                     {new Date(m.kickoff).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Africa/Lagos" })}
                   </option>
                 ))}

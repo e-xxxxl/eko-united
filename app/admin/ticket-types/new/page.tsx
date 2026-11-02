@@ -14,7 +14,7 @@ export default function NewTicketTypePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchMatchOptions().then(setMatches);
+    fetchMatchOptions({ homeOnly: true }).then(setMatches);
   }, []);
 
   async function handleSave(values: TicketTypeFormValues) {

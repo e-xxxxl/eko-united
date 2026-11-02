@@ -67,7 +67,8 @@ export default async function MatchTicketsPage({
 }) {
   const { id } = await params;
   const match = await getMatch(id);
-  if (!match) notFound();
+  // Tickets are only sold for home matches.
+  if (!match || !match.isHome) notFound();
 
   const ticketTypes = await getTicketTypes(id);
   const { date, time } = formatKickoff(match.kickoff);

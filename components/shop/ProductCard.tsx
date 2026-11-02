@@ -11,8 +11,6 @@ export type ShopProduct = {
   slug: string;
   price: number;
   replicaPrice?: number | null;
-  kidsPrice?: number | null;
-  kidsSizes?: string[];
   images: string[];
   sizes: string[];
   stock: number;
@@ -29,8 +27,9 @@ export const categoryLabels: Record<NonNullable<ShopProduct["category"]>, string
 // One product in the shop grid and on the homepage. The photo is the card:
 // it fills a tall frame edge to edge with nothing behind it, and a second
 // photo (when the product has one) fades in on hover so shoppers see another
-// angle without opening the page. Everything else (adding to the cart, kids
-// sizes) happens on the product page, where there is room to do it properly.
+// angle without opening the page. Everything else (adding to the cart,
+// picking a size) happens on the product page, where there is room to do it
+// properly.
 export default function ProductCard({
   product,
   badge,
@@ -42,7 +41,6 @@ export default function ProductCard({
 }) {
   const photos = product.images.filter(isAllowedImageUrl);
   const outOfStock = isRealId(product._id) && product.stock <= 0;
-  const hasKids = product.kidsPrice !== undefined && product.kidsPrice !== null;
   const hasReplica = product.replicaPrice !== undefined && product.replicaPrice !== null;
   const lowStock = !outOfStock && isRealId(product._id) && product.stock > 0 && product.stock <= 5;
 
@@ -120,11 +118,6 @@ export default function ProductCard({
               </>
             ) : (
               <span className="block font-semibold">{formatNaira(product.price)}</span>
-            )}
-            {hasKids && (
-              <span className={clsx("block text-xs", dark ? "text-white/60" : "text-navy/50")}>
-                Kids {formatNaira(product.kidsPrice as number)}
-              </span>
             )}
           </p>
           {/* A span, not a button: the whole card is already the link to the product. */}

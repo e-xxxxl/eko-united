@@ -18,7 +18,7 @@ export default function EditTicketTypePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchMatchOptions().then(setMatches);
+    fetchMatchOptions({ homeOnly: true }).then(setMatches);
     adminFetch<TicketType[]>("/ticket-types")
       .then((all) => {
         const found = all.find((t) => t._id === params.id);

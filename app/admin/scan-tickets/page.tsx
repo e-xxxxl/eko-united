@@ -53,7 +53,7 @@ export default function ScanTicketsPage() {
     fetch(`${API_URL}/matches`)
       .then((res) => (res.ok ? res.json() : []))
       .then((all: MatchOption[]) => {
-        const upcoming = all.filter((m) => m.opponent).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
+        const upcoming = all.filter((m) => m.opponent && m.isHome).sort((a, b) => a.kickoff.localeCompare(b.kickoff));
         setMatches(upcoming);
       })
       .catch(() => setMatches([]));

@@ -25,7 +25,9 @@ function formatKickoff(iso: string) {
 }
 
 async function getUpcomingMatches(): Promise<DemoMatch[]> {
-  return (await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600)) || [];
+  // Tickets are only sold for home matches.
+  const all = (await apiFetch<DemoMatch[]>("/matches?status=upcoming", 600)) || [];
+  return Array.isArray(all) ? all.filter((m) => m.isHome) : [];
 }
 
 export default async function TicketsPage() {
@@ -39,7 +41,7 @@ export default async function TicketsPage() {
       <h1 className="display-title font-display mb-10">Tickets</h1>
 
       {matches.length === 0 ? (
-        <p className="text-navy/50">No upcoming fixtures on sale right now — check back soon.</p>
+        <p className="text-navy/50">No home matches on sale right now — check back soon.</p>
       ) : (
         <div data-reveal-stagger className="border-t border-navy/10">
           {matches.map((match) => {

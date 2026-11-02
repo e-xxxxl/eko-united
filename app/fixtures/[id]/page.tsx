@@ -212,7 +212,7 @@ export default async function MatchDetailPage({
           </div>
         )}
 
-        {!isFinished && match.status !== "postponed" && (
+        {match.isHome && !isFinished && match.status !== "postponed" && (
           <div className="mt-10 flex justify-center">
             <Link
               href={`/tickets/${id}`}

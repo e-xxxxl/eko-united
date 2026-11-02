@@ -8,13 +8,11 @@ import { formatNaira } from "@/lib/format";
 import { isRealId } from "@/lib/isRealId";
 import type { ShopProduct } from "@/components/shop/ProductCard";
 
-type Fit = "adult" | "kids";
 type Version = "replica" | "player";
 
-// Price, fit (adult or kids), size, quantity and add-to-cart for one product.
-// Choosing Kids switches the price to the product's kids price and the sizes
-// to its kids sizes. Checkout re-reads the real price from the database, so
-// what is shown here is only ever a display.
+// Price, version (Replica or Player version, for jerseys that have both), size,
+// quantity and add-to-cart for one product. Checkout re-reads the real price
+// from the database, so what is shown here is only ever a display.
 export default function ProductDetailPurchase({
   product,
   image,
@@ -22,11 +20,8 @@ export default function ProductDetailPurchase({
   product: ShopProduct;
   image?: string;
 }) {
-  const hasKids = product.kidsPrice !== undefined && product.kidsPrice !== null;
-  const kidsSizes = product.kidsSizes?.length ? product.kidsSizes : product.sizes;
   const hasReplica = product.replicaPrice !== undefined && product.replicaPrice !== null;
 
-  const [fit, setFit] = useState<Fit>("adult");
   const [version, setVersion] = useState<Version>("replica");
   const [size, setSize] = useState(product.sizes[0] || "");
   const [quantity, setQuantity] = useState(1);
@@ -34,22 +29,7 @@ export default function ProductDetailPurchase({
 
   const isDemo = !isRealId(product._id);
   const outOfStock = !isDemo && product.stock <= 0;
-  const sizes = fit === "kids" ? kidsSizes : product.sizes;
-  // Kids has its own price; otherwise a jersey with a replica price is charged
-  // that or the player-version price, depending on the version chosen.
-  const showVersions = hasReplica && fit !== "kids";
-  const price =
-    fit === "kids" && hasKids
-      ? (product.kidsPrice as number)
-      : showVersions && version === "replica"
-        ? (product.replicaPrice as number)
-        : product.price;
-
-  function chooseFit(next: Fit) {
-    setFit(next);
-    const list = next === "kids" ? kidsSizes : product.sizes;
-    setSize(list[0] || "");
-  }
+  const price = hasReplica && version === "replica" ? (product.replicaPrice as number) : product.price;
 
   function handleAddToCart() {
     addToCart("shop", {
@@ -58,10 +38,8 @@ export default function ProductDetailPurchase({
       name: product.name,
       price,
       quantity,
-      // Kids lines carry "Kids" in the size, which is how checkout knows to
-      // charge the kids price.
-      size: fit === "kids" ? (size ? `Kids ${size}` : "Kids") : size || undefined,
-      version: showVersions ? version : undefined,
+      size: size || undefined,
+      version: hasReplica ? version : undefined,
       imageUrl: image,
     });
     setAdded(true);
@@ -71,10 +49,7 @@ export default function ProductDetailPurchase({
     <div>
       <p className="mt-5 flex items-baseline gap-3">
         <span className="text-3xl font-semibold text-navy">{formatNaira(price)}</span>
-        {showVersions && <span className="text-sm text-navy/45">{versionLabels[version]}</span>}
-        {hasKids && (
-          <span className="text-sm text-navy/45">{fit === "kids" ? "Kids price" : `Kids ${formatNaira(product.kidsPrice as number)}`}</span>
-        )}
+        {hasReplica && <span className="text-sm text-navy/45">{versionLabels[version]}</span>}
       </p>
 
       {!isDemo && (
@@ -104,7 +79,7 @@ export default function ProductDetailPurchase({
         </div>
       ) : (
         <div className="mt-8 space-y-7 border-t border-navy/10 pt-7">
-          {showVersions && (
+          {hasReplica && (
             <div>
               <span className="mb-3 block text-xs font-semibold uppercase tracking-wide text-navy/50">Version</span>
               <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Replica or player version">
@@ -130,36 +105,11 @@ export default function ProductDetailPurchase({
             </div>
           )}
 
-          {hasKids && (
+          {product.sizes.length > 0 && (
             <div>
-              <span className="mb-3 block text-xs font-semibold uppercase tracking-wide text-navy/50">Fit</span>
-              <div className="inline-flex rounded-xl bg-navy/[0.06] p-1" role="radiogroup" aria-label="Adult or kids">
-                {(["adult", "kids"] as const).map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    role="radio"
-                    aria-checked={fit === f}
-                    onClick={() => chooseFit(f)}
-                    className={clsx(
-                      "rounded-lg px-6 py-2 text-sm font-semibold capitalize transition-all duration-300 ease-smooth",
-                      fit === f ? "bg-navy text-white shadow-sm" : "text-navy/60 hover:text-navy"
-                    )}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {sizes.length > 0 && (
-            <div>
-              <span className="mb-3 block text-xs font-semibold uppercase tracking-wide text-navy/50">
-                {fit === "kids" ? "Kids size" : "Size"}
-              </span>
+              <span className="mb-3 block text-xs font-semibold uppercase tracking-wide text-navy/50">Size</span>
               <div className="flex flex-wrap gap-2">
-                {sizes.map((s) => (
+                {product.sizes.map((s) => (
                   <button
                     key={s}
                     type="button"

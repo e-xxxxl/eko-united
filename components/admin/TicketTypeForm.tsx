@@ -51,8 +51,7 @@ export default function TicketTypeForm({
           </option>
           {matches.map((m) => (
             <option key={m._id} value={m._id}>
-              {m.isHome ? "vs " : "at "}
-              {m.opponent} —{" "}
+              vs {m.opponent} —{" "}
               {new Date(m.kickoff).toLocaleDateString("en-GB", {
                 day: "numeric",
                 month: "short",

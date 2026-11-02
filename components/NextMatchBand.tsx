@@ -146,12 +146,14 @@ export default function NextMatchBand({ match }: { match: NextMatch }) {
         </ul>
 
         <div className="flex w-full max-w-md flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row">
-          <Link
-            href="/tickets"
-            className="btn-glass btn-glass-yellow px-8 py-3 text-center text-xs font-bold uppercase tracking-wide"
-          >
-            Buy tickets
-          </Link>
+          {match.isHome && (
+            <Link
+              href={`/tickets/${match._id}`}
+              className="btn-glass btn-glass-yellow px-8 py-3 text-center text-xs font-bold uppercase tracking-wide"
+            >
+              Buy tickets
+            </Link>
+          )}
           <Link
             href={`/fixtures/${match._id}`}
             className="btn-glass btn-glass-light px-8 py-3 text-center text-xs font-bold uppercase tracking-wide"

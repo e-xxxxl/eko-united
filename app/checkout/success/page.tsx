@@ -3,6 +3,7 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { formatPrice, formatTicketCode } from "@/lib/format";
 import RefreshWhilePending from "@/components/RefreshWhilePending";
+import ClearCart from "@/components/cart/ClearCart";
 
 export const metadata: Metadata = {
   title: "Order Confirmed",
@@ -45,6 +46,13 @@ export default async function CheckoutSuccessPage({
   searchParams: Promise<{ orderId?: string; token?: string; pending?: string }>;
 }) {
   const { orderId, token, pending } = await searchParams;
+  // Back from the payment page: ask the payment provider directly whether the
+  // payment went through (this also completes the order), instead of waiting for
+  // its webhook to arrive.
+  const verified =
+    orderId && token && !pending
+      ? await apiFetch<{ status: string; providerStatus: string | null }>(`/checkout/${orderId}/verify?token=${encodeURIComponent(token)}`, 0)
+      : null;
   const order = orderId ? await apiFetch<OrderStatus>(`/checkout/${orderId}`, 0) : null;
   const ticketsReply =
     order?.type === "ticket" && order.status === "paid" && orderId && token
@@ -53,11 +61,15 @@ export default async function CheckoutSuccessPage({
   const tickets = ticketsReply?.tickets || [];
 
   const isFree = order?.status === "paid" && order.totalAmount === 0;
+  // The buyer closed the payment window or backed out: Paystack calls that "abandoned".
+  const notCompleted =
+    order?.status === "pending" && !pending && ["abandoned", "failed", "reversed"].includes(verified?.providerStatus || "");
   // Came back from the payment page but the confirmation has not landed yet.
-  const waitingForPayment = order?.status === "pending" && !pending;
+  const waitingForPayment = order?.status === "pending" && !pending && !notCompleted;
 
-  const heading =
-    order?.status === "paid"
+  const heading = notCompleted
+    ? "Payment not completed"
+    : order?.status === "paid"
       ? order.type === "ticket"
         ? "Your tickets"
         : isFree
@@ -69,8 +81,9 @@ export default async function CheckoutSuccessPage({
           ? "Order recorded"
           : "Order status unknown";
 
-  const message =
-    order?.status === "paid"
+  const message = notCompleted
+    ? "No money was taken. Your cart is still saved, so you can go back and try again."
+    : order?.status === "paid"
       ? order.type === "ticket"
         ? "You are all set. Show the QR code at the gate, or read out the number. We have also emailed your tickets."
         : "Your order is confirmed. A confirmation has been sent to your email."
@@ -81,6 +94,7 @@ export default async function CheckoutSuccessPage({
   return (
     <main className="mx-auto max-w-2xl px-6 py-24 text-center sm:px-10">
       {waitingForPayment && <RefreshWhilePending />}
+      {(order?.status === "paid" || pending) && <ClearCart />}
       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Thank you</p>
       <h1 className="display-title font-display mt-3">{heading}</h1>
       <p className="mx-auto mt-4 max-w-lg text-base text-navy/60">{message}</p>
@@ -124,12 +138,21 @@ export default async function CheckoutSuccessPage({
         </p>
       )}
 
-      <Link
-        href="/"
-        className="btn-glass btn-glass-yellow mt-10 inline-block px-8 py-3 text-sm font-bold uppercase tracking-wide"
-      >
-        Back to home
-      </Link>
+      {notCompleted ? (
+        <Link
+          href="/cart"
+          className="btn-glass btn-glass-yellow mt-10 inline-block px-8 py-3 text-sm font-bold uppercase tracking-wide"
+        >
+          Back to my cart
+        </Link>
+      ) : (
+        <Link
+          href="/"
+          className="btn-glass btn-glass-yellow mt-10 inline-block px-8 py-3 text-sm font-bold uppercase tracking-wide"
+        >
+          Back to home
+        </Link>
+      )}
     </main>
   );
 }

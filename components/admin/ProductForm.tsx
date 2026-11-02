@@ -11,8 +11,6 @@ export type ProductFormValues = {
   description: string;
   price: number;
   replicaPrice: number | null;
-  kidsPrice: number | null;
-  kidsSizes: string[];
   category: "jersey" | "apparel" | "accessories" | "other";
   images: string[];
   sizes: string[];
@@ -40,7 +38,6 @@ export default function ProductForm({
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [category, setCategory] = useState<ProductFormValues["category"]>(initial?.category || "jersey");
   const [images, setImages] = useState<string[]>(initial?.images?.length ? initial.images : [""]);
-  const [kidsSizesInput, setKidsSizesInput] = useState((initial?.kidsSizes || []).join(", "));
   const [sizesInput, setSizesInput] = useState((initial?.sizes || ["S", "M", "L", "XL"]).join(", "));
 
   const validImages = images.filter(Boolean);
@@ -57,11 +54,6 @@ export default function ProductForm({
       price: Number(data.get("price") || 0),
       replicaPrice:
         category !== "jersey" || String(data.get("replicaPrice") || "").trim() === "" ? null : Number(data.get("replicaPrice")),
-      kidsPrice: String(data.get("kidsPrice") || "").trim() === "" ? null : Number(data.get("kidsPrice")),
-      kidsSizes: kidsSizesInput
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
       category,
       images: validImages,
       sizes: sizesInput
@@ -169,37 +161,6 @@ export default function ProductForm({
           </p>
         </div>
       )}
-
-      <div>
-        <label htmlFor="kidsPrice" className={labelClass}>
-          Kids price (₦, optional)
-        </label>
-        <input
-          id="kidsPrice"
-          name="kidsPrice"
-          type="number"
-          min={0}
-          defaultValue={initial?.kidsPrice ?? ""}
-          placeholder="Leave empty if there is no kids version"
-          className={fieldClass}
-        />
-        <p className="mt-2 text-xs text-navy/45">
-          When set, shoppers see an Adult / Kids switch on the product page. Choosing Kids shows and charges this price.
-        </p>
-      </div>
-
-      <div>
-        <label htmlFor="kidsSizes" className={labelClass}>
-          Kids sizes (comma-separated, optional)
-        </label>
-        <input
-          id="kidsSizes"
-          value={kidsSizesInput}
-          onChange={(e) => setKidsSizesInput(e.target.value)}
-          placeholder="e.g. 4-6, 8-10, 12-14 (empty uses the sizes above)"
-          className={fieldClass}
-        />
-      </div>
 
       <div>
         <label htmlFor="sizes" className={labelClass}>

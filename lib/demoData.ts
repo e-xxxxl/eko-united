@@ -107,8 +107,6 @@ export type DemoProduct = {
   description?: string;
   price: number;
   replicaPrice?: number | null; // price of the replica version of a jersey (`price` is then the player version)
-  kidsPrice?: number | null; // price of the kids' version, when the club sells one
-  kidsSizes?: string[]; // kids size labels; empty means kids use `sizes`
   category: "jersey" | "apparel" | "accessories" | "other";
   images: string[];
   sizes: string[];

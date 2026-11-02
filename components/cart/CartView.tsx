@@ -97,9 +97,11 @@ export default function CartView() {
         return;
       }
 
-      clearCart();
       const link = `/checkout/success?orderId=${body.orderId}${body.token ? `&token=${body.token}` : ""}`;
 
+      // Off to the payment page. The cart is deliberately NOT cleared yet: if
+      // the buyer closes the payment window or presses back, it is still here.
+      // It is emptied on the success page once the payment is confirmed.
       if (body.paymentUrl) {
         window.location.href = body.paymentUrl;
         return;
@@ -107,12 +109,14 @@ export default function CartView() {
 
       // Nothing to pay: the tickets or order are already confirmed.
       if (body.free) {
+        clearCart();
         router.push(link);
         return;
       }
 
       // No payment provider configured yet on the backend — the order was
       // still recorded (see routes/checkout.js), just not auto-charged.
+      clearCart();
       setNotice(body.message || "Your order has been recorded. The club will be in touch to complete payment.");
       router.push(`${link}&pending=1`);
     } catch {
