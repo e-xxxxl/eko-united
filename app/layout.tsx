@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import SiteChrome from "@/components/SiteChrome";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollReveal from "@/components/ScrollReveal";
+import MetaPixel from "@/components/MetaPixel";
 import { apiFetch } from "@/lib/api";
 import "./globals.css";
 
@@ -103,6 +104,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <ScrollToTop />
         <ScrollReveal />
+        <MetaPixel />
         <SiteChrome settings={settings}>{children}</SiteChrome>
       </body>
     </html>
