@@ -58,3 +58,26 @@ export async function revalidatePublicPaths(paths: string[]) {
     // intentionally swallowed — see comment above
   }
 }
+
+// Downloads a file the admin API produces (a CSV, for example). A plain link
+// cannot be used because the request has to carry the sign-in token.
+export async function downloadAdminFile(path: string, fallbackName: string) {
+  const token = getToken();
+  if (!token) {
+    window.location.href = "/admin";
+    return;
+  }
+  const res = await fetch(`${API_URL}/admin${path}`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || "Could not download the file.");
+  }
+  const disposition = res.headers.get("content-disposition") || "";
+  const name = disposition.match(/filename="([^"]+)"/)?.[1] || fallbackName;
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}

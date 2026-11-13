@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
-import { adminFetch } from "@/lib/adminApi";
+import { EmptyState, ErrorNote, PageHeader, Pill, StatCard, btnSecondary, dateTimeLabel } from "@/components/admin/ui";
+import { adminFetch, downloadAdminFile } from "@/lib/adminApi";
 import { formatNaira, formatPrice } from "@/lib/format";
-import { API_URL } from "@/lib/api";
-import { getToken } from "@/lib/adminAuth";
 
 type Order = {
   _id: string;
-  type: "shop" | "ticket";
   items: { name: string; unitPrice: number; quantity: number; size?: string; version?: "replica" | "player" }[];
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
+  subtotalAmount?: number;
   totalAmount: number;
   discountAmount?: number;
   referralCode?: string;
@@ -21,212 +20,281 @@ type Order = {
   marketingConsent?: boolean;
   status: "pending" | "paid" | "failed" | "cancelled";
   paymentProvider?: "paystack" | "flutterwave";
+  paymentReference?: string;
+  paidAt?: string;
   fulfilled: boolean;
   createdAt: string;
 };
 
-const statusTone: Record<Order["status"], string> = {
-  paid: "text-cyan",
-  pending: "text-navy/50",
-  failed: "text-red-500",
-  cancelled: "text-navy/30",
-};
+const statusTone = { paid: "good", pending: "warn", failed: "bad", cancelled: "neutral" } as const;
+const statusLabel = { paid: "Paid", pending: "Not paid yet", failed: "Failed", cancelled: "Cancelled" } as const;
 
-export default function AdminOrdersPage() {
+const methodOf = (o: Order) =>
+  o.paymentProvider === "paystack" ? "Paystack" : o.paymentProvider === "flutterwave" ? "Flutterwave" : o.totalAmount === 0 ? "Free" : o.status === "paid" ? "Offline" : "Not paid";
+
+const lineLabel = (i: Order["items"][number]) =>
+  `${i.quantity} × ${i.name}${i.version ? ` (${i.version === "replica" ? "Replica" : "Player version"})` : ""}${i.size ? ` (${i.size})` : ""}`;
+
+type Filter = "all" | "paid" | "to-send" | "pending";
+
+// Merchandise orders only. Ticket orders have their own list under Ticketing.
+export default function AdminShopOrdersPage() {
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [error, setError] = useState("");
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [notice, setNotice] = useState<{ id: string; text: string; tone: "ok" | "error" } | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ id: string; text: string; ok: boolean } | null>(null);
 
   function load() {
     adminFetch<Order[]>("/orders")
       .then(setOrders)
       .catch((err) => setError(err.message));
   }
-
   useEffect(load, []);
 
-  function flashNotice(id: string, text: string, tone: "ok" | "error") {
-    setNotice({ id, text, tone });
-    setTimeout(() => setNotice((prev) => (prev?.id === id ? null : prev)), 4000);
+  function flash(id: string, text: string, ok: boolean) {
+    setNotice({ id, text, ok });
+    setTimeout(() => setNotice((n) => (n?.id === id ? null : n)), 5000);
   }
 
-  // People who ticked the box to hear from the club, as a spreadsheet.
-  async function downloadContacts() {
-    setError("");
+  function replace(updated: Order) {
+    setOrders((prev) => (prev ? prev.map((o) => (o._id === updated._id ? updated : o)) : prev));
+  }
+
+  async function toggleFulfilled(order: Order) {
+    setBusyId(order._id);
     try {
-      const res = await fetch(`${API_URL}/admin/orders/contacts.csv`, { headers: { Authorization: `Bearer ${getToken()}` } });
-      if (!res.ok) throw new Error("Could not download the list.");
-      const url = URL.createObjectURL(await res.blob());
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "eko-united-contacts.csv";
-      a.click();
-      URL.revokeObjectURL(url);
+      replace(await adminFetch<Order>(`/orders/${order._id}`, { method: "PUT", body: JSON.stringify({ fulfilled: !order.fulfilled }) }));
+    } catch (err) {
+      flash(order._id, err instanceof Error ? err.message : "Could not update the order.", false);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  // Only for orders paid outside the online flow (no payment provider on them).
+  async function markPaid(order: Order) {
+    setBusyId(order._id);
+    try {
+      replace(await adminFetch<Order>(`/orders/${order._id}/mark-paid`, { method: "POST" }));
+      flash(order._id, "Marked as paid. The confirmation email was sent if email is set up.", true);
+    } catch (err) {
+      flash(order._id, err instanceof Error ? err.message : "Could not mark it paid.", false);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function resend(order: Order) {
+    setBusyId(order._id);
+    try {
+      await adminFetch(`/orders/${order._id}/resend-confirmation`, { method: "POST" });
+      flash(order._id, "Confirmation email sent.", true);
+    } catch (err) {
+      flash(order._id, err instanceof Error ? err.message : "Could not send the email.", false);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function downloadContacts() {
+    try {
+      await downloadAdminFile("/orders/contacts.csv?type=shop", "eko-united-contacts.csv");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not download the list.");
     }
   }
 
-  async function toggleFulfilled(order: Order) {
-    setUpdatingId(order._id);
-    try {
-      const updated = await adminFetch<Order>(`/orders/${order._id}`, {
-        method: "PUT",
-        body: JSON.stringify({ fulfilled: !order.fulfilled }),
-      });
-      setOrders((prev) => (prev ? prev.map((o) => (o._id === updated._id ? updated : o)) : prev));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update order.");
-    } finally {
-      setUpdatingId(null);
-    }
-  }
+  const stats = useMemo(() => {
+    const paid = (orders || []).filter((o) => o.status === "paid");
+    return {
+      paidOrders: paid.length,
+      revenue: paid.reduce((s, o) => s + o.totalAmount, 0),
+      items: paid.reduce((s, o) => s + o.items.reduce((n, i) => n + i.quantity, 0), 0),
+      toSend: paid.filter((o) => !o.fulfilled).length,
+      pending: (orders || []).filter((o) => o.status === "pending").length,
+    };
+  }, [orders]);
 
-  // Only for orders paid outside the online flow (no paymentProvider stamped;
-  // see backend/src/routes/admin/orders.js for why a provider-tracked
-  // order refuses this). Goes through the same stock/ticket/email path a
-  // real payment webhook does, so this is also how the order confirmation
-  // email gets exercised today, before live payment credentials exist.
-  async function markPaid(order: Order) {
-    setUpdatingId(order._id);
-    try {
-      const updated = await adminFetch<Order>(`/orders/${order._id}/mark-paid`, { method: "POST" });
-      setOrders((prev) => (prev ? prev.map((o) => (o._id === updated._id ? updated : o)) : prev));
-      flashNotice(order._id, "Marked paid, confirmation email sent (if Resend is configured).", "ok");
-    } catch (err) {
-      flashNotice(order._id, err instanceof Error ? err.message : "Failed to mark paid.", "error");
-    } finally {
-      setUpdatingId(null);
-    }
-  }
+  const shown = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return (orders || []).filter((o) => {
+      if (filter === "paid" && o.status !== "paid") return false;
+      if (filter === "to-send" && !(o.status === "paid" && !o.fulfilled)) return false;
+      if (filter === "pending" && o.status !== "pending") return false;
+      if (!q) return true;
+      return [o.customerName, o.customerEmail, o.customerPhone || "", o._id.slice(-8), o.referralCode || "", ...o.items.map((i) => i.name)].join(" ").toLowerCase().includes(q);
+    });
+  }, [orders, filter, search]);
 
-  async function resendConfirmation(order: Order) {
-    setUpdatingId(order._id);
-    try {
-      await adminFetch(`/orders/${order._id}/resend-confirmation`, { method: "POST" });
-      flashNotice(order._id, "Confirmation email sent.", "ok");
-    } catch (err) {
-      flashNotice(order._id, err instanceof Error ? err.message : "Failed to send.", "error");
-    } finally {
-      setUpdatingId(null);
-    }
-  }
+  const tabs: { value: Filter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "paid", label: "Paid" },
+    { value: "to-send", label: `To send (${stats.toSend})` },
+    { value: "pending", label: `Not paid yet (${stats.pending})` },
+  ];
 
   return (
     <AdminShell>
       {(admin) => (
-        <div className="px-6 py-16 sm:px-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Sales</p>
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-            <h1 className="display-title font-display mt-2">Orders</h1>
-            <button
-              type="button"
-              onClick={downloadContacts}
-              className="btn-glass btn-glass-navy px-5 py-2.5 text-xs font-bold uppercase tracking-wide"
-            >
-              Download opted-in contacts (CSV)
-            </button>
+        <div className="px-6 py-12 sm:px-10">
+          <PageHeader
+            eyebrow="Shop"
+            title="Shop Orders"
+            intro="Merchandise orders only. Ticket orders are kept separate under Ticketing."
+            actions={
+              <button type="button" onClick={downloadContacts} className={btnSecondary}>
+                Download opted-in contacts
+              </button>
+            }
+          />
+          {error && <ErrorNote>{error}</ErrorNote>}
+
+          <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <StatCard label="Paid orders" value={stats.paidOrders} sub={`${stats.items} items sold`} />
+            <StatCard label="Money received" value={formatNaira(stats.revenue)} tone="good" sub="after referral discounts" />
+            <StatCard label="To send out" value={stats.toSend} sub="paid, not yet fulfilled" tone={stats.toSend > 0 ? "warn" : "default"} />
+            <StatCard label="Not paid yet" value={stats.pending} sub="started but unpaid" />
           </div>
 
-          {error && (
-            <p className="mb-4 text-sm text-red-500" role="alert">
-              {error}
-            </p>
-          )}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-2">
+              {tabs.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => setFilter(t.value)}
+                  className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200 ease-smooth ${
+                    filter === t.value ? "bg-navy text-white" : "bg-navy/[0.05] text-navy/60 hover:bg-navy/10"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search name, email, phone, item or order"
+              aria-label="Search orders"
+              className="w-full rounded-xl border border-navy/15 bg-white px-4 py-2.5 text-sm text-navy outline-none focus:border-cyan sm:w-80"
+            />
+          </div>
 
           {orders === null ? (
             <p className="text-navy/50">Loading…</p>
-          ) : orders.length === 0 ? (
-            <p className="text-navy/50">No orders yet.</p>
+          ) : shown.length === 0 ? (
+            <EmptyState>{orders.length === 0 ? "No shop orders yet." : "No orders match this view."}</EmptyState>
           ) : (
-            <div className="border-t border-navy/10">
-              {orders.map((order) => (
-                <div key={order._id} className="flex flex-wrap items-start justify-between gap-4 border-b border-navy/10 py-5">
-                  <div>
-                    <p className="font-medium text-navy">
-                      {order.customerName} <span className="text-navy/40">· {order.customerEmail}</span>
-                      {order.customerPhone && <span className="text-navy/40"> · {order.customerPhone}</span>}
-                    </p>
-                    <p className="mt-1 text-xs uppercase tracking-wide text-navy/40">
-                      {order.type} ·{" "}
-                      {order.items
-                        .map(
-                          (i) =>
-                            `${i.quantity}× ${i.name}${i.version ? ` (${i.version === "replica" ? "Replica" : "Player version"})` : ""}${i.size ? ` (${i.size})` : ""}`
-                        )
-                        .join(", ")}
-                    </p>
-                    {(order.referralCode || order.marketingConsent) && (
-                      <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                        {order.referralCode && (
-                          <span className="font-semibold text-navy/60">
-                            Referral {order.referralCode}
-                            {order.referralOwner ? ` (${order.referralOwner})` : ""}
-                            {order.discountAmount ? `, -${formatNaira(order.discountAmount)}` : ""}
-                          </span>
-                        )}
-                        {order.marketingConsent && <span className="font-semibold text-cyan">Opted in to emails and SMS</span>}
-                      </p>
-                    )}
-                    <p className="mt-1 text-xs text-navy/40">
-                      {new Date(order.createdAt).toLocaleString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        timeZone: "Africa/Lagos",
-                      })}
-                    </p>
-                    {notice?.id === order._id && (
-                      <p className={`mt-2 text-xs font-semibold ${notice.tone === "ok" ? "text-cyan" : "text-red-500"}`}>
-                        {notice.text}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="font-display text-lg text-navy">{formatPrice(order.totalAmount)}</p>
-                    <p className={`text-xs font-semibold uppercase tracking-wide ${statusTone[order.status]}`}>
-                      {order.status}
-                    </p>
+            <ul className="divide-y divide-navy/10 rounded-2xl border border-navy/10">
+              {shown.map((o) => {
+                const isOpen = open === o._id;
+                return (
+                  <li key={o._id}>
+                    <button
+                      type="button"
+                      onClick={() => setOpen(isOpen ? null : o._id)}
+                      aria-expanded={isOpen}
+                      className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4 text-left transition-colors duration-200 ease-smooth hover:bg-navy/[0.03]"
+                    >
+                      <div className="min-w-0 flex-1 basis-60">
+                        <p className="font-semibold text-navy">
+                          {o.customerName} <span className="ml-1 text-xs font-normal text-navy/40">#{o._id.slice(-8).toUpperCase()}</span>
+                        </p>
+                        <p className="mt-0.5 truncate text-sm text-navy/60">{o.items.map(lineLabel).join(", ")}</p>
+                        <p className="mt-0.5 text-xs text-navy/40">{dateTimeLabel(o.createdAt)}</p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Pill tone={statusTone[o.status]}>{statusLabel[o.status]}</Pill>
+                        <Pill tone="neutral">{methodOf(o)}</Pill>
+                        {o.status === "paid" && <Pill tone={o.fulfilled ? "dark" : "warn"}>{o.fulfilled ? "Sent" : "To send"}</Pill>}
+                      </div>
+                      <p className="w-28 text-right font-display text-xl text-navy">{formatPrice(o.totalAmount)}</p>
+                    </button>
 
-                    {order.type === "shop" && order.status === "paid" && (
-                      <button
-                        type="button"
-                        onClick={() => toggleFulfilled(order)}
-                        disabled={updatingId === order._id}
-                        className="mt-2 block text-xs font-semibold text-cyan transition-colors duration-200 ease-smooth hover:text-navy disabled:opacity-50"
-                      >
-                        {updatingId === order._id ? "Updating…" : order.fulfilled ? "Fulfilled ✓" : "Mark fulfilled"}
-                      </button>
-                    )}
+                    {isOpen && (
+                      <div className="border-t border-navy/10 bg-navy/[0.025] px-5 py-6">
+                        <dl className="grid gap-x-10 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+                          <div>
+                            <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/40">Buyer</dt>
+                            <dd className="mt-1 text-sm text-navy">
+                              <p className="font-semibold">{o.customerName}</p>
+                              <a href={`mailto:${o.customerEmail}`} className="block text-cyan hover:text-navy">
+                                {o.customerEmail}
+                              </a>
+                              {o.customerPhone && (
+                                <a href={`tel:${o.customerPhone}`} className="block text-cyan hover:text-navy">
+                                  {o.customerPhone}
+                                </a>
+                              )}
+                              <p className="mt-1 text-xs text-navy/50">{o.marketingConsent ? "Agreed to emails and SMS" : "No marketing consent"}</p>
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/40">Payment</dt>
+                            <dd className="mt-1 text-sm text-navy">
+                              <p>
+                                <span className="font-semibold">{methodOf(o)}</span> · {statusLabel[o.status]}
+                              </p>
+                              {o.paidAt && <p className="text-xs text-navy/50">Paid {dateTimeLabel(o.paidAt)}</p>}
+                              {o.paymentReference && <p className="break-all text-xs text-navy/50">Reference {o.paymentReference}</p>}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/40">Amounts</dt>
+                            <dd className="mt-1 text-sm text-navy">
+                              <p>Items {formatNaira(o.subtotalAmount ?? o.totalAmount + (o.discountAmount || 0))}</p>
+                              {o.referralCode && (
+                                <p className="text-navy/60">
+                                  Referral {o.referralCode}
+                                  {o.referralOwner ? ` (${o.referralOwner})` : ""}
+                                  {o.discountAmount ? `: -${formatNaira(o.discountAmount)}` : " (tracking only)"}
+                                </p>
+                              )}
+                              <p className="mt-1 font-semibold">Total {formatPrice(o.totalAmount)}</p>
+                            </dd>
+                          </div>
+                        </dl>
 
-                    {admin.role === "super_admin" && order.status === "pending" && !order.paymentProvider && (
-                      <button
-                        type="button"
-                        onClick={() => markPaid(order)}
-                        disabled={updatingId === order._id}
-                        className="mt-2 block text-xs font-semibold text-navy underline transition-colors duration-200 ease-smooth hover:text-cyan disabled:opacity-50"
-                      >
-                        {updatingId === order._id ? "Marking paid…" : "Mark paid (offline payment)"}
-                      </button>
-                    )}
+                        <p className="mb-2 mt-6 text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/40">What was bought</p>
+                        <ul className="divide-y divide-navy/10 rounded-xl bg-white">
+                          {o.items.map((i, idx) => (
+                            <li key={idx} className="flex items-center justify-between px-4 py-2.5 text-sm text-navy">
+                              <span>
+                                {lineLabel(i)} <span className="text-navy/40">@ {formatPrice(i.unitPrice)}</span>
+                              </span>
+                              <span className="font-semibold">{formatPrice(i.unitPrice * i.quantity)}</span>
+                            </li>
+                          ))}
+                        </ul>
 
-                    {order.status === "paid" && (
-                      <button
-                        type="button"
-                        onClick={() => resendConfirmation(order)}
-                        disabled={updatingId === order._id}
-                        className="mt-2 block text-xs font-semibold text-navy/50 transition-colors duration-200 ease-smooth hover:text-cyan disabled:opacity-50"
-                      >
-                        {updatingId === order._id ? "Sending…" : "Resend confirmation email"}
-                      </button>
+                        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-semibold">
+                          {o.status === "paid" && (
+                            <button type="button" disabled={busyId === o._id} onClick={() => toggleFulfilled(o)} className="text-cyan transition-colors duration-200 ease-smooth hover:text-navy disabled:opacity-50">
+                              {o.fulfilled ? "Sent ✓ (undo)" : "Mark as sent"}
+                            </button>
+                          )}
+                          {o.status === "paid" && (
+                            <button type="button" disabled={busyId === o._id} onClick={() => resend(o)} className="text-navy/60 transition-colors duration-200 ease-smooth hover:text-cyan disabled:opacity-50">
+                              Email the confirmation again
+                            </button>
+                          )}
+                          {admin.role === "super_admin" && o.status === "pending" && !o.paymentProvider && (
+                            <button type="button" disabled={busyId === o._id} onClick={() => markPaid(o)} className="text-navy underline transition-colors duration-200 ease-smooth hover:text-cyan disabled:opacity-50">
+                              Mark as paid (cash or bank transfer)
+                            </button>
+                          )}
+                          {notice?.id === o._id && <span className={notice.ok ? "text-cyan" : "text-red-500"}>{notice.text}</span>}
+                        </div>
+                      </div>
                     )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </div>
       )}

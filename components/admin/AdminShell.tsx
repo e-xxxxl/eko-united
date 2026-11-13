@@ -15,7 +15,7 @@ const roleLabels: Record<string, string> = {
   inventory_manager: "Inventory Manager",
 };
 
-type NavLink = { href: string; label: string; roles?: string[] };
+type NavLink = { href: string; label: string; roles?: string[]; exact?: boolean };
 type NavGroup = { heading: string; links: NavLink[] };
 
 // Only sections that actually exist link here: add to this list as each
@@ -39,7 +39,6 @@ const navGroups: NavGroup[] = [
       { href: "/admin/matches", label: "Fixtures & Results", roles: ["content_editor"] },
       { href: "/admin/standings", label: "League Table", roles: ["content_editor"] },
       { href: "/admin/players", label: "Players & Staff", roles: ["content_editor"] },
-      { href: "/admin/scan-tickets", label: "Scan Tickets", roles: ["ticket_manager", "inventory_manager"] },
     ],
   },
   {
@@ -71,13 +70,24 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    heading: "Shop and tickets",
+    heading: "Ticketing",
+    links: [
+      { href: "/admin/tickets", label: "Overview", roles: ["ticket_manager"], exact: true },
+      { href: "/admin/tickets/sales", label: "Ticket Orders", roles: ["ticket_manager"] },
+      { href: "/admin/ticket-types", label: "Ticket Types", roles: ["ticket_manager"] },
+      { href: "/admin/scan-tickets", label: "Check-in", roles: ["ticket_manager", "inventory_manager"] },
+    ],
+  },
+  {
+    heading: "Shop",
     links: [
       { href: "/admin/products", label: "Products", roles: ["shop_manager", "inventory_manager"] },
-      { href: "/admin/ticket-types", label: "Ticket Types", roles: ["ticket_manager"] },
-      { href: "/admin/orders", label: "Orders", roles: ["shop_manager", "ticket_manager", "inventory_manager"] },
-      { href: "/admin/referrals", label: "Referral Codes", roles: ["shop_manager", "ticket_manager", "inventory_manager"] },
+      { href: "/admin/orders", label: "Shop Orders", roles: ["shop_manager", "inventory_manager"] },
     ],
+  },
+  {
+    heading: "Promotions",
+    links: [{ href: "/admin/referrals", label: "Referral Codes", roles: ["shop_manager", "ticket_manager", "inventory_manager"] }],
   },
   {
     heading: "Administration",
@@ -184,7 +194,7 @@ export default function AdminShell({ children }: { children: (admin: AdminSessio
               <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">{group.heading}</p>
               <ul className="mt-2 space-y-0.5">
                 {group.links.map((link) => {
-                  const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+                  const active = pathname === link.href || (!link.exact && pathname?.startsWith(`${link.href}/`));
                   return (
                     <li key={link.href}>
                       <Link
