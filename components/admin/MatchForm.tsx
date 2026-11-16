@@ -3,6 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import CloudinaryUpload from "@/components/admin/CloudinaryUpload";
 import { adminFetch } from "@/lib/adminApi";
+import LineupPicker from "@/components/admin/LineupPicker";
+import type { LineupPlayer } from "@/lib/lineup";
 
 type StatPair = { eko: number | null; opponent: number | null };
 
@@ -52,7 +54,10 @@ export type MatchFormValues = {
   summary: string;
 };
 
-type SquadPlayer = { _id: string; name: string; squadNumber?: number; position?: string; role: string };
+type SquadPlayer = LineupPlayer & { role: string };
+
+// A saved lineup can arrive as plain ids or as populated players, depending on the API version.
+const idOf = (x: string | { _id: string }) => (typeof x === "string" ? x : x._id);
 
 const fieldClass =
   "w-full border-b border-navy/20 bg-transparent px-1 py-3 text-sm text-navy outline-none transition-colors duration-200 ease-smooth placeholder:text-navy/30 focus:border-cyan";
@@ -99,8 +104,10 @@ export default function MatchForm({
   const [isHome, setIsHome] = useState(initial?.isHome ?? true);
   const [status, setStatus] = useState<MatchFormValues["status"]>(initial?.status || "upcoming");
   const [opponentLogoUrl, setOpponentLogoUrl] = useState(initial?.opponentLogoUrl || "");
-  const [lineup, setLineup] = useState<string[]>(initial?.lineup || []);
-  const [substitutes, setSubstitutes] = useState<string[]>(initial?.substitutes || []);
+  const [formation, setFormation] = useState(initial?.formation || "");
+  const [lineup, setLineup] = useState<string[]>((initial?.lineup || []).map(idOf));
+  // Players kept out of the matchday squad; everyone else not starting is a substitute.
+  const [leftOut, setLeftOut] = useState<string[]>([]);
   const [events, setEvents] = useState<EventDraft[]>(
     (initial?.events || []).map((e) => ({
       minute: e.minute != null ? String(e.minute) : "",
@@ -109,18 +116,33 @@ export default function MatchForm({
       detail: e.detail || "",
     }))
   );
-  const [stats, setStats] = useState<MatchFormValues["stats"]>(initial?.stats || emptyStats());
+  // A saved match may only have some stats filled in (the server leaves the rest out),
+  // so start from the empty set and lay what was saved over it.
+  const [stats, setStats] = useState<MatchFormValues["stats"]>(() => {
+    const base = emptyStats();
+    for (const key of Object.keys(base) as (keyof MatchFormValues["stats"])[]) {
+      const saved = initial?.stats?.[key];
+      if (saved) base[key] = { eko: saved.eko ?? null, opponent: saved.opponent ?? null };
+    }
+    return base;
+  });
   const [squad, setSquad] = useState<SquadPlayer[]>([]);
 
   useEffect(() => {
     adminFetch<SquadPlayer[]>("/players")
-      .then((all) => setSquad(all.filter((p) => p.role === "player")))
+      .then((all) => {
+        const players = all.filter((p) => p.role === "player");
+        setSquad(players);
+        // A match saved with its own substitute list: whoever is not starting and not on it was left out.
+        const savedSubs = (initial?.substitutes || []).map(idOf);
+        const starting = new Set((initial?.lineup || []).map(idOf));
+        if (savedSubs.length > 0) {
+          setLeftOut(players.filter((p) => !starting.has(p._id) && !savedSubs.includes(p._id)).map((p) => p._id));
+        }
+      })
       .catch(() => setSquad([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  function toggleInList(list: string[], setList: (v: string[]) => void, id: string) {
-    setList(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
-  }
 
   function addEvent() {
     setEvents([...events, { minute: "", type: "goal", player: "", detail: "" }]);
@@ -155,9 +177,14 @@ export default function MatchForm({
       status,
       score: { eko: score("eko"), opponent: score("opponent") },
       preview: String(data.get("preview") || ""),
-      formation: String(data.get("formation") || ""),
+      formation: formation.trim(),
       lineup,
-      substitutes,
+      // Everyone in the squad who is not starting and not left out. If the squad
+      // has not loaded, keep what was saved rather than wiping it.
+      substitutes:
+        squad.length > 0
+          ? squad.filter((p) => !lineup.includes(p._id) && !leftOut.includes(p._id)).map((p) => p._id)
+          : (initial?.substitutes || []).map(idOf),
       // Drop rows the admin added but never filled in; convert minute back
       // to a number (or omit it) for the backend's eventSchema.
       events: events
@@ -203,7 +230,14 @@ export default function MatchForm({
             <label htmlFor="competition" className={labelClass}>
               Competition
             </label>
-            <input id="competition" name="competition" defaultValue={initial?.competition} className={fieldClass} />
+            <input
+              id="competition"
+              name="competition"
+              defaultValue={initial?.competition}
+              placeholder="e.g. Nigeria National League · Matchday 1"
+              className={fieldClass}
+            />
+            <p className="mt-1 text-xs text-navy/40">Shown on the match page as the league and matchday, for example NNL, Matchday 1.</p>
           </div>
           <div>
             <label htmlFor="venue" className={labelClass}>
@@ -305,67 +339,18 @@ export default function MatchForm({
       {/* LINEUPS */}
       <div>
         <p className={sectionLabelClass}>Lineup</p>
-        <div className="mb-4">
-          <label htmlFor="formation" className={labelClass}>
-            Formation (optional)
-          </label>
-          <input
-            id="formation"
-            name="formation"
-            placeholder="e.g. 4-3-3"
-            defaultValue={initial?.formation}
-            className={`${fieldClass} max-w-[160px]`}
-          />
-        </div>
-
         {squad.length === 0 ? (
-          <p className="text-sm text-navy/40">No squad players yet, add some under Players & Staff first.</p>
+          <p className="text-sm text-navy/40">No squad players yet, add some under Players &amp; Staff first.</p>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <span className={labelClass}>Starting XI</span>
-              <div className="max-h-64 space-y-1 overflow-y-auto border-t border-navy/10 pt-2">
-                {squad.map((p) => (
-                  <label key={p._id} className="flex items-center gap-2 py-1 text-sm text-navy">
-                    <input
-                      type="checkbox"
-                      checked={lineup.includes(p._id)}
-                      onChange={() => toggleInList(lineup, setLineup, p._id)}
-                      className="h-4 w-4 shrink-0"
-                    />
-                    <span>
-                      {p.squadNumber != null && <span className="text-navy/40">#{p.squadNumber} </span>}
-                      {p.name}
-                      {p.position && <span className="text-navy/40"> · {p.position}</span>}
-                    </span>
-                  </label>
-                ))}
-              </div>
-              <p className="mt-1 text-xs text-navy/40">{lineup.length} selected</p>
-            </div>
-
-            <div>
-              <span className={labelClass}>Substitutes</span>
-              <div className="max-h-64 space-y-1 overflow-y-auto border-t border-navy/10 pt-2">
-                {squad.map((p) => (
-                  <label key={p._id} className="flex items-center gap-2 py-1 text-sm text-navy">
-                    <input
-                      type="checkbox"
-                      checked={substitutes.includes(p._id)}
-                      onChange={() => toggleInList(substitutes, setSubstitutes, p._id)}
-                      className="h-4 w-4 shrink-0"
-                    />
-                    <span>
-                      {p.squadNumber != null && <span className="text-navy/40">#{p.squadNumber} </span>}
-                      {p.name}
-                      {p.position && <span className="text-navy/40"> · {p.position}</span>}
-                    </span>
-                  </label>
-                ))}
-              </div>
-              <p className="mt-1 text-xs text-navy/40">{substitutes.length} selected</p>
-            </div>
-          </div>
+          <LineupPicker
+            squad={squad}
+            formation={formation}
+            onFormation={setFormation}
+            lineup={lineup}
+            onLineup={setLineup}
+            leftOut={leftOut}
+            onLeftOut={setLeftOut}
+          />
         )}
       </div>
 
