@@ -26,7 +26,7 @@ export default function EditMatchPage() {
     setError("");
     try {
       await adminFetch(`/matches/${params.id}`, { method: "PUT", body: JSON.stringify(values) });
-      await revalidatePublicPaths(["/fixtures", "/results", "/"]);
+      await revalidatePublicPaths(["/fixtures", "/results", "/", `/fixtures/${params.id}`, `/tickets/${params.id}`, "/tickets"]);
       router.push("/admin/matches");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save match.");

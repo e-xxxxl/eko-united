@@ -33,7 +33,7 @@ export default function AdminMatchesPage() {
     setDeletingId(id);
     try {
       await adminFetch(`/matches/${id}`, { method: "DELETE" });
-      await revalidatePublicPaths(["/fixtures", "/results", "/"]);
+      await revalidatePublicPaths(["/fixtures", "/results", "/", `/fixtures/${id}`, `/tickets/${id}`, "/tickets"]);
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete match.");
