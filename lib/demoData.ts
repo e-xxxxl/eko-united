@@ -49,6 +49,7 @@ export type DemoStanding = {
   lost: number;
   goalsFor?: number;
   goalsAgainst?: number;
+  form?: ("W" | "D" | "L")[]; // last results, oldest first
   goalDifference: number;
   points: number;
   position: number;

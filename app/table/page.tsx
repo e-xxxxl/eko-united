@@ -73,7 +73,7 @@ export default async function TablePage() {
   return (
     <main className="px-6 py-16 sm:px-10 lg:px-16">
       <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-cyan">
-        Nigeria National League
+        Nigeria National League · Group A
       </p>
       <h1 className="display-title font-display mb-10">League Table</h1>
 
@@ -84,7 +84,7 @@ export default async function TablePage() {
           {eko && <EkoSpotlight row={eko} total={standings.length} />}
           <LeagueTable rows={standings} />
           <p data-reveal="fade" className="mt-5 text-xs leading-relaxed text-navy/45">
-            P played · W won · D drawn · L lost · GF goals for · GA goals against · GD goal difference · Pts points
+            P played · W won · D drawn · L lost · G goals for : goals against · GD goal difference · Pts points · Form: the last five results, oldest on the left, the latest ringed
           </p>
         </>
       )}

@@ -9,10 +9,12 @@ import type { DemoStanding } from "@/lib/demoData";
 // restyled as a stack of floating rows. On a phone only what matters stays on
 // screen (position, club, played, goal difference, points) and the club's
 // W-D-L record drops under its name, so nothing scrolls sideways and no
-// club name is ever clipped. Wider screens bring back the full set of columns.
+// club name is ever clipped. Wider screens bring back wins, draws, losses,
+// goals (for:against) and the form guide (the last five results).
 // Eko United's row is the one solid navy bar with the single yellow accent.
 
 type Variant = "full" | "preview";
+type Result = "W" | "D" | "L";
 
 function Crest({ name, logoUrl, eko }: { name: string; logoUrl?: string; eko: boolean }) {
   const size = "h-7 w-7 sm:h-9 sm:w-9";
@@ -41,6 +43,34 @@ function signed(n: number) {
   return n > 0 ? `+${n}` : String(n);
 }
 
+const resultLabel: Record<Result, string> = { W: "Win", D: "Draw", L: "Loss" };
+
+// The last results as small coloured squares, oldest on the left, the most
+// recent ringed.
+export function FormChips({ form, eko = false }: { form?: Result[]; eko?: boolean }) {
+  const last = (form || []).slice(-5);
+  if (last.length === 0) return <span className={eko ? "text-white/30" : "text-navy/25"}>-</span>;
+  return (
+    <span className="inline-flex items-center gap-1" role="img" aria-label={`Recent form: ${last.map((r) => resultLabel[r]).join(", ")}`}>
+      {last.map((r, i) => (
+        <span
+          key={i}
+          aria-hidden
+          className={clsx(
+            "flex h-[1.4rem] w-[1.4rem] items-center justify-center rounded-md text-[11px] font-bold leading-none",
+            r === "W" && "bg-cyan text-navy-dark",
+            r === "D" && (eko ? "bg-white/25 text-white" : "bg-navy/20 text-navy"),
+            r === "L" && "bg-red-500 text-white",
+            i === last.length - 1 && (eko ? "ring-2 ring-white/70" : "ring-2 ring-navy/35")
+          )}
+        >
+          {r}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function LeagueTable({
   rows,
   maxPoints,
@@ -58,6 +88,9 @@ export default function LeagueTable({
   const showWdl = full ? "hidden sm:table-cell" : "hidden sm:table-cell lg:hidden xl:table-cell";
   const showRecordLine = full ? "sm:hidden" : "sm:hidden lg:block xl:hidden";
   const showGoals = "hidden md:table-cell";
+  const showForm = full ? "hidden lg:table-cell" : "hidden xl:table-cell";
+  // The last visible cell of a row carries its rounded right edge.
+  const ptsRound = full ? "max-lg:rounded-r-xl" : "max-xl:rounded-r-xl";
 
   const head = "pb-1 text-[10px] font-semibold uppercase tracking-[0.16em]";
   const muted = "text-navy/40";
@@ -87,20 +120,18 @@ export default function LeagueTable({
             L
           </th>
           {full && (
-            <>
-              <th scope="col" title="Goals for" className={clsx(head, muted, "w-10 text-center", showGoals)}>
-                GF
-              </th>
-              <th scope="col" title="Goals against" className={clsx(head, muted, "w-10 text-center", showGoals)}>
-                GA
-              </th>
-            </>
+            <th scope="col" title="Goals for : goals against" className={clsx(head, muted, "w-16 text-center", showGoals)}>
+              G
+            </th>
           )}
           <th scope="col" title="Goal difference" className={clsx(head, muted, "w-9 text-center sm:w-12")}>
             GD
           </th>
           <th scope="col" title="Points" className={clsx(head, "w-12 pr-2.5 text-center text-navy sm:w-20 sm:pr-5")}>
             Pts
+          </th>
+          <th scope="col" title="Last five results, oldest first" className={clsx(head, muted, "w-[9.5rem] pl-1 pr-4 text-left", showForm)}>
+            Form
           </th>
         </tr>
       </thead>
@@ -163,16 +194,17 @@ export default function LeagueTable({
               <td className={clsx(cell, center, showWdl)}>{row.drawn}</td>
               <td className={clsx(cell, center, showWdl)}>{row.lost}</td>
               {full && (
-                <>
-                  <td className={clsx(cell, center, showGoals)}>{row.goalsFor ?? "-"}</td>
-                  <td className={clsx(cell, center, showGoals)}>{row.goalsAgainst ?? "-"}</td>
-                </>
+                <td className={clsx(cell, center, showGoals)}>
+                  {row.goalsFor ?? "-"}
+                  <span className={eko ? "text-white/35" : "text-navy/30"}>:</span>
+                  {row.goalsAgainst ?? "-"}
+                </td>
               )}
               <td className={clsx(cell, center, "font-semibold", row.goalDifference < 0 && "font-normal opacity-80")}>
                 {signed(row.goalDifference)}
               </td>
 
-              <td className={clsx(cell, center, "rounded-r-xl pr-2.5 sm:pr-5")}>
+              <td className={clsx(cell, center, "pr-2.5 sm:pr-5", ptsRound)}>
                 <span
                   className={clsx(
                     "inline-flex min-w-[2.25rem] items-center justify-center rounded-lg px-1.5 py-1 font-display text-xl leading-none sm:min-w-[3rem] sm:px-2 sm:text-2xl",
@@ -181,6 +213,10 @@ export default function LeagueTable({
                 >
                   {row.points}
                 </span>
+              </td>
+
+              <td className={clsx(cell, "whitespace-nowrap rounded-r-xl pl-1 pr-4 text-left", showForm)}>
+                <FormChips form={row.form} eko={eko} />
               </td>
             </tr>
           );
