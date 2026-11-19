@@ -46,7 +46,7 @@ export default function StorageCard() {
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-display text-xl uppercase text-navy">Photo storage</h2>
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-navy/40">
-          Cloudinary {usage.plan ? `· ${usage.plan} plan` : ""}
+          Cloudinary
         </p>
       </div>
 
