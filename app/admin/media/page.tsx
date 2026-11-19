@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { clsx } from "clsx";
 import AdminShell from "@/components/admin/AdminShell";
+import StorageCard from "@/components/admin/StorageCard";
 import { adminFetch } from "@/lib/adminApi";
 import { formatBytes, thumbUrl, type MediaItem, type MediaPage } from "@/lib/mediaTypes";
 
@@ -64,10 +65,15 @@ export default function AdminMediaPage() {
 
   return (
     <AdminShell>
-      {() => (
+      {(admin) => (
         <div className="px-6 py-16 sm:px-10">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan">Content</p>
           <h1 className="display-title font-display mt-2">Photo library</h1>
+          {admin.role === "super_admin" && (
+            <div className="mt-6 max-w-4xl">
+              <StorageCard />
+            </div>
+          )}
           <p className="mb-8 mt-3 max-w-2xl text-sm leading-relaxed text-navy/55">
             Every photo uploaded to Cloudinary, labelled with where the site uses it. When you add a photo anywhere in
             the admin, choose it from here instead of uploading it again, so the same picture is only ever stored once.

@@ -91,7 +91,10 @@ const navGroups: NavGroup[] = [
   },
   {
     heading: "Administration",
-    links: [{ href: "/admin/users", label: "Staff Accounts", roles: ["super_admin"] }],
+    links: [
+      { href: "/admin/users", label: "Staff Accounts", roles: ["super_admin"] },
+      { href: "/admin/activity", label: "Activity Log", roles: ["super_admin"] },
+    ],
   },
 ];
 

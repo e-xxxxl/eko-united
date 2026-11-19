@@ -5,6 +5,7 @@ import Image from "next/image";
 import { adminFetch } from "@/lib/adminApi";
 import { isAllowedImageUrl, ALLOWED_IMAGE_HOSTS } from "@/lib/imageHosts";
 import MediaPicker from "@/components/admin/MediaPicker";
+import { compressImage, formatBytes } from "@/lib/compressImage";
 
 type SignatureResponse = {
   signature: string;
@@ -34,13 +35,19 @@ export default function CloudinaryUpload({
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [saved, setSaved] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleFile(file: File) {
+  async function handleFile(original: File) {
     setUploading(true);
     setError("");
+    setSaved("");
     try {
+      // Shrink in the browser first: smaller upload, smaller file stored.
+      const { file, before, after } = await compressImage(original);
+      if (after < before) setSaved(`Optimised: ${formatBytes(before)} down to ${formatBytes(after)}`);
+
       const sig = await adminFetch<SignatureResponse>("/upload/signature", {
         method: "POST",
         body: JSON.stringify({ folder }),
@@ -128,6 +135,7 @@ export default function CloudinaryUpload({
             )}
           </div>
           <p className="mt-2 text-[11px] text-navy/40">{hint}</p>
+          {saved && !uploading && !error && <p className="mt-1 text-[11px] font-semibold text-cyan-dark">{saved}</p>}
           {error && (
             <p className="mt-2 text-xs text-red-500" role="alert">
               {error}

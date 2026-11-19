@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import AdminShell from "@/components/admin/AdminShell";
+import StorageCard from "@/components/admin/StorageCard";
 
 const sections: { href: string; label: string; description: string; roles?: string[] }[] = [
   { href: "/admin/players", label: "Players & Staff", description: "Squad, coaches, management profiles", roles: ["content_editor"] },
@@ -28,7 +29,8 @@ const sections: { href: string; label: string; description: string; roles?: stri
   { href: "/admin/scan-tickets", label: "Check-in", description: "Scan tickets at the gate on matchday", roles: ["ticket_manager", "inventory_manager"] },
   { href: "/admin/settings", label: "Settings", description: "Hero banners, club info, socials", roles: ["content_editor"] },
   { href: "/admin/analytics", label: "Analytics", description: "Season record, ticket + shop revenue", roles: ["super_admin"] },
-  { href: "/admin/users", label: "Staff Accounts", description: "Add and manage admin logins", roles: ["super_admin"] },
+  { href: "/admin/users", label: "Staff Accounts", description: "Add logins, edit names, emails and roles, reset passwords", roles: ["super_admin"] },
+  { href: "/admin/activity", label: "Activity Log", description: "Who changed what, and when, for every staff member", roles: ["super_admin"] },
 ];
 
 export default function AdminDashboardPage() {
@@ -46,6 +48,12 @@ export default function AdminDashboardPage() {
               Manage the site's content from here — changes go live on the public site within seconds
               of saving.
             </p>
+
+            {admin.role === "super_admin" && (
+              <div className="mt-8 max-w-4xl">
+                <StorageCard />
+              </div>
+            )}
 
             <div className="mt-10 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((section) => (

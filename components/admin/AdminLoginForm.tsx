@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { getToken, login } from "@/lib/adminAuth";
+import PasswordField from "@/components/admin/PasswordField";
 
 export default function AdminLoginForm() {
   const router = useRouter();
@@ -52,10 +53,10 @@ export default function AdminLoginForm() {
         <label htmlFor="password" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/50">
           Password
         </label>
-        <input
+        <PasswordField
+          tone="dark"
           id="password"
           name="password"
-          type="password"
           required
           autoComplete="current-password"
           className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-sm text-white outline-none transition-colors duration-200 ease-smooth placeholder:text-white/30 focus:border-cyan"

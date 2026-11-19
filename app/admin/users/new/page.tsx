@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import { adminFetch } from "@/lib/adminApi";
+import PasswordField from "@/components/admin/PasswordField";
 
 const fieldClass =
   "w-full border-b border-navy/20 bg-transparent px-1 py-3 text-sm text-navy outline-none transition-colors duration-200 ease-smooth placeholder:text-navy/30 focus:border-cyan";
@@ -61,9 +62,9 @@ export default function NewStaffAccountPage() {
             </div>
             <div>
               <label htmlFor="password" className={labelClass}>
-                Temporary password (they can't change it themselves yet — share it securely)
+                Temporary password (share it securely; you can reset it any time from Staff Accounts)
               </label>
-              <input id="password" name="password" type="password" required minLength={8} className={fieldClass} />
+              <PasswordField id="password" name="password" required minLength={8} autoComplete="new-password" className={fieldClass} />
             </div>
             <div>
               <span className={labelClass}>Role</span>
